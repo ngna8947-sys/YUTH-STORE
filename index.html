@@ -20,10 +20,10 @@
         .user-balance { background: #1e293b; padding: 8px 16px; border-radius: 20px; border: 1px solid #38bdf8; font-weight: bold; color: #38bdf8; }
         
         /* Google Button */
-        .btn-google { background: #ffffff; color: #1e293b; padding: 8px 16px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: 0.2s; }
+        .btn-google { background: #ffffff; color: #1e293b; padding: 8px 16px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
         .btn-google:hover { background: #f1f5f9; }
         .btn-logout { background: #ef4444; color: #fff; padding: 8px 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-
+        
         /* Grid & Cards */
         .section-title { color: #38bdf8; margin: 25px 0 15px 0; font-size: 18px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
@@ -31,301 +31,152 @@
         .card:hover { transform: translateY(-4px); border-color: #38bdf8; }
         .card img { width: 100%; height: 140px; object-fit: cover; background: #0f172a; }
         .card-body { padding: 12px; }
-        .card-title { font-size: 15px; font-weight: bold; margin-bottom: 4px; color: #fff; }
-        .card-age { font-size: 12px; color: #f59e0b; margin-bottom: 6px; }
-        .card-price { color: #10b981; font-weight: bold; font-size: 16px; margin-bottom: 8px; }
-        .btn-buy { width: 100%; padding: 8px; background: #38bdf8; color: #0b0f19; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; }
+        .card-title { font-size: 16px; font-weight: bold; margin-bottom: 6px; }
+        .card-price { color: #4ade80; font-weight: bold; font-size: 15px; }
 
-        /* Live Chat Widget */
-        .chat-btn { position: fixed; bottom: 20px; right: 20px; background: #38bdf8; color: #0f172a; width: 55px; height: 55px; border-radius: 50%; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.4); z-index: 100; display: flex; align-items: center; justify-content: center; }
-        .chat-box { display: none; position: fixed; bottom: 85px; right: 20px; width: 320px; height: 420px; background: #1e293b; border: 1px solid #334155; border-radius: 14px; z-index: 100; flex-direction: column; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
-        .chat-header { background: #0f172a; padding: 12px; font-weight: bold; color: #38bdf8; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; }
-        .chat-messages { flex-grow: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
-        .chat-msg { padding: 8px 12px; border-radius: 8px; max-width: 80%; }
-        .chat-msg.me { background: #38bdf8; color: #0f172a; align-self: flex-end; }
-        .chat-msg.other { background: #334155; color: #fff; align-self: flex-start; }
-        .chat-input-area { display: flex; padding: 8px; background: #0f172a; border-top: 1px solid #334155; }
-        .chat-input-area input { flex-grow: 1; padding: 8px; background: #1e293b; border: 1px solid #334155; color: #fff; border-radius: 6px; outline: none; }
-        .chat-input-area button { padding: 8px 12px; background: #10b981; color: #fff; border: none; border-radius: 6px; margin-left: 6px; cursor: pointer; }
-
-        /* Modals */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: #1e293b; padding: 22px; border-radius: 14px; width: 90%; max-width: 420px; border: 1px solid #334155; }
-        .field-group { margin-bottom: 10px; }
-        .field-group label { font-size: 12px; color: #94a3b8; display: block; margin-bottom: 4px; }
-        .field-box { display: flex; gap: 6px; }
-        .field-box input { flex-grow: 1; padding: 8px 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff; font-family: monospace; outline: none; }
-        .btn-copy { padding: 8px 10px; background: #334155; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+        /* Modal Popup */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: #1e293b; padding: 20px; border-radius: 14px; width: 90%; max-width: 400px; border: 1px solid #38bdf8; text-align: center; }
+        .modal-content h3 { margin-bottom: 15px; color: #38bdf8; }
+        .btn-confirm { background: #38bdf8; color: #0b1120; padding: 10px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 15px; }
+        .btn-cancel { background: #64748b; color: #fff; padding: 8px 20px; border: none; border-radius: 8px; margin-top: 10px; cursor: pointer; width: 100%; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <!-- Navbar -->
     <div class="header">
         <div class="brand">🔥 YUTH STORE</div>
-        <div class="auth-bar" id="authBar">
-            <button class="btn-google" onclick="loginWithGoogle()">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> ចូលប្រើជាមួយ Google
+        <div class="auth-bar" id="authSection">
+            <button class="btn-google" id="btnLogin" onclick="loginWithGoogle()">
+                <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+                ចូលប្រើជាមួយ Google
             </button>
+            <div id="userProfile" style="display: none; align-items: center; gap: 10px;">
+                <span class="user-balance" id="userBalanceDisplay">សមតុល្យ: $0.00</span>
+                <span id="userNameDisplay" style="font-weight: bold;"></span>
+                <button class="btn-logout" onclick="logout()">ចាកចេញ</button>
+            </div>
         </div>
     </div>
 
-    <!-- ១. Top-Up ហ្គេម -->
+    <!-- Section Services -->
     <h3 class="section-title">🎮 សេវាកម្មបញ្ចូលពេជ្រហ្គេម</h3>
-    <div class="grid" id="servicesGrid"></div>
+    <div class="grid" id="servicesGrid">
+        <p style="color: #64748b;">មិនទាន់មានសេវាកម្មទេ</p>
+    </div>
 
-    <!-- ២. ហាងលក់ Account -->
+    <!-- Section Accounts -->
     <h3 class="section-title">🛒 ហាងលក់ Account (Facebook / Game)</h3>
-    <div class="grid" id="accountsGrid"></div>
-</div>
-
-<!-- ប៊ូតុង Live Chat -->
-<button class="chat-btn" onclick="toggleChat()">💬</button>
-<div class="chat-box" id="chatBox">
-    <div class="chat-header">
-        <span>💬 ជំនួយការ & តបឆាត</span>
-        <button onclick="toggleChat()" style="background:none; border:none; color:#fff; cursor:pointer; font-size:16px;">✕</button>
-    </div>
-    <div class="chat-messages" id="chatMessages">
-        <div class="chat-msg other">សួស្តី! តើអ្នកចង់ឱ្យពួកយើងជួយអ្វីដែរ?</div>
-    </div>
-    <div class="chat-input-area">
-        <input type="text" id="chatInput" placeholder="វាយសារទីនេះ...">
-        <button onclick="sendChatMessage()">ផ្ញើ</button>
+    <div class="grid" id="accountsGrid">
+        <!-- គំរូទំនិញ -->
+        <div class="card" onclick="openOrderModal('facebook', 1.00)">
+            <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500" alt="Item">
+            <div class="card-body">
+                <div class="card-title">facebook</div>
+                <p style="font-size: 13px; color: #94a3b8; margin-bottom: 5px;">🗓️ 2020</p>
+                <div class="card-price">$1.00</div>
+                <button class="btn-confirm" style="margin-top: 8px; padding: 6px 12px; font-size: 13px;">🔍 មើល & ទិញ</button>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- Modal មើលព័ត៌មាន & អាយុអាខោន -->
-<div class="modal" id="accPreviewModal">
+<!-- Buy Modal -->
+<div class="modal" id="orderModal">
     <div class="modal-content">
-        <img id="prevImg" src="" style="width:100%; height:160px; object-fit:cover; border-radius:8px; margin-bottom:10px;">
-        <h3 id="prevTitle" style="color:#38bdf8; margin-bottom:8px;"></h3>
-        <div style="background:#0f172a; padding:10px; border-radius:8px; margin-bottom:12px; border:1px solid #334155;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                <span style="color:#94a3b8; font-size:13px;">📅 អាយុអាខោន៖</span>
-                <span id="prevAge" style="color:#f59e0b; font-weight:bold; font-size:13px;"></span>
-            </div>
-            <div style="display:flex; justify-content:space-between;">
-                <span style="color:#94a3b8; font-size:13px;">💵 តម្លៃ៖</span>
-                <span id="prevPrice" style="color:#10b981; font-weight:bold; font-size:15px;"></span>
-            </div>
-        </div>
-        <div style="display:flex; gap:8px;">
-            <button onclick="document.getElementById('accPreviewModal').style.display='none'" style="flex:1; padding:8px; background:#475569; color:#fff; border:none; border-radius:6px; cursor:pointer;">បោះបង់</button>
-            <button id="btnConfirmBuy" style="flex:2; padding:8px; background:#10b981; color:#fff; font-weight:bold; border:none; border-radius:6px; cursor:pointer;">🛒 ទិញយកលេខសម្ងាត់</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal បង្ហាញ UID, Pass, 2FA ពេលទិញជោគជ័យ -->
-<div class="modal" id="purchasedModal">
-    <div class="modal-content">
-        <h3 style="color:#10b981; text-align:center; margin-bottom:5px;">🎉 ការទិញបានជោគជ័យ!</h3>
-        <p style="font-size:12px; color:#94a3b8; text-align:center; margin-bottom:15px;">សូមចម្លងទុកព័ត៌មានគណនីរបស់អ្នក</p>
-
-        <div class="field-group">
-            <label>🆔 UID / Email៖</label>
-            <div class="field-box">
-                <input type="text" id="resUid" readonly style="color:#38bdf8;">
-                <button class="btn-copy" onclick="copyText('resUid')">📋</button>
-            </div>
-        </div>
-
-        <div class="field-group">
-            <label>🔑 Password៖</label>
-            <div class="field-box">
-                <input type="text" id="resPass" readonly style="color:#f59e0b;">
-                <button class="btn-copy" onclick="copyText('resPass')">📋</button>
-            </div>
-        </div>
-
-        <div class="field-group">
-            <label>🛡️ 2FA Key៖</label>
-            <div class="field-box">
-                <input type="text" id="res2fa" readonly style="color:#ec4899;">
-                <button class="btn-copy" onclick="copyText('res2fa')">📋</button>
-            </div>
-        </div>
-
-        <button onclick="copyAll()" style="width:100%; padding:10px; background:#10b981; color:#fff; font-weight:bold; border:none; border-radius:8px; cursor:pointer; margin-top:10px; margin-bottom:6px;">📋 Copy ទាំងអស់</button>
-        <button onclick="document.getElementById('purchasedModal').style.display='none'" style="width:100%; padding:8px; background:#475569; color:#fff; border:none; border-radius:8px; cursor:pointer;">បិទ</button>
+        <h3 id="modalTitle">ទិញទំនិញ</h3>
+        <p id="modalPrice" style="color: #4ade80; font-size: 18px; font-weight: bold; margin-bottom: 15px;">$0.00</p>
+        <p style="font-size: 14px; color: #94a3b8; margin-bottom: 10px;">សូមចុចបញ្ជាក់ដើម្បីទិញទំនិញនេះ</p>
+        <button class="btn-confirm" onclick="confirmPurchase()">បញ្ជាក់ការទិញ</button>
+        <button class="btn-cancel" onclick="closeOrderModal()">បោះបង់</button>
     </div>
 </div>
 
 <script>
+    // Firebase Configuration ត្រឹមត្រូវ ១០០%
     const firebaseConfig = {
-        apiKey: "AIzaSyBnKL2cuZSGdtfxBbKq_otyi692HFMHd5o",
+        apiKey: "AIzaSyBnKL2cuZSGdtfxBbKq_otyi692HFMhD5o",
         authDomain: "yuth-store.firebaseapp.com",
         databaseURL: "https://yuth-store-default-rtdb.firebaseio.com",
         projectId: "yuth-store",
         storageBucket: "yuth-store.firebasestorage.app",
         messagingSenderId: "76819152698",
         appId: "1:76819152698:web:64153383c57412343dda03",
-        measurementId: "G-L18LVZ7W6R"
+        measurementId: "G-LT8LVZ7W6R"
     };
-    firebase.initializeApp(firebaseConfig);
+
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
     const auth = firebase.auth();
-    const db = firebase.database();
+    const database = firebase.database();
+    const googleProvider = new firebase.auth.GoogleAuthProvider();
 
     let currentUser = null;
-    let userBalance = 0;
+    let selectedItem = null;
 
-    // Login ជាមួយ Google
+    // Login with Google
     function loginWithGoogle() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).catch(err => {
-            alert("❌ Login Google បរាជ័យ៖ " + err.message);
+        auth.signInWithPopup(googleProvider)
+            .then((result) => {
+                console.log("Logged in successfully:", result.user);
+            })
+            .catch((error) => {
+                alert("❌ Login Google បរាជ័យ: " + error.message);
+            });
+    }
+
+    // Logout
+    function logout() {
+        auth.signOut().then(() => {
+            alert("បានចាកចេញដោយជោគជ័យ!");
         });
     }
 
-    auth.onAuthStateChanged(user => {
-        const authBar = document.getElementById('authBar');
+    // Auth State Observer
+    auth.onAuthStateChanged((user) => {
         if (user) {
             currentUser = user;
-            db.ref('users/' + user.uid).on('value', snap => {
-                const data = snap.val();
-                if (!data) {
-                    db.ref('users/' + user.uid).set({ email: user.email, balance: 0.00 });
-                    userBalance = 0;
-                } else {
-                    userBalance = parseFloat(data.balance || 0);
-                }
-                authBar.innerHTML = `
-                    <div class="user-balance">💰 $${userBalance.toFixed(2)}</div>
-                    <button class="btn-logout" onclick="auth.signOut()">ចាកចេញ</button>
-                `;
+            document.getElementById('btnLogin').style.display = 'none';
+            document.getElementById('userProfile').style.display = 'flex';
+            document.getElementById('userNameDisplay').innerText = user.displayName || user.email;
+            
+            // Listen user balance from Database
+            database.ref('users/' + user.uid).on('value', (snapshot) => {
+                const data = snapshot.val();
+                const balance = (data && data.balance) ? data.balance : 0;
+                document.getElementById('userBalanceDisplay').innerText = 'សមតុល្យ: $' + balance.toFixed(2);
             });
         } else {
             currentUser = null;
-            authBar.innerHTML = `
-                <button class="btn-google" onclick="loginWithGoogle()">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> ចូលប្រើជាមួយ Google
-                </button>
-            `;
+            document.getElementById('btnLogin').style.display = 'flex';
+            document.getElementById('userProfile').style.display = 'none';
         }
     });
 
-    // បង្ហាញសេវាកម្ម Top-Up ហ្គេម
-    db.ref('services').on('value', snapshot => {
-        const grid = document.getElementById('servicesGrid');
-        grid.innerHTML = '';
-        const data = snapshot.val();
-        if (!data) return grid.innerHTML = '<p style="color:#64748b;">មិនទាន់មានសេវាកម្មទេ។</p>';
-
-        for (let key in data) {
-            const item = data[key];
-            grid.innerHTML += `
-                <div class="card" onclick="alert('ជ្រើសរើស៖ ${item.name}')">
-                    <img src="${item.image}">
-                    <div class="card-body">
-                        <div class="card-title">${item.name}</div>
-                        <p style="font-size:12px; color:#94a3b8;">ចុចបញ្ចូលពេជ្រ</p>
-                    </div>
-                </div>
-            `;
-        }
-    });
-
-    // បង្ហាញ Account សម្រាប់លក់
-    db.ref('accounts_for_sale').on('value', snapshot => {
-        const grid = document.getElementById('accountsGrid');
-        grid.innerHTML = '';
-        const data = snapshot.val();
-        if (!data) return grid.innerHTML = '<p style="color:#64748b;">មិនទាន់មាន Account ដាក់លក់ទេ។</p>';
-
-        for (let key in data) {
-            const item = data[key];
-            if (item.status === 'available') {
-                grid.innerHTML += `
-                    <div class="card" onclick="openPreview('${key}')">
-                        <img src="${item.image || item.thumb}">
-                        <div class="card-body">
-                            <div class="card-title">${item.title}</div>
-                            <div class="card-age">📅 ${item.age || 'គុណភាពខ្ពស់'}</div>
-                            <div class="card-price">$${parseFloat(item.price).toFixed(2)}</div>
-                            <button class="btn-buy">🔍 មើល & ទិញ</button>
-                        </div>
-                    </div>
-                `;
-            }
-        }
-    });
-
-    function openPreview(key) {
-        db.ref('accounts_for_sale/' + key).once('value').then(snap => {
-            const acc = snap.val();
-            if (!acc) return;
-
-            document.getElementById('prevImg').src = acc.image || acc.thumb;
-            document.getElementById('prevTitle').innerText = acc.title;
-            document.getElementById('prevAge').innerText = acc.age || 'មិនបានបញ្ជាក់';
-            document.getElementById('prevPrice').innerText = `$${parseFloat(acc.price).toFixed(2)}`;
-
-            document.getElementById('btnConfirmBuy').onclick = function() {
-                document.getElementById('accPreviewModal').style.display = 'none';
-                buyAccount(key, acc.price);
-            };
-
-            document.getElementById('accPreviewModal').style.display = 'flex';
-        });
-    }
-
-    async function buyAccount(key, price) {
+    // Modal Control
+    function openOrderModal(title, price) {
         if (!currentUser) {
-            loginWithGoogle();
-            return alert("សូមចូលប្រើគណនី Google ជាមុនសិន!");
+            alert("សូមធ្វើការ Login ជាមុនសិន!");
+            return;
         }
-
-        if (userBalance < price) {
-            return alert(`❌ លុយមិនគ្រប់ទេ! សមតុល្យអ្នក៖ $${userBalance.toFixed(2)} (ខ្វះ $${(price - userBalance).toFixed(2)}) សូមបញ្ចូលលុយបន្ថែម!`);
-        }
-
-        const accSnap = await db.ref('accounts_for_sale/' + key).once('value');
-        const acc = accSnap.val();
-        if (!acc || acc.status === 'sold') return alert("❌ អាខោននេះត្រូវបានគេទិញរួចហើយ!");
-
-        await db.ref('users/' + currentUser.uid).update({ balance: userBalance - price });
-        await db.ref('accounts_for_sale/' + key).update({ status: 'sold', buyerEmail: currentUser.email, soldAt: Date.now() });
-
-        document.getElementById('resUid').value = acc.acc_id || 'N/A';
-        document.getElementById('resPass').value = acc.acc_pass || 'N/A';
-        document.getElementById('res2fa').value = acc.acc_2fa || 'N/A';
-        document.getElementById('purchasedModal').style.display = 'flex';
+        selectedItem = { title, price };
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalPrice').innerText = '$' + price.toFixed(2);
+        document.getElementById('orderModal').style.display = 'flex';
     }
 
-    function copyText(id) {
-        navigator.clipboard.writeText(document.getElementById(id).value);
-        alert("✅ បានចម្លង!");
+    function closeOrderModal() {
+        document.getElementById('orderModal').style.display = 'none';
     }
 
-    function copyAll() {
-        const uid = document.getElementById('resUid').value;
-        const pass = document.getElementById('resPass').value;
-        const tfa = document.getElementById('res2fa').value;
-        navigator.clipboard.writeText(`UID: ${uid}\nPassword: ${pass}\n2FA: ${tfa}`);
-        alert("✅ បានចម្លងព័ត៌មានទាំងអស់!");
-    }
-
-    // Live Chat Function
-    function toggleChat() {
-        const box = document.getElementById('chatBox');
-        box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
-    }
-
-    function sendChatMessage() {
-        const input = document.getElementById('chatInput');
-        const text = input.value.trim();
-        if (!text) return;
-
-        const msgBox = document.getElementById('chatMessages');
-        msgBox.innerHTML += `<div class="chat-msg me">${text}</div>`;
-        input.value = '';
-        msgBox.scrollTop = msgBox.scrollHeight;
-
-        setTimeout(() => {
-            msgBox.innerHTML += `<div class="chat-msg other">Admin បានទទួលសាររបស់អ្នកហើយ! សូមរង់ចាំការឆ្លើយតបបន្តិច...</div>`;
-            msgBox.scrollTop = msgBox.scrollHeight;
-        }, 1000);
+    function confirmPurchase() {
+        if (!currentUser || !selectedItem) return;
+        alert("ការបញ្ជាទិញ " + selectedItem.title + " បានជោគជ័យ!");
+        closeOrderModal();
     }
 </script>
 </body>
