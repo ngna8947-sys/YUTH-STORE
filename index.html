@@ -3,379 +3,581 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YUTH STORE - Game Top-Up & Diamond Shop</title>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <title>YUTH STORE - Ultra Admin Portal</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 
         :root {
-            --primary: #6366f1;
-            --primary-gradient: linear-gradient(135deg, #6366f1, #06b6d4);
+            --primary: #4f46e5;
+            --primary-gradient: linear-gradient(135deg, #4f46e5, #06b6d4);
             --danger: #ef4444;
             --success: #10b981;
-            --dark-bg: #0b0f19;
-            --card-bg: #131a29;
-            --surface: rgba(19, 26, 41, 0.8);
+            --warning: #f59e0b;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
             --text-main: #f8fafc;
             --text-sub: #94a3b8;
-            --border: #1e293b;
+            --border: #334155;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', 'Hanuman', sans-serif; }
-        body { background: var(--dark-bg); color: var(--text-main); line-height: 1.5; }
+        body { background: var(--dark-bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-        header { background: var(--surface); backdrop-filter: blur(12px); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
-        .logo-area { font-weight: 800; font-size: 20px; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .sidebar { width: 260px; background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 1000; }
+        .sidebar-header { padding: 22px 20px; font-size: 20px; font-weight: 800; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; border-bottom: 1px solid var(--border); }
+        .sidebar-menu { list-style: none; padding: 15px 10px; flex: 1; overflow-y: auto; }
+        .menu-item { padding: 12px 16px; display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 10px; cursor: pointer; transition: 0.2s; margin-bottom: 6px; }
+        .menu-item:hover, .menu-item.active { background: rgba(79, 70, 229, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); }
+        .menu-badge { margin-left: auto; background: var(--primary); color: white; font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: bold; }
 
-        .header-right { display: flex; align-items: center; gap: 12px; }
-        .online-badge { display: flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
-        .online-dot { width: 7px; height: 7px; background: var(--success); border-radius: 50%; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+        .topbar { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(10px); padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .page-title { font-size: 17px; font-weight: 700; }
+        .admin-badge { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
 
-        .user-pill { display: none; align-items: center; gap: 8px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); padding: 4px 12px 4px 6px; border-radius: 20px; }
-        .user-pill img { width: 26px; height: 26px; border-radius: 50%; }
-        .user-pill .balance { font-weight: 800; color: #818cf8; font-size: 14px; }
+        .content-body { flex: 1; padding: 20px; overflow-y: auto; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        .container { max-width: 1000px; margin: 25px auto; padding: 0 15px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: var(--card-bg); border: 1px solid var(--border); padding: 18px; border-radius: 14px; position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary); }
+        .stat-card.emerald::before { background: var(--success); }
+        .stat-card.amber::before { background: var(--warning); }
+        .stat-title { font-size: 12px; color: var(--text-sub); font-weight: 600; margin-bottom: 6px; }
+        .stat-number { font-size: 28px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
 
-        .hero-banner { background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(6, 182, 212, 0.1)); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 18px; padding: 30px; text-align: center; margin-bottom: 25px; }
-        .hero-banner h1 { font-size: 24px; font-weight: 800; margin-bottom: 8px; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-banner p { font-size: 13px; color: var(--text-sub); }
+        .card-panel { background: var(--card-bg); border-radius: 14px; border: 1px solid var(--border); padding: 20px; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+        .panel-title { font-size: 15px; font-weight: 700; }
 
-        .section-header { font-size: 18px; font-weight: 700; margin: 20px 0 15px 0; }
+        .form-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 200px; }
+        .form-group label { font-size: 12px; font-weight: 600; color: var(--text-sub); }
+        .form-group input, .form-group select { background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 10px 14px; border-radius: 10px; font-size: 13px; outline: none; }
+        .form-group input[type="file"] { padding: 7px 10px; cursor: pointer; }
+        .form-group input:focus { border-color: #6366f1; }
 
-        /* Game Grid - Pure Image Poster Display */
-        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
-        
-        .game-card { 
-            height: 200px; 
-            border-radius: 14px; 
-            position: relative; 
-            color: white; 
-            cursor: pointer; 
-            transition: transform 0.25s, box-shadow 0.25s; 
-            overflow: hidden; 
-            border: 1px solid var(--border);
-            background: #1e293b;
-        }
-        .game-card:hover { 
-            transform: translateY(-5px); 
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3); 
-            border-color: #6366f1;
-        }
-        
-        .game-card img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            display: block; 
-        }
+        .packages-container { background: #0f172a; border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 15px; }
+        .package-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+        .package-row input { flex: 1; min-width: 110px; padding: 8px 12px; background: var(--card-bg); border: 1px solid var(--border); color: #fff; border-radius: 8px; font-size: 12px; outline: none; }
 
-        .card-bottom-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 25px 8px 8px 8px;
-            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);
-            text-align: center;
-        }
+        .btn { padding: 10px 18px; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: var(--primary-gradient); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; padding: 6px 12px; font-size: 11px; }
 
-        .card-title { 
-            font-size: 13px; 
-            font-weight: 700; 
-            color: #fff;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+        th, td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        th { background: rgba(15, 23, 42, 0.6); color: var(--text-sub); font-weight: 600; font-size: 11px; text-transform: uppercase; }
+        .game-img-preview { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border); }
 
-        /* Live Chat */
-        .fab-chat { position: fixed; bottom: 25px; right: 25px; width: 56px; height: 56px; border-radius: 50%; background: var(--primary-gradient); color: white; display: flex; justify-content: center; align-items: center; font-size: 26px; border: none; cursor: pointer; box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4); z-index: 1000; }
-        .chat-box { position: fixed; bottom: 90px; right: 25px; width: 360px; height: 500px; background: var(--card-bg); border-radius: 18px; border: 1px solid var(--border); box-shadow: 0 12px 40px rgba(0,0,0,0.5); display: none; flex-direction: column; z-index: 1000; overflow: hidden; }
-        .chat-top { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(8px); padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; border-bottom: 1px solid var(--border); }
-        .chat-logs { flex: 1; padding: 14px; background: #0b0f19; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .chat-container { display: flex; height: calc(100vh - 140px); background: var(--card-bg); border-radius: 14px; border: 1px solid var(--border); overflow: hidden; }
+        .chat-user-list { width: 260px; border-right: 1px solid var(--border); overflow-y: auto; background: #0f172a; }
+        .chat-user-item { padding: 14px; border-bottom: 1px solid rgba(51, 65, 85, 0.5); cursor: pointer; transition: 0.2s; }
+        .chat-user-item.active { background: rgba(79, 70, 229, 0.15); border-left: 4px solid var(--primary); }
+        .chat-user-name { font-weight: 700; font-size: 13px; color: #fff; }
+        .chat-user-email { font-size: 11px; color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
 
-        .chat-msg { max-width: 82%; padding: 9px 13px; border-radius: 14px; font-size: 13px; word-break: break-word; }
-        .chat-msg.admin { background: #1e293b; color: #f8fafc; align-self: flex-start; border: 1px solid var(--border); }
-        .chat-msg.guest { background: var(--primary-gradient); color: white; align-self: flex-end; }
+        .chat-room { flex: 1; display: flex; flex-direction: column; min-width: 0; background: #131d31; }
+        .chat-room-header { padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 700; background: var(--card-bg); display: flex; justify-content: space-between; align-items: center; }
+        .chat-room-messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
 
-        .chat-bottom-wrap { background: var(--card-bg); border-top: 1px solid var(--border); padding: 10px; display: flex; gap: 8px; }
-        .chat-bottom-wrap input { flex: 1; min-width: 0; background: #0b0f19; border: 1px solid var(--border); color: #fff; padding: 9px 14px; border-radius: 20px; outline: none; font-size: 13px; }
-        .btn-send-chat { background: var(--primary-gradient); color: white; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        .admin-msg-bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 13px; word-break: break-word; }
+        .admin-msg-bubble.guest { background: #1e293b; color: #f1f5f9; align-self: flex-start; border: 1px solid var(--border); }
+        .admin-msg-bubble.admin { background: var(--primary-gradient); color: white; align-self: flex-end; }
 
-        /* Package Modal */
-        .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.65); z-index: 9999; justify-content: center; align-items: center; }
-        .modal-card { background: var(--card-bg); border: 1px solid var(--border); padding: 22px; border-radius: 18px; text-align: center; max-width: 420px; width: 92%; position: relative; max-height: 90vh; overflow-y: auto; color: var(--text-main); }
-        .modal-close-x { position: absolute; top: 12px; right: 15px; cursor: pointer; font-size: 18px; color: var(--text-sub); }
-
-        .package-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 15px 0; }
-        .package-btn { border: 1px solid var(--border); background: #0b0f19; padding: 10px 8px; border-radius: 12px; cursor: pointer; text-align: center; color: var(--text-main); position: relative; overflow: hidden; transition: 0.2s; }
-        .package-btn.active { border-color: var(--primary); background: rgba(99, 102, 241, 0.2); box-shadow: 0 0 10px rgba(99, 102, 241, 0.3); }
-
-        .discount-ribbon { position: absolute; top: 0; right: 0; background: var(--danger); color: white; font-size: 9px; font-weight: 800; padding: 2px 6px; border-bottom-left-radius: 6px; }
-        .price-orig { text-decoration: line-through; opacity: 0.5; font-size: 11px; margin-right: 4px; }
-        .price-current { color: #818cf8; font-weight: 800; font-size: 14px; }
+        .chat-room-input { padding: 10px 14px; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; gap: 8px; }
+        .chat-room-input input[type="text"] { flex: 1; min-width: 0; background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 10px 14px; border-radius: 20px; font-size: 13px; outline: none; }
+        .btn-admin-send { background: var(--primary-gradient); color: white; border: none; width: 38px; height: 38px; min-width: 38px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <header>
-        <a href="#" class="logo-area">⚡ YUTHSTORE</a>
-        <div class="header-right">
-            <div class="online-badge"><div class="online-dot"></div><span>9 Online</span></div>
-            <div id="g_id_onload" data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
-            <div class="g_id_signin" data-type="standard" data-shape="pill" id="googleBtnWrapper"></div>
-            <div class="user-pill" id="userPill">
-                <img src="" id="userAvatar">
-                <div class="balance">$<span id="userBalance">0.00</span></div>
+    <div class="sidebar">
+        <div class="sidebar-header">⚡ YUTH ADMIN</div>
+        <ul class="sidebar-menu">
+            <li class="menu-item active" onclick="switchTab('dashboardTab', this)">📊 ផ្ទាំងទិន្នន័យ (Dashboard)</li>
+            <li class="menu-item" onclick="switchTab('manageGamesTab', this)">🎮 បញ្ចូលសេវាកម្ម & រូបថត HD</li>
+            <li class="menu-item" onclick="switchTab('walletTab', this)">💰 បញ្ចូលលុយតាម Email</li>
+            <li class="menu-item" onclick="switchTab('chatTab', this)">💬 ឆាតជាមួយភ្ញៀវ <span class="menu-badge" id="chatCountBadge">0</span></li>
+            <li class="menu-item" onclick="switchTab('usersTab', this)">👥 អ្នកចុះឈ្មោះ (<span id="userCountBadge">0</span>)</li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="page-title" id="pageTitle">ផ្ទាំងគ្រប់គ្រងទូទៅ (Overview)</div>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <span class="admin-badge">● Live Connected</span>
+                <span style="font-size:13px;">Admin: <b>Samnang Mon</b></span>
             </div>
         </div>
-    </header>
 
-    <div class="container">
-        <div class="hero-banner">
-            <h1>🎮 YUTH STORE AUTOMATION</h1>
-            <p>សូមចុះឈ្មោះចូលគណនី Google ដើម្បីទទួលបានសមតុល្យកាបូប (Wallet) ឬឆាតផ្ទាល់ជាមួយ Admin</p>
-        </div>
+        <div class="content-body">
 
-        <div class="section-header">🔥 ជ្រើសរើសសេវាកម្ម & កញ្ចប់ពេជ្របញ្ចុះតម្លៃ</div>
-        <div class="game-grid" id="clientGameGrid">
-            <div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-sub);">មិនទាន់មានសេវាកម្មនៅលើប្រព័ន្ធទេ សូមរង់ចាំ Admin បញ្ចូល...</div>
-        </div>
-    </div>
+            <!-- TAB 1: DASHBOARD -->
+            <div id="dashboardTab" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title">អ្នកចុះឈ្មោះសរុប (REGISTERED USERS)</div>
+                        <div class="stat-number" id="statUsersNumber">0</div>
+                    </div>
+                    <div class="stat-card emerald">
+                        <div class="stat-title">សារឆាតសរុប (ACTIVE CHAT ROOMS)</div>
+                        <div class="stat-number" id="statChatsNumber">0</div>
+                    </div>
+                    <div class="stat-card amber">
+                        <div class="stat-title">សមតុល្យប្រាក់ផ្ញើចេញ (WALLET TOP-UPS)</div>
+                        <div class="stat-number" id="statTotalWalletNumber">$0.00</div>
+                    </div>
+                </div>
 
-    <!-- Floating Chat -->
-    <button class="fab-chat" onclick="toggleChat()">💬</button>
+                <div class="card-panel">
+                    <div class="panel-header"><div class="panel-title">👥 អ្នកចុះឈ្មោះថ្មីៗបំផុត</div></div>
+                    <div id="dashboardUsersTable">កំពុងទាញយកទិន្នន័យ...</div>
+                </div>
+            </div>
 
-    <div class="chat-box" id="chatBox">
-        <div class="chat-top"><span>⚡ Support Live Chat</span><span style="cursor:pointer;" onclick="toggleChat()">✖</span></div>
-        <div class="chat-logs" id="chatLogs"><div class="chat-msg admin">សួស្តីបាទ! 🙏 មានអ្វីឱ្យ Admin ជួយទេ? អាចផ្ញើសារបានភ្លាមៗបាទ។</div></div>
-        <div class="chat-bottom-wrap">
-            <input type="text" id="chatInput" placeholder="វាយសារផ្ញើទៅ Admin..." onkeypress="if(event.key==='Enter') sendChat()">
-            <button class="btn-send-chat" onclick="sendChat()">➤</button>
-        </div>
-    </div>
+            <!-- TAB 2: MANAGE SERVICES & HD PHOTO PROCESSING -->
+            <div id="manageGamesTab" class="tab-content">
+                <div class="card-panel">
+                    <div class="panel-header"><div class="panel-title">➕ បញ្ចូលសេវាកម្ម/ហ្គេមថ្មី (រូបភាព HD ច្បាស់ខ្លាំង)</div></div>
+                    <form id="addGameForm" onsubmit="handleSaveGame(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>ឈ្មោះសេវាកម្ម/ហ្គេម (Name):</label>
+                                <input type="text" id="gameNameInput" placeholder="ឧ. Free Fire លឿន" required>
+                            </div>
+                            <div class="form-group">
+                                <label>📸 ជ្រើសរើសរូបថតផ្ទាល់ខ្លួន (HD Photo):</label>
+                                <input type="file" id="gamePhotoFileInput" accept="image/*" onchange="processHDPhoto(this)" required>
+                                <input type="hidden" id="gameDirectPhotoBase64">
+                            </div>
+                            <div class="form-group">
+                                <label>ពណ៌ផ្ទាំង (Theme Style):</label>
+                                <select id="gameThemeInput">
+                                    <option value="theme-orange">🔥 ទឹកក្រូច (Orange)</option>
+                                    <option value="theme-blue">🛡️ ខៀវ (Blue)</option>
+                                    <option value="theme-dark">⚡ ផ្ទៃងងឹត (Dark)</option>
+                                    <option value="theme-red">🌙 ក្រហម (Red)</option>
+                                    <option value="theme-purple">💎 ស្វាយ (Purple)</option>
+                                </select>
+                            </div>
+                        </div>
 
-    <!-- Modal Package Select -->
-    <div class="modal-bg" id="diamondModal">
-        <div class="modal-card">
-            <div class="modal-close-x" onclick="closeModal('diamondModal')">✖</div>
-            <h3 id="modalGameTitle">ជ្រើសរើសកញ្ចប់</h3>
-            <input type="text" id="playerIdInput" placeholder="បញ្ចូល Player ID / UID / លេខសម្គាល់" style="width:100%; padding:10px; margin-top:12px; border:1px solid var(--border); background:#0b0f19; color:#fff; border-radius:8px; outline:none;">
-            <div class="package-grid" id="modalPackagesGrid"></div>
-            <button onclick="proceedToPay()" style="width:100%; padding:12px; background:var(--primary-gradient); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">
-                បន្តទូទាត់ ($<span id="selectedPkgPrice">0.00</span>)
-            </button>
-        </div>
-    </div>
+                        <div id="photoPreviewContainer" style="display:none; margin-bottom:15px; align-items:center; gap:12px; background:#0f172a; padding:10px 14px; border-radius:10px; border:1px solid var(--border);">
+                            <img id="previewImgElement" src="" style="width:70px; height:90px; border-radius:10px; object-fit:cover; border:1px solid #6366f1;">
+                            <span style="font-size:12px; color:var(--success); font-weight:bold;">✓ រូបថតត្រូវបានរៀបចំជាកម្រិត HD ច្បាស់ម៉ត់</span>
+                        </div>
 
-    <!-- Modal QR -->
-    <div class="modal-bg" id="qrModal">
-        <div class="modal-card">
-            <div class="modal-close-x" onclick="closeModal('qrModal')">✖</div>
-            <h4>ស្កេនទូទាត់ប្រាក់ KHQR</h4>
-            <p style="margin: 8px 0;">ចំនួនទឹកប្រាក់៖ <b style="color:var(--danger); font-size:22px;">$<span id="qrAmount">0.00</span></b></p>
-            <img src="qr.jpg" alt="KHQR" style="width:100%; max-width:200px; margin:10px auto; display:block; border-radius:8px;">
-            <button onclick="closeModal('qrModal')" style="width:100%; padding:9px; background:var(--danger); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">រួចរាល់</button>
+                        <div class="packages-container">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                                <label style="font-size:12px; font-weight:bold; color:var(--text-sub);">💎 កញ្ចប់ពេជ្រ & តម្លៃបញ្ចុះ (Packages & Discount Prices):</label>
+                                <button type="button" class="btn btn-success" onclick="addPackageRow()" style="padding:4px 10px; font-size:11px;">+ បន្ថែមកញ្ចប់ពេជ្រ</button>
+                            </div>
+                            <div id="packagesWrapper">
+                                <div class="package-row">
+                                    <input type="text" placeholder="ចំនួនពេជ្រ (ឧ. 100 💎)" class="pkg-name" required>
+                                    <input type="number" step="0.01" placeholder="តម្លៃដើម $ (ឧ. 1.00)" class="pkg-original-price" title="តម្លៃដើម" required>
+                                    <input type="number" step="0.01" placeholder="តម្លៃលក់/បញ្ចុះ $ (ឧ. 0.60)" class="pkg-price" title="តម្លៃបញ្ចុះលក់ពិតប្រាកដ" required>
+                                    <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">✕</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btnSubmitGame" class="btn btn-primary" style="width:100%;">💾 រក្សាទុកសេវាកម្ម & កញ្ចប់ពេជ្រ</button>
+                    </form>
+                </div>
+
+                <div class="card-panel">
+                    <div class="panel-header"><div class="panel-title">📦 បញ្ជីសេវាកម្មទាំងអស់ (<span id="totalGamesBadge">0</span>)</div></div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>រូបភាព</th>
+                                <th>ឈ្មោះសេវាកម្ម/ហ្គេម</th>
+                                <th>កញ្ចប់ពេជ្រ & តម្លៃបញ្ចុះ</th>
+                                <th>សកម្មភាព</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gamesTableBody">
+                            <tr><td colspan="4" style="text-align:center;">កំពុងទាញយកទិន្នន័យ...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 3: WALLET TOPUP -->
+            <div id="walletTab" class="tab-content">
+                <div class="card-panel">
+                    <div class="panel-header"><div class="panel-title">💳 បញ្ចូលលុយក្នុងកាបូបជូនអតិថិជនតាម Email</div></div>
+                    <form onsubmit="handleManualTopUp(event)">
+                        <div class="form-row">
+                            <div class="form-group" style="flex:2;">
+                                <label>អ៊ីម៉ែលរបស់ភ្ញៀវ (Customer Email):</label>
+                                <input type="email" id="topupEmailInput" placeholder="ឧ. client@gmail.com" required>
+                            </div>
+                            <div class="form-group" style="flex:1;">
+                                <label>ចំនួនទឹកប្រាក់ ($ USD):</label>
+                                <input type="number" step="0.01" id="topupAmountInput" placeholder="ឧ. 10.00" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="height:42px;">+ បញ្ចូលទឹកប្រាក់</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-panel">
+                    <div class="panel-header"><div class="panel-title">📜 បញ្ជីសមតុល្យលុយភ្ញៀវទាំងអស់</div></div>
+                    <div id="walletListTable">កំពុងទាញយក...</div>
+                </div>
+            </div>
+
+            <!-- TAB 4: CHAT -->
+            <div id="chatTab" class="tab-content">
+                <div class="chat-container">
+                    <div class="chat-user-list" id="chatUserList"></div>
+                    <div class="chat-room">
+                        <div class="chat-room-header">
+                            <div>ជជែកជាមួយ៖ <b id="activeChatUserName" style="color:#818cf8;">ជ្រើសរើសភ្ញៀវ</b></div>
+                            <div id="activeChatUserEmail" style="font-size:11px; color:var(--text-sub);"></div>
+                        </div>
+                        <div class="chat-room-messages" id="adminChatLogs"></div>
+                        <div class="chat-room-input">
+                            <input type="text" id="adminChatInput" placeholder="វាយសារតបទៅភ្ញៀវ..." onkeypress="if(event.key==='Enter') adminSendMsg()">
+                            <button class="btn-admin-send" onclick="adminSendMsg()" title="ផ្ញើសារ">➤</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: USERS DIRECTORY -->
+            <div id="usersTab" class="tab-content">
+                <div class="card-panel">
+                    <div class="panel-header"><div class="panel-title">👥 បញ្ជីឈ្មោះ និងអ៊ីម៉ែលអ្នកចុះឈ្មោះទាំងអស់ (<span id="userCountBadge2">0</span> នាក់)</div></div>
+                    <div id="fullUsersTable">កំពុងទាញយក...</div>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script>
         const FIREBASE_DB_URL = "https://yuth-store-default-rtdb.firebaseio.com/";
-        const TELEGRAM_BOT_TOKEN = "8806433517:AAGCs1y4YDwqSMiXQoJs1Y-n0DOGDtEDbII";
-        const TELEGRAM_CHAT_ID = "8363306657";
+        let currentActiveUid = null;
+        let cachedUsers = {};
 
-        let loggedInUser = null;
-        let selectedGame = null;
-        let currentSelectedPrice = 0;
-        let currentSelectedPkgName = '';
+        // មុខងារកែសម្រួលរូបភាពកម្រិត HD ច្បាស់ខ្លាំង (Smart HD Canvas Resizer)
+        function processHDPhoto(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        // កំណត់ទំហំ HD Poster (300 x 380px)
+                        const TARGET_W = 300;
+                        const TARGET_H = 380;
+                        canvas.width = TARGET_W;
+                        canvas.height = TARGET_H;
+                        const ctx = canvas.getContext('2d');
 
-        let localGuestKey = localStorage.getItem('yuth_guest_key');
-        if (!localGuestKey) {
-            localGuestKey = 'guest_' + Math.floor(100000 + Math.random() * 900000);
-            localStorage.setItem('yuth_guest_key', localGuestKey);
-        }
+                        // ក្បួនគណនាដើម្បីកាត់រូបភាពចំកណ្តាល (Center-Crop HD)
+                        const imgRatio = img.width / img.height;
+                        const targetRatio = TARGET_W / TARGET_H;
+                        let srcW, srcH, srcX, srcY;
 
-        function getActiveUser() {
-            return loggedInUser || { uid: localGuestKey, name: 'ភ្ញៀវ (' + localGuestKey.substring(6) + ')', email: 'មិនទាន់ Login' };
-        }
+                        if (imgRatio > targetRatio) {
+                            srcH = img.height;
+                            srcW = img.height * targetRatio;
+                            srcX = (img.width - srcW) / 2;
+                            srcY = 0;
+                        } else {
+                            srcW = img.width;
+                            srcH = img.width / targetRatio;
+                            srcX = 0;
+                            srcY = (img.height - srcH) / 2;
+                        }
 
-        function checkAuth() {
-            if (!loggedInUser) {
-                alert("⚠️ សូមចុះឈ្មោះ / ចូលគណនី (Sign in with Google) នៅខាងលើជាមុនសិន!");
-                return false;
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+                        ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, TARGET_W, TARGET_H);
+
+                        // បង្កើតរូបភាព Base64 កម្រិតច្បាស់ 92%
+                        const hdBase64 = canvas.toDataURL('image/jpeg', 0.92);
+                        document.getElementById('gameDirectPhotoBase64').value = hdBase64;
+                        document.getElementById('previewImgElement').src = hdBase64;
+                        document.getElementById('photoPreviewContainer').style.display = 'flex';
+                    };
+                };
+                reader.readAsDataURL(file);
             }
-            return true;
         }
 
-        function handleCredentialResponse(response) {
-            const base64Url = response.credential.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-            const user = JSON.parse(jsonPayload);
+        function addPackageRow() {
+            const wrapper = document.getElementById('packagesWrapper');
+            const row = document.createElement('div');
+            row.className = 'package-row';
+            row.innerHTML = `
+                <input type="text" placeholder="ចំនួនពេជ្រ (ឧ. 500 💎)" class="pkg-name" required>
+                <input type="number" step="0.01" placeholder="តម្លៃដើម $ (ឧ. 6.00)" class="pkg-original-price" title="តម្លៃដើម" required>
+                <input type="number" step="0.01" placeholder="តម្លៃលក់/បញ្ចុះ $ (ឧ. 5.00)" class="pkg-price" title="តម្លៃបញ្ចុះលក់ពិតប្រាកដ" required>
+                <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">✕</button>
+            `;
+            wrapper.appendChild(row);
+        }
+
+        function handleSaveGame(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitGame');
+            const name = document.getElementById('gameNameInput').value.trim();
+            const image = document.getElementById('gameDirectPhotoBase64').value;
+            const theme = document.getElementById('gameThemeInput').value;
+
+            if (!image) {
+                alert("សូមជ្រើសរើសរូបថតជាមុនសិន!");
+                return;
+            }
+
+            btn.innerText = "⏳ កំពុងរក្សាទុក HD...";
+            btn.disabled = true;
+
+            const pkgNames = document.querySelectorAll('.pkg-name');
+            const pkgOriginalPrices = document.querySelectorAll('.pkg-original-price');
+            const pkgPrices = document.querySelectorAll('.pkg-price');
             
-            loggedInUser = { uid: 'uid_' + user.sub.substring(0, 10), name: user.name, email: user.email, picture: user.picture };
-            document.getElementById('googleBtnWrapper').style.display = 'none';
-            document.getElementById('userPill').style.display = 'flex';
-            document.getElementById('userAvatar').src = user.picture;
-
-            fetch(`${FIREBASE_DB_URL}users/${loggedInUser.uid}.json`, {
-                method: "PATCH",
-                body: JSON.stringify({ name: user.name, email: user.email, picture: user.picture, registeredAt: new Date().toISOString() })
-            });
-
-            fetch(`${FIREBASE_DB_URL}chats/${loggedInUser.uid}/info.json`, {
-                method: "PUT",
-                body: JSON.stringify({ name: user.name, email: user.email })
-            });
-
-            listenToBalance();
-            alert(`🎉 ស្វាគមន៍ ${user.name}!`);
-        }
-
-        function listenToBalance() {
-            if (!loggedInUser) return;
-            setInterval(() => {
-                fetch(`${FIREBASE_DB_URL}users/${loggedInUser.uid}/balance.json`)
-                    .then(res => res.json())
-                    .then(bal => {
-                        document.getElementById('userBalance').innerText = parseFloat(bal || 0).toFixed(2);
-                    });
-            }, 1500);
-        }
-
-        let gamesDataCache = {};
-        function loadStoreGames() {
-            fetch(`${FIREBASE_DB_URL}store_games.json?t=` + Date.now())
-                .then(res => res.json())
-                .then(games => {
-                    const grid = document.getElementById('clientGameGrid');
-                    if (!games || games.error || Object.keys(games).length === 0) {
-                        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-sub);">មិនទាន់មានសេវាកម្មនៅលើប្រព័ន្ធទេ សូមរង់ចាំ Admin បញ្ចូល...</div>';
-                        return;
-                    }
-
-                    gamesDataCache = games;
-                    let html = '';
-                    Object.keys(games).forEach(id => {
-                        const g = games[id];
-                        html += `
-                            <div class="game-card" onclick="openGameModal('${id}')">
-                                <img src="${g.image}" alt="${g.name}">
-                                <div class="card-bottom-overlay">
-                                    <div class="card-title">${g.name}</div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    grid.innerHTML = html;
-                }).catch(e => console.log(e));
-        }
-
-        function openGameModal(gameId) {
-            if (!checkAuth()) return;
-            selectedGame = gamesDataCache[gameId];
-            document.getElementById('modalGameTitle').innerText = selectedGame.name;
-
-            const grid = document.getElementById('modalPackagesGrid');
-            grid.innerHTML = '';
-
-            if (selectedGame.packages && selectedGame.packages.length > 0) {
-                selectedGame.packages.forEach((pkg, index) => {
-                    const activeClass = index === 0 ? 'active' : '';
-                    if (index === 0) {
-                        currentSelectedPrice = pkg.price;
-                        currentSelectedPkgName = pkg.name;
-                        document.getElementById('selectedPkgPrice').innerText = pkg.price.toFixed(2);
-                    }
-
-                    const hasDiscount = pkg.originalPrice && pkg.originalPrice > pkg.price;
-                    const ribbonHtml = hasDiscount ? `<div class="discount-ribbon">SALE</div>` : '';
-                    const origPriceHtml = hasDiscount ? `<span class="price-orig">$${pkg.originalPrice.toFixed(2)}</span>` : '';
-
-                    grid.innerHTML += `
-                        <div class="package-btn ${activeClass}" onclick="selectPkg(this, ${pkg.price}, '${pkg.name}')">
-                            ${ribbonHtml}
-                            <div style="font-weight:bold; font-size:14px; margin-top:2px;">${pkg.name}</div>
-                            <div style="margin-top:4px;">
-                                ${origPriceHtml}
-                                <span class="price-current">$${pkg.price.toFixed(2)}</span>
-                            </div>
-                        </div>
-                    `;
+            const packages = [];
+            for (let i = 0; i < pkgNames.length; i++) {
+                packages.push({
+                    name: pkgNames[i].value.trim(),
+                    originalPrice: parseFloat(pkgOriginalPrices[i].value) || parseFloat(pkgPrices[i].value),
+                    price: parseFloat(pkgPrices[i].value)
                 });
             }
 
-            openModal('diamondModal');
-        }
+            const gameId = 'game_' + Date.now();
 
-        function selectPkg(el, price, name) {
-            document.querySelectorAll('.package-btn').forEach(b => b.classList.remove('active'));
-            el.classList.add('active');
-            currentSelectedPrice = price;
-            currentSelectedPkgName = name;
-            document.getElementById('selectedPkgPrice').innerText = price.toFixed(2);
-        }
-
-        function proceedToPay() {
-            const uid = document.getElementById('playerIdInput').value.trim();
-            if (!uid) return alert("សូមបញ្ចូលលេខសម្គាល់ / Player ID!");
-
-            closeModal('diamondModal');
-            document.getElementById('qrAmount').innerText = currentSelectedPrice.toFixed(2);
-            openModal('qrModal');
-
-            fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+            fetch(`${FIREBASE_DB_URL}store_games/${gameId}.json`, {
+                method: "PUT",
                 body: JSON.stringify({
-                    chat_id: TELEGRAM_CHAT_ID,
-                    text: `🚨 *ការបញ្ជាទិញថ្មី*\n🎮 សេវាកម្ម: ${selectedGame.name}\n💎 កញ្ចប់: ${currentSelectedPkgName}\n💵 តម្លៃ: $${currentSelectedPrice}\n🆔 UID: \`${uid}\`\n👤 ភ្ញៀវ: ${loggedInUser.name}`,
-                    parse_mode: "Markdown"
+                    id: gameId,
+                    name: name,
+                    image: image,
+                    theme: theme,
+                    packages: packages,
+                    createdAt: new Date().toISOString()
                 })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("កំហុសក្នុងការបញ្ជូនទិន្នន័យ");
+                return res.json();
+            })
+            .then(() => {
+                alert("✓ បានរក្សាទុកសេវាកម្មរូបថត HD ជោគជ័យ ១០០%!");
+                document.getElementById('addGameForm').reset();
+                document.getElementById('photoPreviewContainer').style.display = 'none';
+                document.getElementById('gameDirectPhotoBase64').value = '';
+                fetchGames();
+            })
+            .catch(err => {
+                alert("កំហុស៖ " + err.message);
+            })
+            .finally(() => {
+                btn.innerText = "💾 រក្សាទុកសេវាកម្ម & កញ្ចប់ពេជ្រ";
+                btn.disabled = false;
             });
         }
 
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function toggleChat() { const b = document.getElementById('chatBox'); b.style.display = b.style.display === 'flex' ? 'none' : 'flex'; }
+        function fetchGames() {
+            fetch(`${FIREBASE_DB_URL}store_games.json?t=` + Date.now())
+                .then(res => res.json())
+                .then(games => {
+                    const tbody = document.getElementById('gamesTableBody');
+                    if (!games || games.error || Object.keys(games).length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-sub);">មិនទាន់មានសេវាកម្ម/ហ្គេមនៅឡើយទេ</td></tr>';
+                        document.getElementById('totalGamesBadge').innerText = '0';
+                        return;
+                    }
 
-        function sendChat() {
-            const input = document.getElementById('chatInput');
-            const text = input.value.trim();
-            if (!text) return;
-            const user = getActiveUser();
+                    const gameIds = Object.keys(games);
+                    document.getElementById('totalGamesBadge').innerText = gameIds.length;
+                    let html = '';
 
-            fetch(`${FIREBASE_DB_URL}chats/${user.uid}/info.json`, { method: "PUT", body: JSON.stringify({ name: user.name, email: user.email }) });
-            fetch(`${FIREBASE_DB_URL}chats/${user.uid}/messages.json`, { method: "POST", body: JSON.stringify({ sender: "guest", text: text, timestamp: new Date().toISOString() }) });
-            input.value = '';
+                    gameIds.forEach(id => {
+                        const g = games[id];
+                        const imgHtml = `<img src="${g.image}" class="game-img-preview">`;
+                        
+                        let pkgsHtml = '';
+                        if (g.packages && Array.isArray(g.packages)) {
+                            pkgsHtml = g.packages.map(p => {
+                                const orig = p.originalPrice > p.price ? `<s style="opacity:0.6; margin-right:4px;">$${p.originalPrice.toFixed(2)}</s>` : '';
+                                return `<span style="display:inline-block; background:rgba(99,102,241,0.15); border:1px solid rgba(99,102,241,0.3); padding:2px 6px; border-radius:4px; margin:2px; font-size:11px;">${p.name}: ${orig}<b>$${p.price.toFixed(2)}</b></span>`;
+                            }).join('');
+                        }
+
+                        html += `
+                            <tr>
+                                <td>${imgHtml}</td>
+                                <td><b>${g.name}</b></td>
+                                <td>${pkgsHtml}</td>
+                                <td><button class="btn btn-danger" onclick="deleteGame('${id}')">🗑️ លុប</button></td>
+                            </tr>
+                        `;
+                    });
+                    tbody.innerHTML = html;
+                });
         }
 
-        function listenToChatReplies() {
-            setInterval(() => {
-                const user = getActiveUser();
-                fetch(`${FIREBASE_DB_URL}chats/${user.uid}/messages.json?t=` + Date.now())
-                    .then(res => res.json())
-                    .then(data => {
-                        const logs = document.getElementById('chatLogs');
-                        if (!data || data.error) return;
+        function deleteGame(id) {
+            if (confirm("តើអ្នកពិតជាចង់លុបសេវាកម្ម/ហ្គេមនេះមែនទេ?")) {
+                fetch(`${FIREBASE_DB_URL}store_games/${id}.json`, { method: "DELETE" }).then(() => fetchGames());
+            }
+        }
 
-                        let chatHtml = '<div class="chat-msg admin">សួស្តីបាទ! 🙏 មានអ្វីឱ្យ Admin ជួយទេ? អាចផ្ញើសារបានភ្លាមៗបាទ។</div>';
-                        Object.values(data).forEach(msg => {
-                            if (msg && msg.text && msg.text !== 'undefined') {
-                                chatHtml += `<div class="chat-msg ${msg.sender || 'guest'}">${msg.text}</div>`;
-                            }
+        function fetchAdminData() {
+            fetch(`${FIREBASE_DB_URL}users.json?t=` + Date.now())
+                .then(res => res.json())
+                .then(users => {
+                    cachedUsers = users || {};
+                    const uids = Object.keys(cachedUsers);
+                    
+                    document.getElementById('statUsersNumber').innerText = uids.length;
+                    document.getElementById('userCountBadge').innerText = uids.length;
+                    document.getElementById('userCountBadge2').innerText = uids.length;
+
+                    let totalWallet = 0;
+                    let tableHtml = `<table><thead><tr><th>ល.រ</th><th>ឈ្មោះភ្ញៀវ</th><th>អ៊ីម៉ែល (Email)</th><th>សមតុល្យ ($)</th><th>កាលបរិច្ឆេទ</th></tr></thead><tbody>`;
+
+                    if (uids.length === 0) {
+                        tableHtml += `<tr><td colspan="5" style="text-align:center; color:var(--text-sub);">មិនទាន់មានអ្នកចុះឈ្មោះនៅឡើយ</td></tr>`;
+                    } else {
+                        uids.forEach((uid, index) => {
+                            const u = cachedUsers[uid];
+                            const bal = parseFloat(u.balance || 0);
+                            totalWallet += bal;
+                            const regDate = u.registeredAt ? new Date(u.registeredAt).toLocaleDateString('km-KH') : 'ថ្មីៗ';
+
+                            tableHtml += `<tr><td>#${index + 1}</td><td><b>${u.name || 'គ្មានឈ្មោះ'}</b></td><td><code style="color:#38bdf8;">${u.email || '-'}</code></td><td><b style="color:var(--success);">$${bal.toFixed(2)}</b></td><td style="color:var(--text-sub); font-size:11px;">${regDate}</td></tr>`;
                         });
-                        logs.innerHTML = chatHtml;
+                    }
+
+                    tableHtml += `</tbody></table>`;
+                    document.getElementById('statTotalWalletNumber').innerText = `$${totalWallet.toFixed(2)}`;
+                    document.getElementById('dashboardUsersTable').innerHTML = tableHtml;
+                    document.getElementById('fullUsersTable').innerHTML = tableHtml;
+                    document.getElementById('walletListTable').innerHTML = tableHtml;
+                });
+
+            fetch(`${FIREBASE_DB_URL}chats.json?t=` + Date.now())
+                .then(res => res.json())
+                .then(chats => {
+                    const listEl = document.getElementById('chatUserList');
+                    if (!chats || chats.error) {
+                        listEl.innerHTML = '<div style="padding:15px; font-size:12px; color:var(--text-sub);">មិនទាន់មានសារ</div>';
+                        document.getElementById('statChatsNumber').innerText = '0';
+                        document.getElementById('chatCountBadge').innerText = '0';
+                        return;
+                    }
+
+                    const chatUids = Object.keys(chats);
+                    document.getElementById('statChatsNumber').innerText = chatUids.length;
+                    document.getElementById('chatCountBadge').innerText = chatUids.length;
+
+                    listEl.innerHTML = '';
+                    chatUids.forEach((uid, index) => {
+                        const info = chats[uid].info || { name: 'ភ្ញៀវ (' + uid.substring(0, 6) + ')', email: '' };
+                        const isActive = uid === currentActiveUid ? 'active' : '';
+
+                        listEl.innerHTML += `
+                            <div class="chat-user-item ${isActive}" onclick="selectChatUser('${uid}', '${info.name}', '${info.email}')">
+                                <div class="chat-user-name">${info.name}</div>
+                                <div class="chat-user-email">${info.email || 'ចុចដើម្បីតបសារ'}</div>
+                            </div>
+                        `;
+
+                        if (!currentActiveUid && index === 0) {
+                            selectChatUser(uid, info.name, info.email);
+                        }
+                    });
+                });
+
+            if (currentActiveUid) {
+                fetch(`${FIREBASE_DB_URL}chats/${currentActiveUid}/messages.json?t=` + Date.now())
+                    .then(res => res.json())
+                    .then(messages => {
+                        if (!messages || messages.error) return;
+                        const logs = document.getElementById('adminChatLogs');
+                        logs.innerHTML = '';
+                        Object.values(messages).forEach(m => {
+                            if (m.text) logs.innerHTML += `<div class="admin-msg-bubble ${m.sender}">${m.text}</div>`;
+                        });
                         logs.scrollTop = logs.scrollHeight;
                     });
-            }, 1200);
+            }
         }
 
-        setInterval(loadStoreGames, 2000);
-        loadStoreGames();
-        listenToChatReplies();
+        function handleManualTopUp(e) {
+            e.preventDefault();
+            const email = document.getElementById('topupEmailInput').value.trim().toLowerCase();
+            const amount = parseFloat(document.getElementById('topupAmountInput').value);
+
+            const uids = Object.keys(cachedUsers);
+            const targetUid = uids.find(id => cachedUsers[id].email && cachedUsers[id].email.toLowerCase() === email);
+
+            if (!targetUid) {
+                alert(`⚠️ រកមិនឃើញគណនីអ៊ីម៉ែល៖ ${email} ឡើយ!`);
+                return;
+            }
+
+            const currentBal = parseFloat(cachedUsers[targetUid].balance || 0);
+            const newBal = currentBal + amount;
+
+            fetch(`${FIREBASE_DB_URL}users/${targetUid}.json`, {
+                method: "PATCH",
+                body: JSON.stringify({ balance: newBal })
+            }).then(() => {
+                alert(`✓ បានបញ្ចូលទឹកប្រាក់ $${amount.toFixed(2)} ជូនអ៊ីម៉ែល៖ ${email} ជោគជ័យ!`);
+                document.getElementById('topupEmailInput').value = '';
+                document.getElementById('topupAmountInput').value = '';
+                fetchAdminData();
+            });
+        }
+
+        function selectChatUser(uid, name, email) {
+            currentActiveUid = uid;
+            document.getElementById('activeChatUserName').innerText = name;
+            document.getElementById('activeChatUserEmail').innerText = email || '';
+            document.querySelectorAll('.chat-user-item').forEach(el => el.classList.remove('active'));
+            fetchAdminData();
+        }
+
+        function adminSendMsg() {
+            const input = document.getElementById('adminChatInput');
+            const text = input.value.trim();
+            if (!text || !currentActiveUid) return;
+
+            fetch(`${FIREBASE_DB_URL}chats/${currentActiveUid}/messages.json`, {
+                method: "POST",
+                body: JSON.stringify({ sender: "admin", text, timestamp: new Date().toISOString() })
+            });
+
+            input.value = '';
+            fetchAdminData();
+        }
+
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+            document.getElementById('pageTitle').innerText = element.innerText;
+        }
+
+        fetchGames();
+        setInterval(fetchAdminData, 1500);
+        fetchAdminData();
     </script>
 </body>
 </html>
