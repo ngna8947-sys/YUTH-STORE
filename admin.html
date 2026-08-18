@@ -3,363 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ផ្ទាំងគ្រប់គ្រង Admin - YUTH STORE</title>
+    <title>YUTH STORE - Admin Dashboard</title>
+    
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
-        body { background: #0b1120; color: #f8fafc; padding: 20px; }
+        * { box-sizing: border-box; font-family: 'Kantumruy Pro', sans-serif; margin: 0; padding: 0; }
+        body { background: #090e17; color: #f8fafc; padding: 20px; }
         .container { max-width: 1100px; margin: 0 auto; }
-        .header-title { color: #38bdf8; font-size: 24px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
-        .card { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 20px; margin-bottom: 25px; }
-        .card h3 { color: #38bdf8; margin-bottom: 15px; font-size: 18px; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .full-width { grid-column: span 2; }
-        label { font-size: 13px; color: #94a3b8; display: block; margin-bottom: 6px; }
-        input, select, textarea { width: 100%; padding: 10px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #fff; outline: none; }
-        input[type="file"] { padding: 8px; background: #1e293b; border: 1px dashed #38bdf8; cursor: pointer; }
-        input:focus, textarea:focus { border-color: #38bdf8; }
-        button { cursor: pointer; border: none; border-radius: 8px; font-weight: bold; transition: 0.2s; }
-        .btn-green { background: #10b981; color: #fff; padding: 12px; width: 100%; margin-top: 15px; }
-        .btn-green:hover { background: #059669; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #334155; font-size: 14px; }
-        th { color: #94a3b8; }
-        .badge-available { background: #10b981; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 11px; }
-        .badge-sold { background: #ef4444; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 11px; }
-        .diamond-tag { background: #0f172a; border: 1px solid #334155; padding: 3px 8px; border-radius: 6px; font-size: 12px; display: inline-block; margin: 2px; }
-        .img-preview { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; margin-top: 5px; display: none; border: 1px solid #38bdf8; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: #1e293b; padding: 25px; border-radius: 14px; width: 90%; max-width: 450px; border: 1px solid #334155; }
+        
+        /* Header */
+        .admin-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 15px; margin-bottom: 25px; }
+        .brand { font-size: 22px; font-weight: bold; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
+
+        /* Stats Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: #131c2e; border: 1px solid #1e293b; padding: 20px; border-radius: 12px; }
+        .stat-card h4 { font-size: 13px; color: #94a3b8; margin-bottom: 8px; }
+        .stat-card .value { font-size: 24px; font-weight: bold; color: #38bdf8; }
+
+        /* Action Panel */
+        .panel { background: #131c2e; border: 1px solid #1e293b; padding: 20px; border-radius: 14px; margin-bottom: 25px; }
+        .panel h3 { color: #38bdf8; font-size: 17px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .form-row { display: flex; gap: 12px; flex-wrap: wrap; }
+        .form-row input { flex: 1; min-width: 200px; padding: 11px; background: #0b1120; border: 1px solid #334155; border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
+        .form-row input:focus { border-color: #38bdf8; }
+        .btn-topup { background: #0284c7; color: #fff; border: none; padding: 11px 22px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-topup:hover { background: #38bdf8; color: #090e17; }
+
+        /* Orders Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #1e293b; }
+        th { background: #0b1120; color: #94a3b8; font-weight: 600; }
+        tr:hover { background: rgba(56, 189, 248, 0.03); }
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; }
+        .badge.pending { background: rgba(234, 179, 8, 0.2); color: #facc15; }
+        .badge.completed { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        .btn-done { background: #22c55e; color: #fff; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header-title">⚙️ ផ្ទាំងគ្រប់គ្រង Admin (Top-Up & Account Store)</div>
-
-    <!-- ១. បន្ថែមសេវាកម្ម Top-Up ហ្គេម -->
-    <div class="card">
-        <h3>🎮 បន្ថែមសេវាកម្មហ្គេម Top-Up ថ្មី</h3>
-        <div class="form-grid">
-            <div>
-                <label>ឈ្មោះហ្គេម / សេវាកម្ម៖</label>
-                <input type="text" id="gameName" placeholder="ឧ. Free Fire, Mobile Legends">
-            </div>
-            <div>
-                <label>📁 រូបភាព Logo ហ្គេម (ជ្រើសរើសពីទូរសព្ទ/កុំព្យូទ័រ)៖</label>
-                <input type="file" id="gameImageFile" accept="image/*" onchange="previewFile(this, 'gameImgPreview')">
-                <img id="gameImgPreview" class="img-preview">
-            </div>
-            <div class="full-width">
-                <label>កញ្ចប់ពេជ្រ & តម្លៃ (ទម្រង់៖ ពេជ្រ:តម្លៃ, ពេជ្រ:តម្លៃ)៖</label>
-                <input type="text" id="gamePackages" placeholder="100:1.50, 300:2.50, 500:4.00, 1000:7.00">
-            </div>
-        </div>
-        <button class="btn-green" onclick="addGameService()">➕ បន្ថែមសេវាកម្មហ្គេម</button>
+    <div class="admin-header">
+        <div class="brand"><i class="fa-solid fa-shield-halved"></i> YUTH STORE - Admin Dashboard</div>
+        <a href="index.html" style="color: #94a3b8; text-decoration: none; font-size: 14px;"><i class="fa-solid fa-arrow-left"></i> ទៅកាន់ទំព័រមុខ</a>
     </div>
 
-    <!-- ២. បញ្ជីសេវាកម្ម Top-Up ហ្គេម -->
-    <div class="card">
-        <h3>📦 បញ្ជីសេវាកម្មហ្គេមទាំងអស់</h3>
-        <div style="overflow-x:auto;">
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h4><i class="fa-solid fa-cart-shopping"></i> ការបញ្ជាទិញសរុប</h4>
+            <div class="value" id="statOrders">0</div>
+        </div>
+        <div class="stat-card">
+            <h4><i class="fa-solid fa-clock"></i> រង់ចាំដំណើរការ (Pending)</h4>
+            <div class="value" style="color: #facc15;" id="statPending">0</div>
+        </div>
+    </div>
+
+    <!-- Manual Top-up Panel -->
+    <div class="panel">
+        <h3><i class="fa-solid fa-wallet"></i> បញ្ចូលសមតុល្យឱ្យសមាជិក (Manual Top-Up)</h3>
+        <div class="form-row">
+            <input type="text" id="manualEmail" placeholder="អ៊ីមែលអ្នកប្រើប្រាស់ (ឧ. user@gmail.com)">
+            <input type="number" id="manualAmount" placeholder="ចំនួនទឹកប្រាក់ ($) ឧ. 10">
+            <button class="btn-topup" onclick="addManualBalance()">បញ្ចូលលុយ</button>
+        </div>
+    </div>
+
+    <!-- Orders Management -->
+    <div class="panel">
+        <h3><i class="fa-solid fa-list-check"></i> បញ្ជីការបញ្ជាទិញ (Orders List)</h3>
+        <div style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr>
-                        <th>រូបភាព</th>
-                        <th>ឈ្មោះសេវាកម្ម/ហ្គេម</th>
-                        <th>កញ្ចប់ពេជ្រ & តម្លៃ</th>
-                        <th>សកម្មភាព</th>
-                    </tr>
-                </thead>
-                <tbody id="servicesTableBody"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- ៣. បន្ថែម Account សម្រាប់ដាក់លក់ -->
-    <div class="card">
-        <h3>🛒 បន្ថែម Account សម្រាប់ដាក់លក់ (Facebook / Game)</h3>
-        <div class="form-grid">
-            <div>
-                <label>ឈ្មោះ Account / ប្រភេទ៖</label>
-                <input type="text" id="accTitle" placeholder="ឧ. Facebook Account 2018 / FF Level 60">
-            </div>
-            <div>
-                <label>តម្លៃ ($ USD)៖</label>
-                <input type="number" step="0.01" id="accPrice" placeholder="15.00">
-            </div>
-            <div>
-                <label>📅 អាយុអាខោន / ឆ្នាំបង្កើត៖</label>
-                <input type="text" id="accAge" placeholder="ឧ. បង្កើតឆ្នាំ 2018 (អាយុ 8 ឆ្នាំ)">
-            </div>
-            <div>
-                <label>📁 រូប Profile / Logo (ជ្រើសរើសពីទូរសព្ទ)៖</label>
-                <input type="file" id="accThumbFile" accept="image/*" onchange="previewFile(this, 'accThumbPreview')">
-                <img id="accThumbPreview" class="img-preview">
-            </div>
-            <div class="full-width">
-                <label>📁 រូប Screenshot បង្ហាញអាខោន (ជ្រើសរើសពីទូរសព្ទ)៖</label>
-                <input type="file" id="accImageFile" accept="image/*" onchange="previewFile(this, 'accImgPreview')">
-                <img id="accImgPreview" class="img-preview" style="height:80px; width:120px;">
-            </div>
-            <div>
-                <label>🆔 UID / Email / Username (លេខសម្ងាត់)៖</label>
-                <input type="text" id="accUid" placeholder="100082348234">
-            </div>
-            <div>
-                <label>🔑 Password (លេខសម្ងាត់)៖</label>
-                <input type="text" id="accPass" placeholder="Pass@12345">
-            </div>
-            <div class="full-width">
-                <label>🛡️ 2FA Key / Backup Code (លេខកូដសុវត្ថិភាព)៖</label>
-                <input type="text" id="acc2fa" placeholder="JBSWY3DPEHPK3PXP">
-            </div>
-        </div>
-        <button class="btn-green" onclick="addNewAccount()">➕ បង្ហោះលក់ Account នេះ</button>
-    </div>
-
-    <!-- ៤. បញ្ជី Account ទាំងអស់ -->
-    <div class="card">
-        <h3>📋 បញ្ជី Account ទាំងអស់ក្នុងប្រព័ន្ធ</h3>
-        <div style="overflow-x:auto;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>រូបភាព</th>
-                        <th>ឈ្មោះ Account</th>
-                        <th>អាយុអាខោន</th>
+                        <th>កាលបរិច្ឆេទ</th>
+                        <th>អ៊ីមែល</th>
+                        <th>ទំនិញ</th>
+                        <th>Player ID</th>
                         <th>តម្លៃ</th>
-                        <th>UID / Login</th>
-                        <th>Password</th>
-                        <th>2FA</th>
                         <th>ស្ថានភាព</th>
                         <th>សកម្មភាព</th>
                     </tr>
                 </thead>
-                <tbody id="accountsTableBody"></tbody>
+                <tbody id="ordersTableBody">
+                    <tr><td colspan="7" style="text-align: center; color: #64748b;">មិនទាន់មានការបញ្ជាទិញទេ</td></tr>
+                </tbody>
             </table>
-        </div>
-    </div>
-</div>
-
-<!-- Modal កែប្រែសេវាកម្ម -->
-<div class="modal" id="editServiceModal">
-    <div class="modal-content">
-        <h3 style="color:#38bdf8; margin-bottom:15px;">✏️ កែប្រែព័ត៌មានសេវាកម្ម</h3>
-        <input type="hidden" id="editGameKey">
-        <label>ឈ្មោះសេវាកម្ម / ហ្គេម៖</label>
-        <input type="text" id="editGameName" style="margin-bottom:15px;">
-        <label>📁 ប្តូររូបភាពថ្មី (បើចង់ប្តូរ)៖</label>
-        <input type="file" id="editGameImgFile" accept="image/*" style="margin-bottom:20px;">
-        <div style="display:flex; justify-content:flex-end; gap:10px;">
-            <button onclick="document.getElementById('editServiceModal').style.display='none'" style="padding:8px 16px; background:#475569; color:#fff;">បោះបង់</button>
-            <button onclick="saveServiceChanges()" style="padding:8px 16px; background:#38bdf8; color:#0f172a;">រក្សាទុក</button>
         </div>
     </div>
 </div>
 
 <script>
     const firebaseConfig = {
-        apiKey: "AIzaSyBnKL2cuZSGdtfxBbKq_otyi692HFMHd5o",
+        apiKey: "AIzaSyBnKL2cuZSGdtfxBbKq_otyi692HFMhD5o",
         authDomain: "yuth-store.firebaseapp.com",
         databaseURL: "https://yuth-store-default-rtdb.firebaseio.com",
         projectId: "yuth-store",
         storageBucket: "yuth-store.firebasestorage.app",
         messagingSenderId: "76819152698",
         appId: "1:76819152698:web:64153383c57412343dda03",
-        measurementId: "G-L18LVZ7W6R"
+        measurementId: "G-LT8LVZ7W6R"
     };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
 
-    function getBase64(file) {
-        return new Promise((resolve, reject) => {
-            if (!file) return resolve('');
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
-        });
-    }
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-    function previewFile(input, previewId) {
-        const preview = document.getElementById(previewId);
-        const file = input.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-            }
-            reader.readAsDataURL(file);
-        }
-    }
+    // បញ្ចូលលុយ Manual
+    function addManualBalance() {
+        const email = document.getElementById('manualEmail').value.trim();
+        const amt = parseFloat(document.getElementById('manualAmount').value);
 
-    async function addGameService() {
-        const name = document.getElementById('gameName').value.trim();
-        const packagesStr = document.getElementById('gamePackages').value.trim();
-        const file = document.getElementById('gameImageFile').files[0];
+        if (!email || isNaN(amt) || amt <= 0) return alert("សូមបញ្ចូលអ៊ីមែល និងចំនួនទឹកប្រាក់ឱ្យបានត្រឹមត្រូវ!");
+        const emailKey = email.replace(/\./g, ',');
 
-        if (!name || !packagesStr) return alert("សូមបំពេញឈ្មោះហ្គេម និងកញ្ចប់តម្លៃ!");
+        database.ref('users/' + emailKey).once('value', (snap) => {
+            let current = 0;
+            const data = snap.val();
+            if (typeof data === 'number') current = data;
+            else if (data && data.balance !== undefined) current = data.balance;
 
-        const imageBase64 = await getBase64(file) || 'https://via.placeholder.com/80';
-
-        const packages = {};
-        packagesStr.split(',').forEach(item => {
-            const parts = item.split(':');
-            if (parts.length === 2) {
-                const amount = parts[0].trim();
-                const price = parseFloat(parts[1].trim());
-                if (amount && !isNaN(price)) packages[amount] = price;
-            }
-        });
-
-        db.ref('services').push({
-            name: name,
-            image: imageBase64,
-            packages: packages
-        }).then(() => {
-            alert("✅ បានបន្ថែមសេវាកម្មជោគជ័យ!");
-            document.getElementById('gameName').value = '';
-            document.getElementById('gamePackages').value = '';
-            document.getElementById('gameImageFile').value = '';
-            document.getElementById('gameImgPreview').style.display = 'none';
-        });
-    }
-
-    db.ref('services').on('value', snapshot => {
-        const tbody = document.getElementById('servicesTableBody');
-        tbody.innerHTML = '';
-        const data = snapshot.val();
-        if (!data) return tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b;">មិនទាន់មានសេវាកម្មនៅឡើយទេ។</td></tr>';
-
-        for (let key in data) {
-            const item = data[key];
-            let pkgsHtml = '';
-            if (item.packages) {
-                for (let amount in item.packages) {
-                    pkgsHtml += `<span class="diamond-tag">💎 ${amount}: <strong>$${item.packages[amount].toFixed(2)}</strong></span>`;
+            const newTotal = current + amt;
+            database.ref('users/' + emailKey).set({ balance: newTotal }, (err) => {
+                if (!err) {
+                    alert("✅ បានបញ្ចូល $" + amt + " ទៅកាន់ " + email + " ជោគជ័យ! (សមតុល្យថ្មី: $" + newTotal + ")");
+                    document.getElementById('manualAmount').value = '';
+                } else {
+                    alert("Error: " + err.message);
                 }
-            }
-
-            tbody.innerHTML += `
-                <tr>
-                    <td><img src="${item.image}" style="width:40px; height:40px; border-radius:8px; object-fit:cover;"></td>
-                    <td><strong>${item.name}</strong></td>
-                    <td>${pkgsHtml || 'គ្មានកញ្ចប់'}</td>
-                    <td>
-                        <button onclick="openEditModal('${key}', '${item.name}')" style="padding:6px 10px; background:#eab308; color:#000; font-size:12px; margin-right:5px;">✏️ កែ</button>
-                        <button onclick="deleteService('${key}')" style="padding:6px 10px; background:#ef4444; color:#fff; font-size:12px;">🗑️ លុប</button>
-                    </td>
-                </tr>
-            `;
-        }
-    });
-
-    function openEditModal(key, name) {
-        document.getElementById('editGameKey').value = key;
-        document.getElementById('editGameName').value = name;
-        document.getElementById('editServiceModal').style.display = 'flex';
-    }
-
-    async function saveServiceChanges() {
-        const key = document.getElementById('editGameKey').value;
-        const name = document.getElementById('editGameName').value.trim();
-        const file = document.getElementById('editGameImgFile').files[0];
-
-        if (!name) return alert("សូមបញ្ចូលឈ្មោះសេវាកម្ម!");
-        
-        const updateData = { name: name };
-        if (file) {
-            updateData.image = await getBase64(file);
-        }
-
-        db.ref('services/' + key).update(updateData).then(() => {
-            alert("✅ បានកែប្រែទិន្នន័យជោគជ័យ!");
-            document.getElementById('editServiceModal').style.display = 'none';
+            });
         });
     }
 
-    function deleteService(key) {
-        if (confirm("តើអ្នកពិតជាចង់លុបសេវាកម្មនេះមែនទេ?")) db.ref('services/' + key).remove();
-    }
-
-    async function addNewAccount() {
-        const title = document.getElementById('accTitle').value.trim();
-        const price = parseFloat(document.getElementById('accPrice').value);
-        const age = document.getElementById('accAge').value.trim();
-        const uid = document.getElementById('accUid').value.trim();
-        const pass = document.getElementById('accPass').value.trim();
-        const tfa = document.getElementById('acc2fa').value.trim();
-
-        const thumbFile = document.getElementById('accThumbFile').files[0];
-        const imageFile = document.getElementById('accImageFile').files[0];
-
-        if (!title || isNaN(price) || price <= 0 || !uid || !pass) {
-            return alert("សូមបំពេញឈ្មោះ តម្លៃ UID និង Password ឱ្យបានត្រឹមត្រូវ!");
-        }
-
-        const thumbBase64 = await getBase64(thumbFile) || 'https://via.placeholder.com/100';
-        const imageBase64 = await getBase64(imageFile) || thumbBase64;
-
-        db.ref('accounts_for_sale').push({
-            title: title,
-            price: price,
-            age: age || 'Account គុណភាពខ្ពស់',
-            thumb: thumbBase64,
-            image: imageBase64,
-            acc_id: uid,
-            acc_pass: pass,
-            acc_2fa: tfa || 'គ្មាន',
-            status: 'available',
-            createdAt: Date.now()
-        }).then(() => {
-            alert("✅ បានបង្ហោះដាក់លក់ Account ជោគជ័យ!");
-            document.getElementById('accTitle').value = '';
-            document.getElementById('accPrice').value = '';
-            document.getElementById('accAge').value = '';
-            document.getElementById('accUid').value = '';
-            document.getElementById('accPass').value = '';
-            document.getElementById('acc2fa').value = '';
-            document.getElementById('accThumbFile').value = '';
-            document.getElementById('accImageFile').value = '';
-            document.getElementById('accThumbPreview').style.display = 'none';
-            document.getElementById('accImgPreview').style.display = 'none';
-        });
-    }
-
-    db.ref('accounts_for_sale').on('value', snapshot => {
-        const tbody = document.getElementById('accountsTableBody');
+    // Realtime Orders
+    database.ref('orders').on('value', (snap) => {
+        const orders = snap.val() || {};
+        const tbody = document.getElementById('ordersTableBody');
         tbody.innerHTML = '';
-        const data = snapshot.val();
-        if (!data) return tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:#64748b;">មិនទាន់មាន Account ដាក់លក់នៅឡើយទេ។</td></tr>';
 
-        for (let key in data) {
-            const acc = data[key];
-            const status = acc.status === 'sold' 
-                ? '<span class="badge-sold">លក់ដាច់ហើយ</span>' 
-                : '<span class="badge-available">នៅសល់</span>';
+        let total = 0, pending = 0;
 
-            tbody.innerHTML += `
-                <tr>
-                    <td><img src="${acc.thumb}" style="width:40px; height:40px; border-radius:6px; object-fit:cover;"></td>
-                    <td><strong>${acc.title}</strong></td>
-                    <td style="color:#f59e0b;">${acc.age || 'N/A'}</td>
-                    <td style="color:#38bdf8; font-weight:bold;">$${parseFloat(acc.price).toFixed(2)}</td>
-                    <td><code>${acc.acc_id}</code></td>
-                    <td><code>${acc.acc_pass}</code></td>
-                    <td><code>${acc.acc_2fa}</code></td>
-                    <td>${status}</td>
-                    <td><button onclick="deleteAccount('${key}')" style="padding:6px 10px; background:#ef4444; color:#fff; font-size:12px;">🗑️ លុប</button></td>
-                </tr>
+        Object.keys(orders).reverse().forEach((key) => {
+            const ord = orders[key];
+            total++;
+            if (ord.status === 'pending') pending++;
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${ord.time || '-'}</td>
+                <td>${ord.user || '-'}</td>
+                <td style="color: #38bdf8; font-weight: bold;">${ord.item}</td>
+                <td><code style="background:#0b1120; padding:3px 6px; border-radius:4px;">${ord.targetId}</code></td>
+                <td style="color: #4ade80; font-weight: bold;">$${Number(ord.price).toFixed(2)}</td>
+                <td><span class="badge ${ord.status}">${ord.status === 'pending' ? 'រង់ចាំ' : 'ជោគជ័យ'}</span></td>
+                <td>
+                    ${ord.status === 'pending' ? `<button class="btn-done" onclick="completeOrder('${key}')">✓ បញ្ចប់</button>` : '<i class="fa-solid fa-check" style="color:#22c55e;"></i>'}
+                </td>
             `;
-        }
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('statOrders').innerText = total;
+        document.getElementById('statPending').innerText = pending;
     });
 
-    function deleteAccount(key) {
-        if (confirm("តើអ្នកពិតជាចង់លុប Account នេះមែនទេ?")) db.ref('accounts_for_sale/' + key).remove();
+    function completeOrder(key) {
+        if (confirm("តើអ្នកបានបញ្ចូលពេជ្រជូនភ្ញៀវរួចរាល់ហើយមែនទេ?")) {
+            database.ref('orders/' + key).update({ status: 'completed' });
+        }
     }
 </script>
 </body>
