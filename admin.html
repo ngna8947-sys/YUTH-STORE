@@ -3,120 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin Dashboard - YUTH STORE</title>
+    <title>YUTH STORE - Ultra Admin Portal</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700&family=Poppins:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 
         :root {
-            --primary: #1877f2;
-            --primary-dark: #145dbf;
-            --danger: #e41e3f;
-            --success: #31a24c;
+            --primary: #4f46e5;
+            --primary-gradient: linear-gradient(135deg, #4f46e5, #06b6d4);
+            --danger: #ef4444;
+            --success: #10b981;
             --warning: #f59e0b;
-            --dark: #1c1e21;
-            --bg: #f0f2f5;
-            --card: #ffffff;
-            --border: #e4e6eb;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border: #334155;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Hanuman', sans-serif; }
-        body { background: var(--bg); display: flex; height: 100vh; overflow: hidden; color: var(--dark); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', 'Hanuman', sans-serif; }
+        body { background: var(--dark-bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-        .sidebar { width: 250px; background: white; border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 1000; }
-        .sidebar-header { padding: 18px; font-size: 19px; font-weight: 800; color: var(--danger); text-align: center; border-bottom: 1px solid var(--border); }
-        .sidebar-menu { list-style: none; padding: 10px 0; flex: 1; overflow-y: auto; }
-        .menu-item { padding: 14px 18px; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; color: #555; cursor: pointer; border-left: 4px solid transparent; }
-        .menu-item:hover, .menu-item.active { background: #e8f0fe; color: var(--primary); border-left-color: var(--primary); }
-        .menu-badge { margin-left: auto; background: var(--danger); color: white; font-size: 11px; padding: 2px 7px; border-radius: 10px; font-weight: bold; }
+        /* Sidebar */
+        .sidebar { width: 260px; background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 1000; }
+        .sidebar-header { padding: 22px 20px; font-size: 20px; font-weight: 800; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; border-bottom: 1px solid var(--border); }
+        .sidebar-menu { list-style: none; padding: 15px 10px; flex: 1; overflow-y: auto; }
+        .menu-item { padding: 12px 16px; display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 10px; cursor: pointer; transition: 0.2s; margin-bottom: 6px; }
+        .menu-item:hover, .menu-item.active { background: rgba(79, 70, 229, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); }
+        .menu-badge { margin-left: auto; background: var(--primary); color: white; font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: bold; }
 
+        /* Main Content */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
-        .topbar { background: white; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-        .page-title { font-size: 16px; font-weight: 700; }
-        .admin-profile { display: flex; align-items: center; gap: 8px; font-size: 13px; }
-        .admin-badge { background: #e6f4ea; color: var(--success); padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+        .topbar { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(10px); padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .page-title { font-size: 17px; font-weight: 700; }
+        .admin-badge { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
 
-        .content-body { flex: 1; padding: 15px; overflow-y: auto; }
+        .content-body { flex: 1; padding: 20px; overflow-y: auto; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Dashboard Stats */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 15px; }
-        .stat-card { background: white; padding: 15px; border-radius: 12px; border: 1px solid var(--border); border-left: 4px solid var(--primary); }
-        .stat-card.purple { border-left-color: #8b5cf6; }
-        .stat-card.success { border-left-color: var(--success); }
-        .stat-card.warning { border-left-color: var(--warning); }
-        .stat-title { font-size: 11px; color: #777; margin-bottom: 4px; }
-        .stat-value { font-size: 20px; font-weight: 800; }
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: var(--card-bg); border: 1px solid var(--border); padding: 18px; border-radius: 14px; position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary); }
+        .stat-card.emerald::before { background: var(--success); }
+        .stat-card.amber::before { background: var(--warning); }
+        .stat-title { font-size: 12px; color: var(--text-sub); font-weight: 600; margin-bottom: 6px; }
+        .stat-number { font-size: 28px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
 
-        .card-panel { background: white; border-radius: 12px; border: 1px solid var(--border); padding: 15px; margin-bottom: 15px; overflow-x: auto; }
-        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .panel-title { font-size: 14px; font-weight: 700; }
+        /* Panels */
+        .card-panel { background: var(--card-bg); border-radius: 14px; border: 1px solid var(--border); padding: 20px; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+        .panel-title { font-size: 15px; font-weight: 700; }
 
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; min-width: 480px; }
-        th, td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; }
-        th { background: #f8f9fa; color: #555; font-weight: 600; }
+        /* Forms */
+        .form-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 200px; }
+        .form-group label { font-size: 12px; font-weight: 600; color: var(--text-sub); }
+        .form-group input, .form-group select { background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 10px 14px; border-radius: 10px; font-size: 13px; outline: none; }
+        .form-group input:focus { border-color: #6366f1; }
 
-        .badge { padding: 3px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; }
-        .badge-pending { background: #fef3c7; color: #d97706; }
-        .badge-success { background: #dcfce7; color: #15803d; }
+        .packages-container { background: #0f172a; border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 15px; }
+        .package-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+        .package-row input { flex: 1; min-width: 110px; padding: 8px 12px; background: var(--card-bg); border: 1px solid var(--border); color: #fff; border-radius: 8px; font-size: 12px; outline: none; }
 
-        .btn { padding: 5px 10px; border: none; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; }
+        .btn { padding: 10px 18px; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: var(--primary-gradient); color: white; }
         .btn-success { background: var(--success); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-primary { background: var(--primary); color: white; }
+        .btn-danger { background: var(--danger); color: white; padding: 6px 12px; font-size: 11px; }
 
-        /* Price Grid */
-        .price-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
-        .price-card { background: #f8f9fa; border: 1px solid #e4e6eb; border-radius: 10px; padding: 12px; }
-        .price-card h4 { font-size: 13px; color: var(--primary); margin-bottom: 6px; }
-        .price-input-group label { font-size: 11px; color: #666; }
-        .price-input-group input { width: 100%; padding: 6px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; margin-top: 2px; }
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+        th, td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        th { background: rgba(15, 23, 42, 0.6); color: var(--text-sub); font-weight: 600; font-size: 11px; text-transform: uppercase; }
+        .game-img-preview { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
 
-        /* Chat System */
-        .chat-container { display: flex; height: calc(100vh - 120px); background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
-        .chat-user-list { width: 230px; border-right: 1px solid var(--border); overflow-y: auto; background: #fafafa; }
-        .chat-user-item { padding: 12px 14px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
-        .chat-user-item:hover { background: #f0f2f5; }
-        .chat-user-item.active { background: #e8f0fe; border-left: 4px solid var(--primary); }
-        .chat-user-name { font-weight: bold; font-size: 13px; }
-        .chat-user-email { font-size: 11px; color: #777; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+        /* Chat */
+        .chat-container { display: flex; height: calc(100vh - 140px); background: var(--card-bg); border-radius: 14px; border: 1px solid var(--border); overflow: hidden; }
+        .chat-user-list { width: 260px; border-right: 1px solid var(--border); overflow-y: auto; background: #0f172a; }
+        .chat-user-item { padding: 14px; border-bottom: 1px solid rgba(51, 65, 85, 0.5); cursor: pointer; transition: 0.2s; }
+        .chat-user-item.active { background: rgba(79, 70, 229, 0.15); border-left: 4px solid var(--primary); }
+        .chat-user-name { font-weight: 700; font-size: 13px; color: #fff; }
+        .chat-user-email { font-size: 11px; color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
 
-        .chat-room { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-        .chat-room-header { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: bold; background: #fafafa; }
-        .chat-room-messages { flex: 1; padding: 12px; overflow-y: auto; background: #f0f2f5; display: flex; flex-direction: column; gap: 8px; }
+        .chat-room { flex: 1; display: flex; flex-direction: column; min-width: 0; background: #131d31; }
+        .chat-room-header { padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 700; background: var(--card-bg); display: flex; justify-content: space-between; align-items: center; }
+        .chat-room-messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
 
-        .admin-msg-bubble { max-width: 85%; padding: 8px 12px; border-radius: 10px; font-size: 12px; word-break: break-word; }
-        .admin-msg-bubble.guest { background: white; align-self: flex-start; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .admin-msg-bubble.admin { background: var(--primary); color: white; align-self: flex-end; box-shadow: 0 1px 2px rgba(24,119,242,0.2); }
+        .admin-msg-bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 13px; word-break: break-word; line-height: 1.4; }
+        .admin-msg-bubble.guest { background: #1e293b; color: #f1f5f9; align-self: flex-start; border: 1px solid var(--border); }
+        .admin-msg-bubble.admin { background: var(--primary-gradient); color: white; align-self: flex-end; }
 
-        .chat-room-input { padding: 8px 10px; background: white; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 6px; width: 100%; }
-        .chat-room-input input[type="text"] { flex: 1; min-width: 0; padding: 7px 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 13px; outline: none; }
-        .btn-admin-send { background: var(--primary); color: white; border: none; width: 34px; height: 34px; min-width: 34px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+        .chat-room-input { padding: 10px 14px; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; gap: 8px; }
+        .chat-room-input input[type="text"] { flex: 1; min-width: 0; background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 10px 14px; border-radius: 20px; font-size: 13px; outline: none; }
+        .btn-admin-send { background: var(--primary-gradient); color: white; border: none; width: 38px; height: 38px; min-width: 38px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <div class="sidebar-header">🛠️ YUTH ADMIN</div>
+        <div class="sidebar-header">⚡ YUTH ADMIN</div>
         <ul class="sidebar-menu">
-            <li class="menu-item active" onclick="switchTab('dashboardTab', this, 'Dashboard')">📊 Dashboard</li>
-            <li class="menu-item" onclick="switchTab('topupTab', this, 'បញ្ចូលលុយ (Top-Up)')">
-                💰 បញ្ចូលលុយ <span class="menu-badge" id="pendingCount">1</span>
+            <li class="menu-item active" onclick="switchTab('dashboardTab', this)">📊 ផ្ទាំងទិន្នន័យ (Dashboard)</li>
+            <li class="menu-item" onclick="switchTab('manageGamesTab', this)">🎮 បញ្ចូលហ្គេម & បញ្ចុះតម្លៃ</li>
+            <li class="menu-item" onclick="switchTab('walletTab', this)">💰 បញ្ចូលលុយតាម Email</li>
+            <li class="menu-item" onclick="switchTab('chatTab', this)">
+                💬 ឆាតជាមួយភ្ញៀវ <span class="menu-badge" id="chatCountBadge">0</span>
             </li>
-            <li class="menu-item" onclick="switchTab('priceTab', this, 'កែសម្រួលតម្លៃ')">🏷️ បញ្ចុះតម្លៃ / កែតម្លៃ</li>
-            <li class="menu-item" onclick="switchTab('chatTab', this, 'ឆាតជាមួយភ្ញៀវ')">💬 ឆាតជាមួយភ្ញៀវ</li>
-            <li class="menu-item" onclick="switchTab('usersTab', this, 'បញ្ជីអ្នកប្រើប្រាស់')">
-                👥 អ្នកចុះឈ្មោះ <span class="menu-badge" style="background:#8b5cf6;" id="sidebarUserCount">0</span>
+            <li class="menu-item" onclick="switchTab('usersTab', this)">
+                👥 អ្នកចុះឈ្មោះ (<span id="userCountBadge">0</span>)
             </li>
         </ul>
     </div>
 
     <div class="main-content">
         <div class="topbar">
-            <div class="page-title" id="pageTitle">Dashboard</div>
-            <div class="admin-profile">
-                <span class="admin-badge">● Online</span>
-                <span><b>Samnang</b></span>
+            <div class="page-title" id="pageTitle">ផ្ទាំងគ្រប់គ្រងទូទៅ (Overview)</div>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <span class="admin-badge">● Live Connected</span>
+                <span style="font-size:13px;">Admin: <b>Samnang Mon</b></span>
             </div>
         </div>
 
@@ -125,141 +130,140 @@
             <!-- TAB 1: DASHBOARD -->
             <div id="dashboardTab" class="tab-content active">
                 <div class="stats-grid">
-                    <div class="stat-card purple">
-                        <div class="stat-title">អ្នកចុះឈ្មោះសរុប (Emails)</div>
-                        <div class="stat-value"><span id="totalUserCount">0</span> នាក់</div>
-                    </div>
                     <div class="stat-card">
-                        <div class="stat-title">ការបញ្ជាទិញសរុប</div>
-                        <div class="stat-value">128</div>
+                        <div class="stat-title">អ្នកចុះឈ្មោះសរុប (REGISTERED USERS)</div>
+                        <div class="stat-number" id="statUsersNumber">0</div>
                     </div>
-                    <div class="stat-card success">
-                        <div class="stat-title">ចំណូលសរុប</div>
-                        <div class="stat-value">$1,245.80</div>
+                    <div class="stat-card emerald">
+                        <div class="stat-title">សារឆាតសរុប (ACTIVE CHAT ROOMS)</div>
+                        <div class="stat-number" id="statChatsNumber">0</div>
                     </div>
-                    <div class="stat-card warning">
-                        <div class="stat-title">រង់ចាំយល់ព្រម</div>
-                        <div class="stat-value">1</div>
+                    <div class="stat-card amber">
+                        <div class="stat-title">សមតុល្យប្រាក់ផ្ញើចេញ (WALLET TOP-UPS)</div>
+                        <div class="stat-number" id="statTotalWalletNumber">$0.00</div>
                     </div>
                 </div>
 
                 <div class="card-panel">
                     <div class="panel-header">
-                        <div class="panel-title">បញ្ជាទិញថ្មីៗ (Recent Orders)</div>
+                        <div class="panel-title">👥 អ្នកចុះឈ្មោះថ្មីៗបំផុត (Recent Registered Accounts)</div>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ម៉ោង</th>
-                                <th>ឈ្មោះភ្ញៀវ</th>
-                                <th>ហ្គេម & កញ្ចប់</th>
-                                <th>Player ID</th>
-                                <th>តម្លៃ</th>
-                                <th>ស្ថានភាព</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>13:45</td>
-                                <td>Vannak Gamer</td>
-                                <td>Free Fire - 500 💎</td>
-                                <td><code>84930219</code></td>
-                                <td>$5.00</td>
-                                <td><span class="badge badge-success">ជោគជ័យ</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div id="dashboardUsersTable">កំពុងទាញយកទិន្នន័យ...</div>
                 </div>
             </div>
 
-            <!-- TAB 2: TOP-UP WALLET -->
-            <div id="topupTab" class="tab-content">
+            <!-- TAB 2: MANAGE GAMES & DISCOUNT -->
+            <div id="manageGamesTab" class="tab-content">
                 <div class="card-panel">
                     <div class="panel-header">
-                        <div class="panel-title">💰 សំណើរបញ្ចូលលុយ (KHQR Top-Up)</div>
+                        <div class="panel-title">➕ បញ្ចូលហ្គេម និងកញ្ចប់ពេជ្រ (កំណត់ការបញ្ចុះតម្លៃ)</div>
+                    </div>
+                    <form id="addGameForm" onsubmit="handleSaveGame(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>ឈ្មោះហ្គេម (Game Name):</label>
+                                <input type="text" id="gameNameInput" placeholder="ឧ. Free Fire លឿន" required>
+                            </div>
+                            <div class="form-group">
+                                <label>តំណភ្ជាប់រូបភាព (Image/Icon URL):</label>
+                                <input type="text" id="gameImgInput" placeholder="https://... ឬ Emoji 🔥" required>
+                            </div>
+                            <div class="form-group">
+                                <label>ពណ៌ផ្ទាំង (Theme Style):</label>
+                                <select id="gameThemeInput">
+                                    <option value="theme-orange">🔥 ទឹកក្រូច (Orange)</option>
+                                    <option value="theme-blue">🛡️ ខៀវ (Blue)</option>
+                                    <option value="theme-dark">⚡ ផ្ទៃងងឹត (Dark)</option>
+                                    <option value="theme-red">🌙 ក្រហម (Red)</option>
+                                    <option value="theme-purple">💎 ស្វាយ (Purple)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="packages-container">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                                <label style="font-size:12px; font-weight:bold; color:var(--text-sub);">💎 កញ្ចប់ពេជ្រ & តម្លៃបញ្ចុះ (Packages & Discount Prices):</label>
+                                <button type="button" class="btn btn-success" onclick="addPackageRow()" style="padding:4px 10px; font-size:11px;">+ បន្ថែមកញ្ចប់ពេជ្រ</button>
+                            </div>
+                            <div id="packagesWrapper">
+                                <div class="package-row">
+                                    <input type="text" placeholder="ចំនួនពេជ្រ (ឧ. 100 💎)" class="pkg-name" required>
+                                    <input type="number" step="0.01" placeholder="តម្លៃដើម $ (ឧ. 1.00)" class="pkg-original-price" title="តម្លៃដើម" required>
+                                    <input type="number" step="0.01" placeholder="តម្លៃលក់/បញ្ចុះ $ (ឧ. 0.60)" class="pkg-price" title="តម្លៃបញ្ចុះលក់ពិតប្រាកដ" required>
+                                    <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">✕</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width:100%;">💾 រក្សាទុកហ្គេម & កញ្ចប់ពេជ្រទាំងអស់</button>
+                    </form>
+                </div>
+
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">📦 បញ្ជីហ្គេមទាំងអស់ (<span id="totalGamesBadge">0</span>)</div>
                     </div>
                     <table>
                         <thead>
                             <tr>
-                                <th>ឈ្មោះភ្ញៀវ</th>
-                                <th>អ៊ីម៉ែល</th>
-                                <th>ចំនួនលុយ</th>
-                                <th>វិក្កយបត្រ</th>
+                                <th>រូបភាព</th>
+                                <th>ឈ្មោះហ្គេម</th>
+                                <th>កញ្ចប់ពេជ្រ & តម្លៃបញ្ចុះ</th>
                                 <th>សកម្មភាព</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr id="orderRow1">
-                                <td>Sophea Touch</td>
-                                <td>sopheatouch99@gmail.com</td>
-                                <td><b style="color:var(--danger);">$13.00</b></td>
-                                <td><a href="qr.jpg" target="_blank" style="color:var(--primary); font-weight:bold;">🔎 មើលរូប</a></td>
-                                <td>
-                                    <button class="btn btn-success" onclick="approveTopup('orderRow1', 'Sophea Touch', 13.00)">✓ យល់ព្រម</button>
-                                    <button class="btn btn-danger" onclick="rejectTopup('orderRow1')">✕</button>
-                                </td>
-                            </tr>
+                        <tbody id="gamesTableBody">
+                            <tr><td colspan="4" style="text-align:center;">កំពុងទាញយកទិន្នន័យ...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- TAB 3: PRICE MANAGEMENT -->
-            <div id="priceTab" class="tab-content">
+            <!-- TAB 3: WALLET TOPUP VIA EMAIL -->
+            <div id="walletTab" class="tab-content">
                 <div class="card-panel">
                     <div class="panel-header">
-                        <div class="panel-title">🏷️ កែតម្លៃពេជ្រ</div>
-                        <button class="btn btn-primary" onclick="alert('រក្សាទុកតម្លៃជោគជ័យ!')">💾 រក្សាទុក</button>
+                        <div class="panel-title">💳 បញ្ចូលលុយក្នុងកាបូបជូនអតិថិជនតាម Email (Add User Balance)</div>
                     </div>
-                    <div class="price-grid">
-                        <div class="price-card">
-                            <h4>💎 FF - 100 💎</h4>
-                            <div class="price-input-group"><input type="number" step="0.1" value="0.60"></div>
+                    <form onsubmit="handleManualTopUp(event)">
+                        <div class="form-row">
+                            <div class="form-group" style="flex:2;">
+                                <label>អ៊ីម៉ែលរបស់ភ្ញៀវ (Customer Email):</label>
+                                <input type="email" id="topupEmailInput" placeholder="ឧ. client@gmail.com" required>
+                            </div>
+                            <div class="form-group" style="flex:1;">
+                                <label>ចំនួនទឹកប្រាក់ ($ USD):</label>
+                                <input type="number" step="0.01" id="topupAmountInput" placeholder="ឧ. 10.00" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="height:42px;">+ បញ្ចូលទឹកប្រាក់</button>
                         </div>
-                        <div class="price-card">
-                            <h4>💎 FF - 300 💎</h4>
-                            <div class="price-input-group"><input type="number" step="0.1" value="2.00"></div>
-                        </div>
-                        <div class="price-card">
-                            <h4>💎 FF - 500 💎</h4>
-                            <div class="price-input-group"><input type="number" step="0.1" value="5.00"></div>
-                        </div>
-                        <div class="price-card">
-                            <h4>💎 FF - 800 💎</h4>
-                            <div class="price-input-group"><input type="number" step="0.1" value="9.00"></div>
-                        </div>
-                        <div class="price-card">
-                            <h4>💎 FF - 1000 💎</h4>
-                            <div class="price-input-group"><input type="number" step="0.1" value="10.00"></div>
-                        </div>
-                        <div class="price-card">
-                            <h4>💎 FF - 10,000 💎 🔥</h4>
-                            <div class="price-input-group"><input type="number" step="0.1" value="25.00"></div>
-                        </div>
-                        <div class="price-card">
-                            <h4>📅 Monthly Pass</h4>
-                            <div class="price-input-group"><input type="number" step="0.1" value="13.00"></div>
-                        </div>
+                    </form>
+                </div>
+
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">📜 បញ្ជីសមតុល្យលុយរបស់ភ្ញៀវទាំងអស់ (Customer Balances)</div>
                     </div>
+                    <div id="walletListTable">កំពុងទាញយក...</div>
                 </div>
             </div>
 
-            <!-- TAB 4: REALTIME LIVE CHAT -->
+            <!-- TAB 4: REALTIME CHAT -->
             <div id="chatTab" class="tab-content">
                 <div class="chat-container">
                     <div class="chat-user-list" id="chatUserList"></div>
-
                     <div class="chat-room">
                         <div class="chat-room-header">
-                            ជជែកជាមួយ៖ <b id="activeChatUserName" style="color:var(--primary);">ជ្រើសរើសភ្ញៀវ</b>
+                            <div>ជជែកជាមួយ៖ <b id="activeChatUserName" style="color:#818cf8;">ជ្រើសរើសភ្ញៀវ</b></div>
+                            <div id="activeChatUserEmail" style="font-size:11px; color:var(--text-sub);"></div>
                         </div>
                         <div class="chat-room-messages" id="adminChatLogs">
-                            <div style="text-align:center; color:#888; font-size:12px; margin-top:20px;">
-                                សូមចុចលើឈ្មោះភ្ញៀវដើម្បីមើលសារ
+                            <div style="text-align:center; color:var(--text-sub); font-size:12px; margin-top:30px;">
+                                សូមចុចលើឈ្មោះភ្ញៀវនៅខាងឆ្វេង ដើម្បីមើល និងតបសារ
                             </div>
                         </div>
                         <div class="chat-room-input">
-                            <input type="text" id="adminChatInput" placeholder="វាយសារតប..." onkeypress="if(event.key==='Enter') adminSendMsg()">
+                            <input type="text" id="adminChatInput" placeholder="វាយសារតបទៅភ្ញៀវ..." onkeypress="if(event.key==='Enter') adminSendMsg()">
                             <button class="btn-admin-send" onclick="adminSendMsg()" title="ផ្ញើសារ">➤</button>
                         </div>
                     </div>
@@ -270,9 +274,9 @@
             <div id="usersTab" class="tab-content">
                 <div class="card-panel">
                     <div class="panel-header">
-                        <div class="panel-title">👥 បញ្ជីឈ្មោះ & អ៊ីម៉ែលអ្នកចុះឈ្មោះទាំងអស់ (<span id="userCountBadge">0</span> នាក់)</div>
+                        <div class="panel-title">👥 បញ្ជីឈ្មោះ និងអ៊ីម៉ែលអ្នកចុះឈ្មោះទាំងអស់ (<span id="userCountBadge2">0</span> នាក់)</div>
                     </div>
-                    <div id="usersTableWrapper">កំពុងទាញយក...</div>
+                    <div id="fullUsersTable">កំពុងទាញយក...</div>
                 </div>
             </div>
 
@@ -282,61 +286,194 @@
     <script>
         const FIREBASE_DB_URL = "https://yuth-store-default-rtdb.firebaseio.com/";
         let currentActiveUid = null;
+        let cachedUsers = {};
 
-        function fetchRealtimeData() {
-            // ទាញយកអ្នកចុះឈ្មោះ
+        function addPackageRow() {
+            const wrapper = document.getElementById('packagesWrapper');
+            const row = document.createElement('div');
+            row.className = 'package-row';
+            row.innerHTML = `
+                <input type="text" placeholder="ចំនួនពេជ្រ (ឧ. 500 💎)" class="pkg-name" required>
+                <input type="number" step="0.01" placeholder="តម្លៃដើម $ (ឧ. 6.00)" class="pkg-original-price" title="តម្លៃដើម" required>
+                <input type="number" step="0.01" placeholder="តម្លៃលក់/បញ្ចុះ $ (ឧ. 5.00)" class="pkg-price" title="តម្លៃបញ្ចុះលក់ពិតប្រាកដ" required>
+                <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">✕</button>
+            `;
+            wrapper.appendChild(row);
+        }
+
+        function handleSaveGame(e) {
+            e.preventDefault();
+            const name = document.getElementById('gameNameInput').value.trim();
+            const image = document.getElementById('gameImgInput').value.trim();
+            const theme = document.getElementById('gameThemeInput').value;
+
+            const pkgNames = document.querySelectorAll('.pkg-name');
+            const pkgOriginalPrices = document.querySelectorAll('.pkg-original-price');
+            const pkgPrices = document.querySelectorAll('.pkg-price');
+            
+            const packages = [];
+            for (let i = 0; i < pkgNames.length; i++) {
+                packages.push({
+                    name: pkgNames[i].value.trim(),
+                    originalPrice: parseFloat(pkgOriginalPrices[i].value) || parseFloat(pkgPrices[i].value),
+                    price: parseFloat(pkgPrices[i].value)
+                });
+            }
+
+            const gameId = 'game_' + Date.now();
+
+            fetch(`${FIREBASE_DB_URL}store_games/${gameId}.json`, {
+                method: "PUT",
+                body: JSON.stringify({ id: gameId, name, image, theme, packages, createdAt: new Date().toISOString() })
+            }).then(() => {
+                alert("✓ បានបញ្ចូលហ្គេម និងកញ្ចប់ពេជ្រជោគជ័យ!");
+                document.getElementById('addGameForm').reset();
+                document.getElementById('packagesWrapper').innerHTML = `
+                    <div class="package-row">
+                        <input type="text" placeholder="ចំនួនពេជ្រ (ឧ. 100 💎)" class="pkg-name" required>
+                        <input type="number" step="0.01" placeholder="តម្លៃដើម $ (ឧ. 1.00)" class="pkg-original-price" title="តម្លៃដើម" required>
+                        <input type="number" step="0.01" placeholder="តម្លៃលក់/បញ្ចុះ $ (ឧ. 0.60)" class="pkg-price" title="តម្លៃបញ្ចុះលក់ពិតប្រាកដ" required>
+                        <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">✕</button>
+                    </div>
+                `;
+                fetchGames();
+            });
+        }
+
+        function fetchGames() {
+            fetch(`${FIREBASE_DB_URL}store_games.json`)
+                .then(res => res.json())
+                .then(games => {
+                    const tbody = document.getElementById('gamesTableBody');
+                    if (!games || games.error) {
+                        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-sub);">មិនទាន់មានហ្គេមនៅឡើយទេ</td></tr>';
+                        document.getElementById('totalGamesBadge').innerText = '0';
+                        return;
+                    }
+
+                    const gameIds = Object.keys(games);
+                    document.getElementById('totalGamesBadge').innerText = gameIds.length;
+                    let html = '';
+
+                    gameIds.forEach(id => {
+                        const g = games[id];
+                        const imgHtml = g.image.startsWith('http') ? `<img src="${g.image}" class="game-img-preview">` : `<span style="font-size:24px;">${g.image}</span>`;
+                        
+                        let pkgsHtml = '';
+                        if (g.packages && Array.isArray(g.packages)) {
+                            pkgsHtml = g.packages.map(p => {
+                                const orig = p.originalPrice > p.price ? `<s style="opacity:0.6; margin-right:4px;">$${p.originalPrice.toFixed(2)}</s>` : '';
+                                return `<span style="display:inline-block; background:rgba(99,102,241,0.15); border:1px solid rgba(99,102,241,0.3); padding:2px 6px; border-radius:4px; margin:2px; font-size:11px;">${p.name}: ${orig}<b>$${p.price.toFixed(2)}</b></span>`;
+                            }).join('');
+                        }
+
+                        html += `
+                            <tr>
+                                <td>${imgHtml}</td>
+                                <td><b>${g.name}</b></td>
+                                <td>${pkgsHtml}</td>
+                                <td><button class="btn btn-danger" onclick="deleteGame('${id}')">🗑️ លុប</button></td>
+                            </tr>
+                        `;
+                    });
+                    tbody.innerHTML = html;
+                });
+        }
+
+        function deleteGame(id) {
+            if (confirm("តើអ្នកពិតជាចង់លុបហ្គេមនេះមែនទេ?")) {
+                fetch(`${FIREBASE_DB_URL}store_games/${id}.json`, { method: "DELETE" }).then(() => fetchGames());
+            }
+        }
+
+        function fetchAdminData() {
             fetch(`${FIREBASE_DB_URL}users.json`)
                 .then(res => res.json())
                 .then(users => {
-                    if (!users || users.error) {
-                        return;
-                    }
-                    const uids = Object.keys(users);
-                    document.getElementById('totalUserCount').innerText = uids.length;
-                    document.getElementById('sidebarUserCount').innerText = uids.length;
+                    cachedUsers = users || {};
+                    const uids = Object.keys(cachedUsers);
+                    
+                    document.getElementById('statUsersNumber').innerText = uids.length;
                     document.getElementById('userCountBadge').innerText = uids.length;
+                    document.getElementById('userCountBadge2').innerText = uids.length;
 
-                    let html = '<table><thead><tr><th>ល.រ</th><th>ឈ្មោះ</th><th>អ៊ីម៉ែល</th><th>សកម្មភាព</th></tr></thead><tbody>';
-                    uids.forEach((uid, index) => {
-                        const u = users[uid];
-                        html += `<tr><td>#${index+1}</td><td><b>${u.name || 'គ្មានឈ្មោះ'}</b></td><td>${u.email || '-'}</td><td><button class="btn btn-primary">+ ដាក់លុយ</button></td></tr>`;
-                    });
-                    html += '</tbody></table>';
-                    document.getElementById('usersTableWrapper').innerHTML = html;
-                }).catch(e => console.log(e));
+                    let totalWallet = 0;
+                    let tableHtml = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ល.រ</th>
+                                    <th>ឈ្មោះភ្ញៀវ</th>
+                                    <th>អ៊ីម៉ែល (Email)</th>
+                                    <th>សមតុល្យ ($)</th>
+                                    <th>កាលបរិច្ឆេទ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
 
-            // ទាញយកបញ្ជីឆាត
+                    if (uids.length === 0) {
+                        tableHtml += `<tr><td colspan="5" style="text-align:center; color:var(--text-sub);">មិនទាន់មានអ្នកចុះឈ្មោះនៅឡើយ</td></tr>`;
+                    } else {
+                        uids.forEach((uid, index) => {
+                            const u = cachedUsers[uid];
+                            const bal = parseFloat(u.balance || 0);
+                            totalWallet += bal;
+                            const regDate = u.registeredAt ? new Date(u.registeredAt).toLocaleDateString('km-KH') : 'ថ្មីៗ';
+
+                            tableHtml += `
+                                <tr>
+                                    <td>#${index + 1}</td>
+                                    <td><b>${u.name || 'គ្មានឈ្មោះ'}</b></td>
+                                    <td><code style="color:#38bdf8;">${u.email || '-'}</code></td>
+                                    <td><b style="color:var(--success);">$${bal.toFixed(2)}</b></td>
+                                    <td style="color:var(--text-sub); font-size:11px;">${regDate}</td>
+                                </tr>
+                            `;
+                        });
+                    }
+
+                    tableHtml += `</tbody></table>`;
+                    document.getElementById('statTotalWalletNumber').innerText = `$${totalWallet.toFixed(2)}`;
+                    document.getElementById('dashboardUsersTable').innerHTML = tableHtml;
+                    document.getElementById('fullUsersTable').innerHTML = tableHtml;
+                    document.getElementById('walletListTable').innerHTML = tableHtml;
+                });
+
             fetch(`${FIREBASE_DB_URL}chats.json`)
                 .then(res => res.json())
                 .then(chats => {
                     const listEl = document.getElementById('chatUserList');
                     if (!chats || chats.error) {
-                        listEl.innerHTML = '<div style="padding:15px; font-size:12px; color:#888;">មិនទាន់មានសារ</div>';
+                        listEl.innerHTML = '<div style="padding:15px; font-size:12px; color:var(--text-sub);">មិនទាន់មានសារ</div>';
+                        document.getElementById('statChatsNumber').innerText = '0';
+                        document.getElementById('chatCountBadge').innerText = '0';
                         return;
                     }
 
-                    listEl.innerHTML = '';
-                    const chatUids = Object.keys(chats).filter(k => k !== 'error');
+                    const chatUids = Object.keys(chats);
+                    document.getElementById('statChatsNumber').innerText = chatUids.length;
+                    document.getElementById('chatCountBadge').innerText = chatUids.length;
 
+                    listEl.innerHTML = '';
                     chatUids.forEach((uid, index) => {
                         const info = chats[uid].info || { name: 'ភ្ញៀវ (' + uid.substring(0, 6) + ')', email: '' };
                         const isActive = uid === currentActiveUid ? 'active' : '';
 
                         listEl.innerHTML += `
-                            <div class="chat-user-item ${isActive}" onclick="selectUser('${uid}', '${info.name}')">
+                            <div class="chat-user-item ${isActive}" onclick="selectChatUser('${uid}', '${info.name}', '${info.email}')">
                                 <div class="chat-user-name">${info.name}</div>
-                                <div class="chat-user-email">${info.email || 'ចុចដើម្បីមើលសារ'}</div>
+                                <div class="chat-user-email">${info.email || 'ចុចដើម្បីតបសារ'}</div>
                             </div>
                         `;
 
                         if (!currentActiveUid && index === 0) {
-                            selectUser(uid, info.name);
+                            selectChatUser(uid, info.name, info.email);
                         }
                     });
-                }).catch(e => console.log(e));
+                });
 
-            // ទាញយកសារ
-            if (currentActiveUid && currentActiveUid !== 'error') {
+            if (currentActiveUid) {
                 fetch(`${FIREBASE_DB_URL}chats/${currentActiveUid}/messages.json`)
                     .then(res => res.json())
                     .then(messages => {
@@ -349,15 +486,48 @@
                             }
                         });
                         logs.scrollTop = logs.scrollHeight;
-                    }).catch(e => console.log(e));
+                    });
             }
         }
 
-        function selectUser(uid, name) {
+        function handleManualTopUp(e) {
+            e.preventDefault();
+            const email = document.getElementById('topupEmailInput').value.trim().toLowerCase();
+            const amount = parseFloat(document.getElementById('topupAmountInput').value);
+
+            if (!email || isNaN(amount) || amount <= 0) {
+                alert("សូមបញ្ចូល Email និងចំនួនទឹកប្រាក់ឱ្យបានត្រឹមត្រូវ!");
+                return;
+            }
+
+            const uids = Object.keys(cachedUsers);
+            const targetUid = uids.find(id => cachedUsers[id].email && cachedUsers[id].email.toLowerCase() === email);
+
+            if (!targetUid) {
+                alert(`⚠️ រកមិនឃើញគណនីដែលប្រើប្រាស់អ៊ីម៉ែល៖ ${email} ឡើយ! សូមប្រាកដថាភ្ញៀវបាន Login រួចហើយ។`);
+                return;
+            }
+
+            const currentBal = parseFloat(cachedUsers[targetUid].balance || 0);
+            const newBal = currentBal + amount;
+
+            fetch(`${FIREBASE_DB_URL}users/${targetUid}.json`, {
+                method: "PATCH",
+                body: JSON.stringify({ balance: newBal })
+            }).then(() => {
+                alert(`✓ បានបញ្ចូលទឹកប្រាក់ $${amount.toFixed(2)} ជូនអ៊ីម៉ែល៖ ${email} ជោគជ័យ!\n(សមតុល្យថ្មី៖ $${newBal.toFixed(2)})`);
+                document.getElementById('topupEmailInput').value = '';
+                document.getElementById('topupAmountInput').value = '';
+                fetchAdminData();
+            });
+        }
+
+        function selectChatUser(uid, name, email) {
             currentActiveUid = uid;
             document.getElementById('activeChatUserName').innerText = name;
+            document.getElementById('activeChatUserEmail').innerText = email || '';
             document.querySelectorAll('.chat-user-item').forEach(el => el.classList.remove('active'));
-            fetchRealtimeData();
+            fetchAdminData();
         }
 
         function adminSendMsg() {
@@ -367,45 +537,24 @@
 
             fetch(`${FIREBASE_DB_URL}chats/${currentActiveUid}/messages.json`, {
                 method: "POST",
-                body: JSON.stringify({
-                    sender: "admin",
-                    text: text,
-                    timestamp: new Date().toISOString()
-                })
+                body: JSON.stringify({ sender: "admin", text, timestamp: new Date().toISOString() })
             });
 
             input.value = '';
-            fetchRealtimeData();
+            fetchAdminData();
         }
 
-        function switchTab(tabId, element, titleText) {
+        function switchTab(tabId, element) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             element.classList.add('active');
-            document.getElementById('pageTitle').innerText = titleText;
+            document.getElementById('pageTitle').innerText = element.innerText;
         }
 
-        function approveTopup(rowId, userName, amount) {
-            if (confirm(`បញ្ចូលទឹកប្រាក់ $${amount} ជូន ${userName}?`)) {
-                document.getElementById(rowId).innerHTML = `
-                    <td colspan="5" style="text-align:center; color:var(--success); font-weight:bold; background:#e6f4ea;">
-                        ✓ បានបញ្ចូល $${amount.toFixed(2)} ជូន ${userName} ជោគជ័យ!
-                    </td>
-                `;
-                document.getElementById('pendingCount').innerText = '0';
-            }
-        }
-
-        function rejectTopup(rowId) {
-            if (confirm("បដិសេធសំណើនេះ?")) {
-                document.getElementById(rowId).remove();
-                document.getElementById('pendingCount').innerText = '0';
-            }
-        }
-
-        setInterval(fetchRealtimeData, 1200);
-        fetchRealtimeData();
+        fetchGames();
+        setInterval(fetchAdminData, 1200);
+        fetchAdminData();
     </script>
 </body>
 </html>
