@@ -1,57 +1,40 @@
-// ១. អនុគមន៍គណនា CRC16 CCITT (0x1021) ស្តង់ដារ EMVCo KHQR
-function crc16(data) {
-    let crc = 0xFFFF;
-    for (let i = 0; i < data.length; i++) {
-        crc ^= (data.charCodeAt(i) << 8);
-        for (let j = 0; j < 8; j++) {
-            if ((crc & 0x8000) !== 0) {
-                crc = ((crc << 1) ^ 0x1021) & 0xFFFF;
-            } else {
-                crc = (crc << 1) & 0xFFFF;
-            }
-        }
-    }
-    return crc.toString(16).toUpperCase().padStart(4, '0');
-}
-
-// ២. អនុគមន៍បង្កើត EMVCo KHQR សម្រាប់គណនីបាគងបុគ្គល (Individual)
-function generateBakongKHQR(bakongId, merchantName, amountUSD) {
-    const formattedAmount = parseFloat(amountUSD).toFixed(2);
-    const formatTag = (id, val) => id + val.length.toString().padStart(2, '0') + val;
-
-    // Tag 30: សម្រាប់គណនីបាគងបុគ្គល (Individual Account)
-    const sub00 = formatTag("00", bakongId);
-    const tag30 = formatTag("30", sub00);
-
-    const tag00 = formatTag("00", "01");               // Format Version
-    const tag01 = formatTag("01", "12");               // 12 = Dynamic QR (មានកំណត់ចំនួនទឹកប្រាក់)
-    const tag52 = formatTag("52", "5999");             // Category Code
-    const tag53 = formatTag("53", "840");              // 840 = USD ($)
-    const tag54 = formatTag("54", formattedAmount);    // ចំនួនលុយ
-    const tag58 = formatTag("58", "KH");               // Country Code
-    const tag59 = formatTag("59", merchantName);       // Merchant Name
-    const tag60 = formatTag("60", "Phnom Penh");       // City
-
-    const rawData = tag00 + tag01 + tag30 + tag52 + tag53 + tag54 + tag58 + tag59 + tag60 + "6304";
-    return rawData + crc16(rawData);
-}
-
-// ៣. បង្ហាញ QR Code លើផ្ទាំង Canvas
 function showQR(amountUSD) {
-    const BAKONG_ID = "mon_samnang@bkrt"; 
-    const MERCHANT = "SAMNANG MON";
+    const formattedAmount = parseFloat(amountUSD).toFixed(2);
+    document.getElementById('qrAmountDisplay').innerText = formattedAmount;
 
-    const khqrPayload = generateBakongKHQR(BAKONG_ID, MERCHANT, amountUSD);
+    // ប្រើ Bakong KHQR SDK ផ្លូវការ
+    const { BakongKHQR, IndividualInfo } = window.BakongKHQR;
 
-    document.getElementById('qrAmountDisplay').innerText = parseFloat(amountUSD).toFixed(2);
+    const optionalData = {
+        currency: "USD",
+        amount: parseFloat(formattedAmount),
+        mobileNumber: "85590217653",
+        storeLabel: "YUTH STORE",
+        terminalLabel: "Online"
+    };
 
-    QRCode.toCanvas(document.getElementById('qrCanvas'), khqrPayload, {
-        width: 220,
-        margin: 1,
-        errorCorrectionLevel: 'L'
-    }, function (error) {
-        if (error) console.error("QR Error:", error);
-    });
+    const individualInfo = new IndividualInfo(
+        "mon_samnang@bkrt",
+        "SAMNANG MON",
+        "Phnom Penh",
+        optionalData
+    );
 
-    document.getElementById('qrModal').style.display = 'flex';
+    const khqr = new BakongKHQR();
+    const response = khqr.generateIndividual(individualInfo);
+
+    if (response && response.data && response.data.qr) {
+        // គូរ QR ទៅលើ Canvas
+        QRCode.toCanvas(document.getElementById('qrCanvas'), response.data.qr, {
+            width: 220,
+            margin: 1,
+            errorCorrectionLevel: 'M'
+        }, function (error) {
+            if (error) console.error("QR Render Error:", error);
+        });
+
+        document.getElementById('qrModal').style.display = 'flex';
+    } else {
+        console.error("KHQR Generation Failed:", response);
+    }
 }
