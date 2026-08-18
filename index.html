@@ -242,7 +242,7 @@
         </div>
     </div>
 
-    <!-- 1. Modal ជ្រើសរើសកញ្ចប់ពេជ្រតាមតម្លៃថ្មី -->
+    <!-- 1. Modal ជ្រើសរើសកញ្ចប់ពេជ្រ -->
     <div class="modal-bg" id="diamondModal">
         <div class="modal-card">
             <div class="modal-close-x" onclick="closeModal('diamondModal')">✖</div>
@@ -347,8 +347,36 @@
     </div>
 
     <script>
+        // បញ្ចូល Telegram Bot Token និង Chat ID របស់អ្នក
+        const TELEGRAM_BOT_TOKEN = "8806433517:AAGCs1y4YDwqSMiXQoJs1Y-n0DOGDtEDbII";
+        const TELEGRAM_CHAT_ID = "8363306657";
+
         let currentSelectedPrice = 0.60;
         let currentSelectedPkgName = '100 💎';
+        let loggedInUser = null;
+
+        // អនុគមន៍ផ្ញើសារ Alert ចូល Telegram ភ្លាមៗ
+        function sendTelegramNotification(title, packageInfo, price, uid, zoneId) {
+            const time = new Date().toLocaleString('km-KH');
+            let message = `🚨 *មានការបញ្ជាទិញថ្មី (YUTH STORE)* 🚨\n\n`;
+            message += `🎮 *ហ្គេម/សេវាកម្ម:* ${title}\n`;
+            message += `💎 *កញ្ចប់:* ${packageInfo}\n`;
+            message += `💵 *តម្លៃ:* $${parseFloat(price).toFixed(2)}\n`;
+            if (uid) message += `🆔 *Player ID:* \`${uid}\`\n`;
+            if (zoneId) message += `🌐 *Zone ID:* \`${zoneId}\`\n`;
+            if (loggedInUser) message += `👤 *គណនីភ្ញៀវ:* ${loggedInUser.name} (${loggedInUser.email})\n`;
+            message += `⏰ *ពេលវេលា:* ${time}`;
+
+            fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: message,
+                    parse_mode: "Markdown"
+                })
+            }).catch(err => console.error("Telegram Alert Failed:", err));
+        }
 
         // Google Sign-In Callback
         function handleCredentialResponse(response) {
@@ -357,6 +385,7 @@
             const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
             const user = JSON.parse(jsonPayload);
             
+            loggedInUser = { name: user.name, email: user.email };
             document.getElementById('googleBtnWrapper').style.display = 'none';
             document.getElementById('userPill').style.display = 'flex';
             document.getElementById('userAvatar').src = user.picture;
@@ -385,10 +414,17 @@
 
         function proceedToPay() {
             const uid = document.getElementById('playerIdInput').value.trim();
+            const zoneId = document.getElementById('zoneIdInput') ? document.getElementById('zoneIdInput').value.trim() : '';
+            const gameTitle = document.getElementById('modalGameTitle').innerText;
+
             if (!uid) {
                 alert("សូមបញ្ចូល Player ID របស់អ្នកជាមុនសិន!");
                 return;
             }
+
+            // ផ្ញើសាររោទ៍ចូល Telegram របស់អ្នកភ្លាមៗ!
+            sendTelegramNotification(gameTitle, currentSelectedPkgName, currentSelectedPrice, uid, zoneId);
+
             closeModal('diamondModal');
             showQR(currentSelectedPrice);
         }
@@ -414,6 +450,10 @@
                 alert("សូមបញ្ចូលចំនួនទឹកប្រាក់ត្រឹមត្រូវ!");
                 return;
             }
+
+            // ផ្ញើសាររោទ៍ចូល Telegram ពេលភ្ញៀវ Top-Up លុយក្នុងកាបូប
+            sendTelegramNotification("បញ្ចូលលុយក្នុងកាបូប (Wallet Top-Up)", "សមតុល្យផ្ទាល់ខ្លួន", amount, "Wallet Top-up", "");
+
             closeModal('walletTopUpModal');
             showQR(amount);
         }
@@ -436,6 +476,18 @@
 
             const logs = document.getElementById('chatLogs');
             logs.innerHTML += `<div class="chat-msg user">${text}</div>`;
+            
+            // ផ្ញើសារ Chat របស់ភ្ញៀវចូល Telegram ផងដែរ
+            fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: `💬 *សារថ្មីពីភ្ញៀវ (Live Chat):*\n"${text}"`,
+                    parse_mode: "Markdown"
+                })
+            }).catch(e => console.error(e));
+
             input.value = '';
             logs.scrollTop = logs.scrollHeight;
 
