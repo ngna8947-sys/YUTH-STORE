@@ -71,8 +71,7 @@
         .theme-red { background: linear-gradient(180deg, #cb2d3e, #ef473a); }
 
         /* Floating Button Chat */
-        .fab-chat { position: fixed; bottom: 25px; right: 25px; width: 56px; height: 56px; border-radius: 50%; background: #1877f2; color: white; display: flex; justify-content: center; align-items: center; font-size: 26px; box-shadow: 0 4px 15px rgba(24,119,242,0.4); cursor: pointer; border: none; z-index: 1000; transition: transform 0.2s; }
-        .fab-chat:hover { transform: scale(1.08); }
+        .fab-chat { position: fixed; bottom: 25px; right: 25px; width: 56px; height: 56px; border-radius: 50%; background: #1877f2; color: white; display: flex; justify-content: center; align-items: center; font-size: 26px; box-shadow: 0 4px 15px rgba(24,119,242,0.4); cursor: pointer; border: none; z-index: 1000; }
 
         /* Chat Pop-up */
         .chat-box { position: fixed; bottom: 90px; right: 25px; width: 360px; height: 500px; background: white; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.18); display: none; flex-direction: column; z-index: 1000; overflow: hidden; border: 1px solid #e4e6eb; }
@@ -86,9 +85,6 @@
         .chat-bottom-wrap { background: white; border-top: 1px solid #eee; padding: 8px 10px; }
         .chat-tools { display: flex; align-items: center; gap: 6px; width: 100%; }
         .chat-tools input[type="text"] { flex: 1; min-width: 0; padding: 8px 12px; border: 1px solid #ddd; border-radius: 20px; outline: none; font-size: 13px; }
-        .chat-tools input[type="text"]:focus { border-color: var(--primary); }
-        
-        .tool-btn { background: #f0f2f5; border: none; width: 32px; height: 32px; min-width: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 15px; cursor: pointer; color: #555; }
         .btn-send-chat { background: var(--primary); color: white; border: none; width: 34px; height: 34px; min-width: 34px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; }
 
         /* Modals */
@@ -96,6 +92,7 @@
         .modal-card { background: white; padding: 22px; border-radius: 18px; text-align: center; max-width: 400px; width: 92%; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; max-height: 90vh; overflow-y: auto; }
         .modal-close-x { position: absolute; top: 12px; right: 15px; font-size: 20px; cursor: pointer; color: #888; }
 
+        /* Package Grid */
         .package-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 15px 0; }
         .package-btn { border: 2px solid #e4e6eb; background: #fff; padding: 10px 6px; border-radius: 12px; cursor: pointer; text-align: center; transition: 0.2s; }
         .package-btn:hover, .package-btn.active { border-color: var(--primary); background: #e8f0fe; transform: scale(1.02); }
@@ -132,7 +129,7 @@
                 <span id="onlineVal">9 Online</span>
             </div>
 
-            <!-- Login Container -->
+            <!-- Login Button -->
             <div id="g_id_onload"
                  data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
                  data-callback="handleCredentialResponse"
@@ -234,21 +231,19 @@
         </div>
         <div class="chat-logs" id="chatLogs">
             <div class="chat-msg admin">
-                សួស្តីបាទ! 🙏 មានអ្វីឱ្យ Admin ជួយទេ? អ្នកអាចសរសេរអក្សរ ផ្ញើរូបភាពបានបាទ។
+                សួស្តីបាទ! 🙏 មានអ្វីឱ្យ Admin ជួយទេ? អ្នកអាចសរសេរអក្សរផ្ញើមកបានបាទ។
             </div>
         </div>
         
         <div class="chat-bottom-wrap">
             <div class="chat-tools">
-                <input type="file" id="chatMediaInput" accept="image/*" style="display:none;" onchange="handleMediaUpload(this)">
-                <button class="tool-btn" onclick="document.getElementById('chatMediaInput').click()" title="រូបភាព">📎</button>
                 <input type="text" id="chatInput" placeholder="ផ្ញើសារ..." onkeypress="if(event.key==='Enter') sendChat()">
                 <button class="btn-send-chat" onclick="sendChat()" title="ផ្ញើសារ">➤</button>
             </div>
         </div>
     </div>
 
-    <!-- 1. Modal ជ្រើសរើសកញ្ចប់ពេជ្រ -->
+    <!-- 1. Modal ជ្រើសរើសកញ្ចប់ពេជ្រ (តម្លៃពេញលេញគ្រប់កញ្ចប់) -->
     <div class="modal-bg" id="diamondModal">
         <div class="modal-card">
             <div class="modal-close-x" onclick="closeModal('diamondModal')">✖</div>
@@ -513,7 +508,6 @@
             const text = input.value.trim();
             if (!text) return;
 
-            // បាញ់សារចូល Firebase ទៅកាន់ Admin
             fetch(`${FIREBASE_DB_URL}chats/${loggedInUser.uid}/messages.json`, {
                 method: "POST",
                 body: JSON.stringify({
@@ -523,7 +517,6 @@
                 })
             });
 
-            // ផ្ញើសារ Alert ចូល Telegram
             fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -537,34 +530,6 @@
             input.value = '';
         }
 
-        function handleMediaUpload(input) {
-            if (!checkAuth()) return;
-            const file = input.files[0];
-            if (!file) return;
-
-            fetch(`${FIREBASE_DB_URL}chats/${loggedInUser.uid}/messages.json`, {
-                method: "POST",
-                body: JSON.stringify({
-                    sender: "guest",
-                    text: "📷 [បានផ្ញើរូបភាពមួយ]",
-                    timestamp: new Date().toISOString()
-                })
-            });
-
-            const formData = new FormData();
-            formData.append("chat_id", TELEGRAM_CHAT_ID);
-            formData.append("caption", `📷 *រូបភាពផ្ញើដោយ:* ${loggedInUser.name}`);
-            formData.append("photo", file);
-
-            fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
-                method: "POST",
-                body: formData
-            }).catch(e => console.error(e));
-
-            input.value = '';
-        }
-
-        // ស្តាប់មើលសារ Realtime
         function listenToAdminReplies() {
             if (!loggedInUser) return;
             setInterval(() => {
