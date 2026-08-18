@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Portal - Game & Account Management</title>
+    <title>ផ្ទាំងគ្រប់គ្រង Admin - YUTH STORE</title>
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
-        body { background: #0f172a; color: #f8fafc; padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; }
-        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; margin-bottom: 25px; }
-        h2, h3 { color: #38bdf8; margin-bottom: 15px; }
+        body { background: #0b1120; color: #f8fafc; padding: 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .header-title { color: #38bdf8; font-size: 24px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 20px; margin-bottom: 25px; }
+        .card h3 { color: #38bdf8; margin-bottom: 15px; font-size: 18px; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .full-width { grid-column: span 2; }
-        label { font-size: 13px; color: #94a3b8; display: block; margin-bottom: 5px; }
-        input, textarea { width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #fff; outline: none; }
+        label { font-size: 13px; color: #94a3b8; display: block; margin-bottom: 6px; }
+        input, select, textarea { width: 100%; padding: 10px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #fff; outline: none; }
         input:focus, textarea:focus { border-color: #38bdf8; }
         button { cursor: pointer; border: none; border-radius: 8px; font-weight: bold; transition: 0.2s; }
         .btn-green { background: #10b981; color: #fff; padding: 12px; width: 100%; margin-top: 15px; }
@@ -23,17 +25,57 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #334155; font-size: 14px; }
         th { color: #94a3b8; }
-        .badge-available { background: #10b981; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; }
-        .badge-sold { background: #ef4444; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; }
+        .badge-available { background: #10b981; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 11px; }
+        .badge-sold { background: #ef4444; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 11px; }
+        .diamond-tag { background: #0f172a; border: 1px solid #334155; padding: 3px 8px; border-radius: 6px; font-size: 12px; display: inline-block; margin: 2px; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: #1e293b; padding: 25px; border-radius: 14px; width: 90%; max-width: 450px; border: 1px solid #334155; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>⚙️ ផ្ទាំងគ្រប់គ្រង Admin</h2>
+    <div class="header-title">⚙️ ផ្ទាំងគ្រប់គ្រង Admin (Top-Up & Account Store)</div>
 
-    <!-- ១. ដាក់លក់ Account -->
+    <!-- ១. បន្ថែមសេវាកម្ម Top-Up ហ្គេមថ្មី (មុខងារចាស់) -->
+    <div class="card">
+        <h3>🎮 បន្ថែមសេវាកម្មហ្គេម Top-Up ថ្មី</h3>
+        <div class="form-grid">
+            <div>
+                <label>ឈ្មោះហ្គេម / សេវាកម្ម៖</label>
+                <input type="text" id="gameName" placeholder="ឧ. Free Fire, Mobile Legends">
+            </div>
+            <div>
+                <label>Link រូបភាព Logo ហ្គេម (URL)៖</label>
+                <input type="text" id="gameImage" placeholder="https://...">
+            </div>
+            <div class="full-width">
+                <label>កញ្ចប់ពេជ្រ & តម្លៃ (ទម្រង់៖ ពេជ្រ:តម្លៃ, ពេជ្រ:តម្លៃ)៖</label>
+                <input type="text" id="gamePackages" placeholder="100:1.50, 300:2.50, 500:4.00, 1000:7.00">
+            </div>
+        </div>
+        <button class="btn-green" onclick="addGameService()">➕ បន្ថែមសេវាកម្មហ្គេម</button>
+    </div>
+
+    <!-- ២. បញ្ជីសេវាកម្ម Top-Up ហ្គេមដែលមានស្រាប់ (មុខងារចាស់ + កែប្រែ) -->
+    <div class="card">
+        <h3>📦 បញ្ជីសេវាកម្មហ្គេមទាំងអស់</h3>
+        <div style="overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>រូបភាព</th>
+                        <th>ឈ្មោះសេវាកម្ម/ហ្គេម</th>
+                        <th>កញ្ចប់ពេជ្រ & តម្លៃ</th>
+                        <th>សកម្មភាព</th>
+                    </tr>
+                </thead>
+                <tbody id="servicesTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ៣. បន្ថែម Account សម្រាប់ដាក់លក់ (មុខងារថ្មី) -->
     <div class="card">
         <h3>🛒 បន្ថែម Account សម្រាប់ដាក់លក់ (Facebook / Game)</h3>
         <div class="form-grid">
@@ -43,13 +85,17 @@
             </div>
             <div>
                 <label>តម្លៃ ($ USD)៖</label>
-                <input type="number" step="0.01" id="accPrice" placeholder="ឧ. 15.00">
+                <input type="number" step="0.01" id="accPrice" placeholder="15.00">
+            </div>
+            <div>
+                <label>📅 អាយុអាខោន / ឆ្នាំបង្កើត៖</label>
+                <input type="text" id="accAge" placeholder="ឧ. បង្កើតឆ្នាំ 2018 (អាយុ 8 ឆ្នាំ)">
             </div>
             <div>
                 <label>Link រូបភាព Logo / Profile (URL)៖</label>
                 <input type="text" id="accThumb" placeholder="https://...">
             </div>
-            <div>
+            <div class="full-width">
                 <label>Link រូបភាព Screenshot បង្ហាញអាខោន (URL)៖</label>
                 <input type="text" id="accImage" placeholder="https://...">
             </div>
@@ -69,7 +115,7 @@
         <button class="btn-green" onclick="addNewAccount()">➕ បង្ហោះលក់ Account នេះ</button>
     </div>
 
-    <!-- ២. បញ្ជី Account ទាំងអស់ -->
+    <!-- ៤. បញ្ជី Account ទាំងអស់កំពុងដាក់លក់ (មុខងារថ្មី) -->
     <div class="card">
         <h3>📋 បញ្ជី Account ទាំងអស់ក្នុងប្រព័ន្ធ</h3>
         <div style="overflow-x:auto;">
@@ -78,15 +124,33 @@
                     <tr>
                         <th>រូបភាព</th>
                         <th>ឈ្មោះ Account</th>
+                        <th>អាយុអាខោន</th>
                         <th>តម្លៃ</th>
                         <th>UID / Login</th>
                         <th>Password</th>
+                        <th>2FA</th>
                         <th>ស្ថានភាព</th>
                         <th>សកម្មភាព</th>
                     </tr>
                 </thead>
                 <tbody id="accountsTableBody"></tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal កែប្រែព័ត៌មានសេវាកម្មហ្គេម -->
+<div class="modal" id="editServiceModal">
+    <div class="modal-content">
+        <h3 style="color:#38bdf8; margin-bottom:15px;">✏️ កែប្រែព័ត៌មានសេវាកម្ម</h3>
+        <input type="hidden" id="editGameKey">
+        <label>ឈ្មោះសេវាកម្ម / ហ្គេម៖</label>
+        <input type="text" id="editGameName" style="margin-bottom:15px;">
+        <label>Link រូបភាព Logo (URL)៖</label>
+        <input type="text" id="editGameImg" style="margin-bottom:20px;">
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button onclick="document.getElementById('editServiceModal').style.display='none'" style="padding:8px 16px; background:#475569; color:#fff;">បោះបង់</button>
+            <button onclick="saveServiceChanges()" style="padding:8px 16px; background:#38bdf8; color:#0f172a;">រក្សាទុក</button>
         </div>
     </div>
 </div>
@@ -98,9 +162,96 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // --- ១. ផ្នែកគ្រប់គ្រងសេវាកម្ម Top-Up ហ្គេម ---
+    function addGameService() {
+        const name = document.getElementById('gameName').value.trim();
+        const image = document.getElementById('gameImage').value.trim();
+        const packagesStr = document.getElementById('gamePackages').value.trim();
+
+        if (!name || !packagesStr) return alert("សូមបំពេញឈ្មោះហ្គេម និងកញ្ចប់តម្លៃ!");
+
+        const packages = {};
+        packagesStr.split(',').forEach(item => {
+            const parts = item.split(':');
+            if (parts.length === 2) {
+                const amount = parts[0].trim();
+                const price = parseFloat(parts[1].trim());
+                if (amount && !isNaN(price)) packages[amount] = price;
+            }
+        });
+
+        db.ref('services').push({
+            name: name,
+            image: image || 'https://via.placeholder.com/80',
+            packages: packages
+        }).then(() => {
+            alert("✅ បានបន្ថែមសេវាកម្មជោគជ័យ!");
+            document.getElementById('gameName').value = '';
+            document.getElementById('gameImage').value = '';
+            document.getElementById('gamePackages').value = '';
+        });
+    }
+
+    db.ref('services').on('value', snapshot => {
+        const tbody = document.getElementById('servicesTableBody');
+        tbody.innerHTML = '';
+        const data = snapshot.val();
+        if (!data) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b;">មិនទាន់មានសេវាកម្មនៅឡើយទេ។</td></tr>';
+            return;
+        }
+
+        for (let key in data) {
+            const item = data[key];
+            let pkgsHtml = '';
+            if (item.packages) {
+                for (let amount in item.packages) {
+                    pkgsHtml += `<span class="diamond-tag">💎 ${amount}: <strong>$${item.packages[amount].toFixed(2)}</strong></span>`;
+                }
+            }
+
+            tbody.innerHTML += `
+                <tr>
+                    <td><img src="${item.image}" style="width:40px; height:40px; border-radius:8px; object-fit:cover;"></td>
+                    <td><strong>${item.name}</strong></td>
+                    <td>${pkgsHtml || 'គ្មានកញ្ចប់'}</td>
+                    <td>
+                        <button onclick="openEditModal('${key}', '${item.name}', '${item.image || ''}')" style="padding:6px 10px; background:#eab308; color:#000; font-size:12px; margin-right:5px;">✏️ កែ</button>
+                        <button onclick="deleteService('${key}')" style="padding:6px 10px; background:#ef4444; color:#fff; font-size:12px;">🗑️ លុប</button>
+                    </td>
+                </tr>
+            `;
+        }
+    });
+
+    function openEditModal(key, name, image) {
+        document.getElementById('editGameKey').value = key;
+        document.getElementById('editGameName').value = name;
+        document.getElementById('editGameImg').value = image;
+        document.getElementById('editServiceModal').style.display = 'flex';
+    }
+
+    function saveServiceChanges() {
+        const key = document.getElementById('editGameKey').value;
+        const name = document.getElementById('editGameName').value.trim();
+        const image = document.getElementById('editGameImg').value.trim();
+
+        if (!name) return alert("សូមបញ្ចូលឈ្មោះសេវាកម្ម!");
+        db.ref('services/' + key).update({ name: name, image: image }).then(() => {
+            alert("✅ បានកែប្រែទិន្នន័យជោគជ័យ!");
+            document.getElementById('editServiceModal').style.display = 'none';
+        });
+    }
+
+    function deleteService(key) {
+        if (confirm("តើអ្នកពិតជាចង់លុបសេវាកម្មនេះមែនទេ?")) db.ref('services/' + key).remove();
+    }
+
+    // --- ២. ផ្នែកគ្រប់គ្រង Account ដាក់លក់ ---
     function addNewAccount() {
         const title = document.getElementById('accTitle').value.trim();
         const price = parseFloat(document.getElementById('accPrice').value);
+        const age = document.getElementById('accAge').value.trim();
         const thumb = document.getElementById('accThumb').value.trim();
         const image = document.getElementById('accImage').value.trim();
         const uid = document.getElementById('accUid').value.trim();
@@ -111,9 +262,10 @@
             return alert("សូមបំពេញឈ្មោះ តម្លៃ UID និង Password ឱ្យបានត្រឹមត្រូវ!");
         }
 
-        const newAccount = {
+        db.ref('accounts_for_sale').push({
             title: title,
             price: price,
+            age: age || 'Account គុណភាពខ្ពស់',
             thumb: thumb || 'https://via.placeholder.com/100',
             image: image || thumb || 'https://via.placeholder.com/300',
             acc_id: uid,
@@ -121,18 +273,17 @@
             acc_2fa: tfa || 'គ្មាន',
             status: 'available',
             createdAt: Date.now()
-        };
-
-        db.ref('accounts_for_sale').push(newAccount).then(() => {
+        }).then(() => {
             alert("✅ បានបង្ហោះដាក់លក់ Account ជោគជ័យ!");
             document.getElementById('accTitle').value = '';
             document.getElementById('accPrice').value = '';
+            document.getElementById('accAge').value = '';
             document.getElementById('accThumb').value = '';
             document.getElementById('accImage').value = '';
             document.getElementById('accUid').value = '';
             document.getElementById('accPass').value = '';
             document.getElementById('acc2fa').value = '';
-        }).catch(err => alert("❌ បរាជ័យ៖ " + err.message));
+        });
     }
 
     db.ref('accounts_for_sale').on('value', snapshot => {
@@ -140,7 +291,7 @@
         tbody.innerHTML = '';
         const data = snapshot.val();
         if (!data) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#64748b;">មិនទាន់មាន Account នៅឡើយទេ។</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:#64748b;">មិនទាន់មាន Account ដាក់លក់នៅឡើយទេ។</td></tr>';
             return;
         }
 
@@ -154,22 +305,20 @@
                 <tr>
                     <td><img src="${acc.thumb}" style="width:40px; height:40px; border-radius:6px; object-fit:cover;"></td>
                     <td><strong>${acc.title}</strong></td>
+                    <td style="color:#f59e0b;">${acc.age || 'N/A'}</td>
                     <td style="color:#38bdf8; font-weight:bold;">$${parseFloat(acc.price).toFixed(2)}</td>
                     <td><code>${acc.acc_id}</code></td>
                     <td><code>${acc.acc_pass}</code></td>
+                    <td><code>${acc.acc_2fa}</code></td>
                     <td>${status}</td>
-                    <td>
-                        <button onclick="deleteAccount('${key}')" style="padding:6px 10px; background:#ef4444; color:#fff; font-size:12px;">🗑️ លុប</button>
-                    </td>
+                    <td><button onclick="deleteAccount('${key}')" style="padding:6px 10px; background:#ef4444; color:#fff; font-size:12px;">🗑️ លុប</button></td>
                 </tr>
             `;
         }
     });
 
     function deleteAccount(key) {
-        if (confirm("តើអ្នកពិតជាចង់លុប Account នេះមែនទេ?")) {
-            db.ref('accounts_for_sale/' + key).remove();
-        }
+        if (confirm("តើអ្នកពិតជាចង់លុប Account នេះមែនទេ?")) db.ref('accounts_for_sale/' + key).remove();
     }
 </script>
 </body>
