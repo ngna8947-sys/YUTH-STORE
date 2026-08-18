@@ -43,19 +43,54 @@
 
         .section-header { font-size: 18px; font-weight: 700; margin: 20px 0 15px 0; }
 
-        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        .game-card { height: 190px; border-radius: 16px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; position: relative; color: white; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; }
-        .game-card:hover { transform: translateY(-4px); }
-        .card-icon-wrap { flex: 1; display: flex; justify-content: center; align-items: center; }
-        .card-icon-wrap img { width: 70px; height: 70px; border-radius: 14px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .card-title { font-size: 13px; font-weight: 700; text-align: center; margin-top: 6px; }
+        /* Game Grid - Pure Image Poster Display */
+        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+        
+        .game-card { 
+            height: 200px; 
+            border-radius: 14px; 
+            position: relative; 
+            color: white; 
+            cursor: pointer; 
+            transition: transform 0.25s, box-shadow 0.25s; 
+            overflow: hidden; 
+            border: 1px solid var(--border);
+            background: #1e293b;
+        }
+        .game-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3); 
+            border-color: #6366f1;
+        }
+        
+        .game-card img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            display: block; 
+        }
 
-        .theme-orange { background: linear-gradient(180deg, #f12711, #f5af19); }
-        .theme-blue { background: linear-gradient(180deg, #1e3c72, #2a5298); }
-        .theme-dark { background: linear-gradient(180deg, #2c3e50, #3498db); }
-        .theme-red { background: linear-gradient(180deg, #cb2d3e, #ef473a); }
-        .theme-purple { background: linear-gradient(180deg, #654ea3, #eaafc8); }
+        .card-bottom-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 25px 8px 8px 8px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);
+            text-align: center;
+        }
 
+        .card-title { 
+            font-size: 13px; 
+            font-weight: 700; 
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Live Chat */
         .fab-chat { position: fixed; bottom: 25px; right: 25px; width: 56px; height: 56px; border-radius: 50%; background: var(--primary-gradient); color: white; display: flex; justify-content: center; align-items: center; font-size: 26px; border: none; cursor: pointer; box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4); z-index: 1000; }
         .chat-box { position: fixed; bottom: 90px; right: 25px; width: 360px; height: 500px; background: var(--card-bg); border-radius: 18px; border: 1px solid var(--border); box-shadow: 0 12px 40px rgba(0,0,0,0.5); display: none; flex-direction: column; z-index: 1000; overflow: hidden; }
         .chat-top { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(8px); padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; border-bottom: 1px solid var(--border); }
@@ -69,6 +104,7 @@
         .chat-bottom-wrap input { flex: 1; min-width: 0; background: #0b0f19; border: 1px solid var(--border); color: #fff; padding: 9px 14px; border-radius: 20px; outline: none; font-size: 13px; }
         .btn-send-chat { background: var(--primary-gradient); color: white; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; }
 
+        /* Package Modal */
         .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.65); z-index: 9999; justify-content: center; align-items: center; }
         .modal-card { background: var(--card-bg); border: 1px solid var(--border); padding: 22px; border-radius: 18px; text-align: center; max-width: 420px; width: 92%; position: relative; max-height: 90vh; overflow-y: auto; color: var(--text-main); }
         .modal-close-x { position: absolute; top: 12px; right: 15px; cursor: pointer; font-size: 18px; color: var(--text-sub); }
@@ -109,6 +145,7 @@
         </div>
     </div>
 
+    <!-- Floating Chat -->
     <button class="fab-chat" onclick="toggleChat()">💬</button>
 
     <div class="chat-box" id="chatBox">
@@ -223,12 +260,12 @@
                     let html = '';
                     Object.keys(games).forEach(id => {
                         const g = games[id];
-                        const iconHtml = `<img src="${g.image}" onerror="this.src='https://placehold.co/100x100?text=IMG'">`;
-
                         html += `
-                            <div class="game-card ${g.theme || 'theme-orange'}" onclick="openGameModal('${id}')">
-                                <div class="card-icon-wrap">${iconHtml}</div>
-                                <div class="card-title">${g.name}</div>
+                            <div class="game-card" onclick="openGameModal('${id}')">
+                                <img src="${g.image}" alt="${g.name}">
+                                <div class="card-bottom-overlay">
+                                    <div class="card-title">${g.name}</div>
+                                </div>
                             </div>
                         `;
                     });
