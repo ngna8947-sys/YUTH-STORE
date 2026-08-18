@@ -70,7 +70,6 @@
     <!-- Section Accounts -->
     <h3 class="section-title">🛒 ហាងលក់ Account (Facebook / Game)</h3>
     <div class="grid" id="accountsGrid">
-        <!-- គំរូទំនិញ -->
         <div class="card" onclick="openOrderModal('facebook', 1.00)">
             <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500" alt="Item">
             <div class="card-body">
@@ -95,7 +94,6 @@
 </div>
 
 <script>
-    // Firebase Configuration ត្រឹមត្រូវ ១០០%
     const firebaseConfig = {
         apiKey: "AIzaSyBnKL2cuZSGdtfxBbKq_otyi692HFMhD5o",
         authDomain: "yuth-store.firebaseapp.com",
@@ -107,7 +105,6 @@
         measurementId: "G-LT8LVZ7W6R"
     };
 
-    // Initialize Firebase
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
@@ -118,7 +115,6 @@
     let currentUser = null;
     let selectedItem = null;
 
-    // Login with Google
     function loginWithGoogle() {
         auth.signInWithPopup(googleProvider)
             .then((result) => {
@@ -129,14 +125,13 @@
             });
     }
 
-    // Logout
     function logout() {
         auth.signOut().then(() => {
             alert("បានចាកចេញដោយជោគជ័យ!");
         });
     }
 
-    // Auth State Observer
+    // មុខងារអានសមតុល្យតាមគ្រប់ទម្រង់ដែល Telegram Bot បានបញ្ចូល
     auth.onAuthStateChanged((user) => {
         if (user) {
             currentUser = user;
@@ -144,11 +139,24 @@
             document.getElementById('userProfile').style.display = 'flex';
             document.getElementById('userNameDisplay').innerText = user.displayName || user.email;
             
-            // Listen user balance from Database
-            database.ref('users/' + user.uid).on('value', (snapshot) => {
-                const data = snapshot.val();
-                const balance = (data && data.balance) ? data.balance : 0;
-                document.getElementById('userBalanceDisplay').innerText = 'សមតុល្យ: $' + balance.toFixed(2);
+            const emailKey = user.email ? user.email.replace(/\./g, ',') : '';
+            const emailDirect = user.email || '';
+
+            // អានទិន្នន័យពី Database
+            database.ref('users').on('value', (snapshot) => {
+                const allUsers = snapshot.val() || {};
+                let userBalance = 0;
+
+                // ពិនិត្យគ្រប់ទីតាំងដែលអាចមានសមតុល្យរបស់ Bot
+                if (allUsers[user.uid]) {
+                    userBalance = typeof allUsers[user.uid] === 'number' ? allUsers[user.uid] : (allUsers[user.uid].balance || 0);
+                } else if (emailKey && allUsers[emailKey]) {
+                    userBalance = typeof allUsers[emailKey] === 'number' ? allUsers[emailKey] : (allUsers[emailKey].balance || 0);
+                } else if (emailDirect && allUsers[emailDirect]) {
+                    userBalance = typeof allUsers[emailDirect] === 'number' ? allUsers[emailDirect] : (allUsers[emailDirect].balance || 0);
+                }
+
+                document.getElementById('userBalanceDisplay').innerText = 'សមតុល្យ: $' + Number(userBalance).toFixed(2);
             });
         } else {
             currentUser = null;
@@ -157,7 +165,6 @@
         }
     });
 
-    // Modal Control
     function openOrderModal(title, price) {
         if (!currentUser) {
             alert("សូមធ្វើការ Login ជាមុនសិន!");
