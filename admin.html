@@ -140,7 +140,7 @@
                 </div>
             </div>
 
-            <!-- TAB 2: MANAGE SERVICES & PHOTO UPLOAD -->
+            <!-- TAB 2: MANAGE SERVICES & FAST LOCAL RESIZE -->
             <div id="manageGamesTab" class="tab-content">
                 <div class="card-panel">
                     <div class="panel-header"><div class="panel-title">➕ បញ្ចូលសេវាកម្ម/ហ្គេមថ្មី (ជ្រើសរូបថតផ្ទាល់ខ្លួន)</div></div>
@@ -152,7 +152,8 @@
                             </div>
                             <div class="form-group">
                                 <label>📸 ជ្រើសរើសរូបថតផ្ទាល់ខ្លួន (Photo):</label>
-                                <input type="file" id="gamePhotoFileInput" accept="image/*" onchange="previewPhoto(this)" required>
+                                <input type="file" id="gamePhotoFileInput" accept="image/*" onchange="processFastMicroPhoto(this)" required>
+                                <input type="hidden" id="gameDirectPhotoBase64">
                             </div>
                             <div class="form-group">
                                 <label>ពណ៌ផ្ទាំង (Theme Style):</label>
@@ -168,7 +169,7 @@
 
                         <div id="photoPreviewContainer" style="display:none; margin-bottom:15px; align-items:center; gap:12px; background:#0f172a; padding:10px 14px; border-radius:10px; border:1px solid var(--border);">
                             <img id="previewImgElement" src="" style="width:60px; height:60px; border-radius:10px; object-fit:cover; border:1px solid #6366f1;">
-                            <span style="font-size:12px; color:var(--success); font-weight:bold;">✓ រូបថតត្រូវបានជ្រើសរើស</span>
+                            <span style="font-size:12px; color:var(--success); font-weight:bold;">✓ រូបថតរួចរាល់សម្រាប់រក្សាទុក (Safe Payload)</span>
                         </div>
 
                         <div class="packages-container">
@@ -263,21 +264,40 @@
 
     <script>
         const FIREBASE_DB_URL = "https://yuth-store-default-rtdb.firebaseio.com/";
-        const IMGBB_API_KEY = "c8f25979c5c24e93bb85f3964fc5c8b7"; // ImgBB Free Cloud Key
-
         let currentActiveUid = null;
         let cachedUsers = {};
-        let selectedImageFile = null;
 
-        function previewPhoto(input) {
+        // បង្រួមទំហំរូបភាពឱ្យស្រាលបំផុត (< 6KB) ដើម្បី Save ចូល Firebase បានភ្លាមៗ
+        function processFastMicroPhoto(input) {
             if (input.files && input.files[0]) {
-                selectedImageFile = input.files[0];
+                const file = input.files[0];
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    document.getElementById('previewImgElement').src = e.target.result;
-                    document.getElementById('photoPreviewContainer').style.display = 'flex';
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const size = 96; // 96x96px ច្បាស់ល្អលើអេក្រង់ទូរសព្ទ និងកុំព្យូទ័រ
+                        canvas.width = size;
+                        canvas.height = size;
+                        const ctx = canvas.getContext('2d');
+                        
+                        let srcX = 0, srcY = 0, srcSize = Math.min(img.width, img.height);
+                        if (img.width > img.height) {
+                            srcX = (img.width - img.height) / 2;
+                        } else {
+                            srcY = (img.height - img.width) / 2;
+                        }
+
+                        ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, size, size);
+
+                        const tinyBase64 = canvas.toDataURL('image/jpeg', 0.65);
+                        document.getElementById('gameDirectPhotoBase64').value = tinyBase64;
+                        document.getElementById('previewImgElement').src = tinyBase64;
+                        document.getElementById('photoPreviewContainer').style.display = 'flex';
+                    };
                 };
-                reader.readAsDataURL(selectedImageFile);
+                reader.readAsDataURL(file);
             }
         }
 
@@ -294,82 +314,65 @@
             wrapper.appendChild(row);
         }
 
-        async function handleSaveGame(e) {
+        function handleSaveGame(e) {
             e.preventDefault();
             const btn = document.getElementById('btnSubmitGame');
             const name = document.getElementById('gameNameInput').value.trim();
+            const image = document.getElementById('gameDirectPhotoBase64').value;
             const theme = document.getElementById('gameThemeInput').value;
 
-            if (!selectedImageFile) {
+            if (!image) {
                 alert("សូមជ្រើសរើសរូបថតជាមុនសិន!");
                 return;
             }
 
-            btn.innerText = "⏳ កំពុង Upload រូបភាព...";
+            btn.innerText = "⏳ កំពុងរក្សាទុក...";
             btn.disabled = true;
 
-            try {
-                // ១. Upload រូបភាពទៅកាន់ Cloud ImgBB
-                const formData = new FormData();
-                formData.append("image", selectedImageFile);
-
-                const imgRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-                    method: "POST",
-                    body: formData
+            const pkgNames = document.querySelectorAll('.pkg-name');
+            const pkgOriginalPrices = document.querySelectorAll('.pkg-original-price');
+            const pkgPrices = document.querySelectorAll('.pkg-price');
+            
+            const packages = [];
+            for (let i = 0; i < pkgNames.length; i++) {
+                packages.push({
+                    name: pkgNames[i].value.trim(),
+                    originalPrice: parseFloat(pkgOriginalPrices[i].value) || parseFloat(pkgPrices[i].value),
+                    price: parseFloat(pkgPrices[i].value)
                 });
-                const imgData = await imgRes.json();
-                
-                if (!imgData.success) {
-                    throw new Error("មិនអាច Upload រូបភាពបានទេ សូមព្យាយាមម្តងទៀត!");
-                }
+            }
 
-                const uploadedImageUrl = imgData.data.url;
-                btn.innerText = "⏳ កំពុងរក្សាទុកក្នុង Database...";
+            const gameId = 'game_' + Date.now();
 
-                // ២. រៀបចំកញ្ចប់ពេជ្រ
-                const pkgNames = document.querySelectorAll('.pkg-name');
-                const pkgOriginalPrices = document.querySelectorAll('.pkg-original-price');
-                const pkgPrices = document.querySelectorAll('.pkg-price');
-                
-                const packages = [];
-                for (let i = 0; i < pkgNames.length; i++) {
-                    packages.push({
-                        name: pkgNames[i].value.trim(),
-                        originalPrice: parseFloat(pkgOriginalPrices[i].value) || parseFloat(pkgPrices[i].value),
-                        price: parseFloat(pkgPrices[i].value)
-                    });
-                }
-
-                const gameId = 'game_' + Date.now();
-
-                // ៣. រក្សាទុកក្នុង Firebase
-                const fbRes = await fetch(`${FIREBASE_DB_URL}store_games/${gameId}.json`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        id: gameId,
-                        name: name,
-                        image: uploadedImageUrl,
-                        theme: theme,
-                        packages: packages,
-                        createdAt: new Date().toISOString()
-                    })
-                });
-
-                if (!fbRes.ok) throw new Error("Firebase មិនអនុញ្ញាត!");
-
+            fetch(`${FIREBASE_DB_URL}store_games/${gameId}.json`, {
+                method: "PUT",
+                body: JSON.stringify({
+                    id: gameId,
+                    name: name,
+                    image: image,
+                    theme: theme,
+                    packages: packages,
+                    createdAt: new Date().toISOString()
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("កំហុសក្នុងការបញ្ជូនទិន្នន័យ");
+                return res.json();
+            })
+            .then(() => {
                 alert("✓ បានរក្សាទុកសេវាកម្ម និងរូបថតជោគជ័យ ១០០%!");
                 document.getElementById('addGameForm').reset();
                 document.getElementById('photoPreviewContainer').style.display = 'none';
-                selectedImageFile = null;
+                document.getElementById('gameDirectPhotoBase64').value = '';
                 fetchGames();
-
-            } catch (err) {
+            })
+            .catch(err => {
                 alert("កំហុស៖ " + err.message);
-            } finally {
+            })
+            .finally(() => {
                 btn.innerText = "💾 រក្សាទុកសេវាកម្ម & កញ្ចប់ពេជ្រ";
                 btn.disabled = false;
-            }
+            });
         }
 
         function fetchGames() {
@@ -377,7 +380,7 @@
                 .then(res => res.json())
                 .then(games => {
                     const tbody = document.getElementById('gamesTableBody');
-                    if (!games || games.error) {
+                    if (!games || games.error || Object.keys(games).length === 0) {
                         tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-sub);">មិនទាន់មានសេវាកម្ម/ហ្គេមនៅឡើយទេ</td></tr>';
                         document.getElementById('totalGamesBadge').innerText = '0';
                         return;
@@ -389,7 +392,7 @@
 
                     gameIds.forEach(id => {
                         const g = games[id];
-                        const imgHtml = `<img src="${g.image}" class="game-img-preview" onerror="this.src='https://placehold.co/100x100?text=IMG'">`;
+                        const imgHtml = `<img src="${g.image}" class="game-img-preview">`;
                         
                         let pkgsHtml = '';
                         if (g.packages && Array.isArray(g.packages)) {
