@@ -1,10 +1,10 @@
 const firebaseConfig = {
-    apiKey: "AIzaSyBnKL2cuZSGdtfxBbKq_otyi692HFMhD5o",
-    authDomain: "yuth-store.firebaseapp.com",
-    databaseURL: "https://yuth-store-default-rtdb.firebaseio.com",
-    projectId: "yuth-store",
-    storageBucket: "yuth-store.firebasestorage.app",
-    messagingSenderId: "76819152698",
-    appId: "1:76819152698:web:64153383c57412343dda03",
-    measurementId: "G-L18LVZ7W6R"
-};
+        apiKey: "AIzaSyBnKL2cuZSGdtfxBbKq_otyi692HFMhD5o",
+        authDomain: "yuth-store.firebaseapp.com",
+        databaseURL: "https://yuth-store-default-rtdb.firebaseio.com",
+        projectId: "yuth-store",
+        storageBucket: "yuth-store.firebasestorage.app",
+        messagingSenderId: "76819152698",
+        appId: "1:76819152698:web:64153383c57412343dda03",
+        measurementId: "G-L18LVZ7W6R"
+    };
