@@ -99,7 +99,7 @@
         <div class="sidebar-header">⚡ YUTH ADMIN</div>
         <ul class="sidebar-menu">
             <li class="menu-item active" onclick="switchTab('dashboardTab', this)">📊 ផ្ទាំងទិន្នន័យ (Dashboard)</li>
-            <li class="menu-item" onclick="switchTab('manageGamesTab', this)">🎮 បញ្ចូលសេវាកម្ម & រូបថត</li>
+            <li class="menu-item" onclick="switchTab('manageGamesTab', this)">🎮 បញ្ចូលសេវាកម្ម & រូបថត HD</li>
             <li class="menu-item" onclick="switchTab('walletTab', this)">💰 បញ្ចូលលុយតាម Email</li>
             <li class="menu-item" onclick="switchTab('chatTab', this)">💬 ឆាតជាមួយភ្ញៀវ <span class="menu-badge" id="chatCountBadge">0</span></li>
             <li class="menu-item" onclick="switchTab('usersTab', this)">👥 អ្នកចុះឈ្មោះ (<span id="userCountBadge">0</span>)</li>
@@ -140,10 +140,10 @@
                 </div>
             </div>
 
-            <!-- TAB 2: MANAGE SERVICES & FAST LOCAL RESIZE -->
+            <!-- TAB 2: MANAGE SERVICES & HD PHOTO PROCESSING -->
             <div id="manageGamesTab" class="tab-content">
                 <div class="card-panel">
-                    <div class="panel-header"><div class="panel-title">➕ បញ្ចូលសេវាកម្ម/ហ្គេមថ្មី (ជ្រើសរូបថតផ្ទាល់ខ្លួន)</div></div>
+                    <div class="panel-header"><div class="panel-title">➕ បញ្ចូលសេវាកម្ម/ហ្គេមថ្មី (រូបភាព HD ច្បាស់ខ្លាំង)</div></div>
                     <form id="addGameForm" onsubmit="handleSaveGame(event)">
                         <div class="form-grid">
                             <div class="form-group">
@@ -151,8 +151,8 @@
                                 <input type="text" id="gameNameInput" placeholder="ឧ. Free Fire លឿន" required>
                             </div>
                             <div class="form-group">
-                                <label>📸 ជ្រើសរើសរូបថតផ្ទាល់ខ្លួន (Photo):</label>
-                                <input type="file" id="gamePhotoFileInput" accept="image/*" onchange="processFastMicroPhoto(this)" required>
+                                <label>📸 ជ្រើសរើសរូបថតផ្ទាល់ខ្លួន (HD Photo):</label>
+                                <input type="file" id="gamePhotoFileInput" accept="image/*" onchange="processHDPhoto(this)" required>
                                 <input type="hidden" id="gameDirectPhotoBase64">
                             </div>
                             <div class="form-group">
@@ -168,8 +168,8 @@
                         </div>
 
                         <div id="photoPreviewContainer" style="display:none; margin-bottom:15px; align-items:center; gap:12px; background:#0f172a; padding:10px 14px; border-radius:10px; border:1px solid var(--border);">
-                            <img id="previewImgElement" src="" style="width:60px; height:60px; border-radius:10px; object-fit:cover; border:1px solid #6366f1;">
-                            <span style="font-size:12px; color:var(--success); font-weight:bold;">✓ រូបថតរួចរាល់សម្រាប់រក្សាទុក (Safe Payload)</span>
+                            <img id="previewImgElement" src="" style="width:70px; height:90px; border-radius:10px; object-fit:cover; border:1px solid #6366f1;">
+                            <span style="font-size:12px; color:var(--success); font-weight:bold;">✓ រូបថតត្រូវបានរៀបចំជាកម្រិត HD ច្បាស់ម៉ត់</span>
                         </div>
 
                         <div class="packages-container">
@@ -267,8 +267,8 @@
         let currentActiveUid = null;
         let cachedUsers = {};
 
-        // បង្រួមទំហំរូបភាពឱ្យស្រាលបំផុត (< 6KB) ដើម្បី Save ចូល Firebase បានភ្លាមៗ
-        function processFastMicroPhoto(input) {
+        // មុខងារកែសម្រួលរូបភាពកម្រិត HD ច្បាស់ខ្លាំង (Smart HD Canvas Resizer)
+        function processHDPhoto(input) {
             if (input.files && input.files[0]) {
                 const file = input.files[0];
                 const reader = new FileReader();
@@ -277,23 +277,38 @@
                     img.src = e.target.result;
                     img.onload = function() {
                         const canvas = document.createElement('canvas');
-                        const size = 96; // 96x96px ច្បាស់ល្អលើអេក្រង់ទូរសព្ទ និងកុំព្យូទ័រ
-                        canvas.width = size;
-                        canvas.height = size;
+                        // កំណត់ទំហំ HD Poster (300 x 380px)
+                        const TARGET_W = 300;
+                        const TARGET_H = 380;
+                        canvas.width = TARGET_W;
+                        canvas.height = TARGET_H;
                         const ctx = canvas.getContext('2d');
-                        
-                        let srcX = 0, srcY = 0, srcSize = Math.min(img.width, img.height);
-                        if (img.width > img.height) {
-                            srcX = (img.width - img.height) / 2;
+
+                        // ក្បួនគណនាដើម្បីកាត់រូបភាពចំកណ្តាល (Center-Crop HD)
+                        const imgRatio = img.width / img.height;
+                        const targetRatio = TARGET_W / TARGET_H;
+                        let srcW, srcH, srcX, srcY;
+
+                        if (imgRatio > targetRatio) {
+                            srcH = img.height;
+                            srcW = img.height * targetRatio;
+                            srcX = (img.width - srcW) / 2;
+                            srcY = 0;
                         } else {
-                            srcY = (img.height - img.width) / 2;
+                            srcW = img.width;
+                            srcH = img.width / targetRatio;
+                            srcX = 0;
+                            srcY = (img.height - srcH) / 2;
                         }
 
-                        ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, size, size);
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+                        ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, TARGET_W, TARGET_H);
 
-                        const tinyBase64 = canvas.toDataURL('image/jpeg', 0.65);
-                        document.getElementById('gameDirectPhotoBase64').value = tinyBase64;
-                        document.getElementById('previewImgElement').src = tinyBase64;
+                        // បង្កើតរូបភាព Base64 កម្រិតច្បាស់ 92%
+                        const hdBase64 = canvas.toDataURL('image/jpeg', 0.92);
+                        document.getElementById('gameDirectPhotoBase64').value = hdBase64;
+                        document.getElementById('previewImgElement').src = hdBase64;
                         document.getElementById('photoPreviewContainer').style.display = 'flex';
                     };
                 };
@@ -326,7 +341,7 @@
                 return;
             }
 
-            btn.innerText = "⏳ កំពុងរក្សាទុក...";
+            btn.innerText = "⏳ កំពុងរក្សាទុក HD...";
             btn.disabled = true;
 
             const pkgNames = document.querySelectorAll('.pkg-name');
@@ -360,7 +375,7 @@
                 return res.json();
             })
             .then(() => {
-                alert("✓ បានរក្សាទុកសេវាកម្ម និងរូបថតជោគជ័យ ១០០%!");
+                alert("✓ បានរក្សាទុកសេវាកម្មរូបថត HD ជោគជ័យ ១០០%!");
                 document.getElementById('addGameForm').reset();
                 document.getElementById('photoPreviewContainer').style.display = 'none';
                 document.getElementById('gameDirectPhotoBase64').value = '';
