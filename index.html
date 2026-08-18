@@ -4,48 +4,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YUTH STORE - Game Top-Up & Account Store</title>
+    
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
         body { background: #0b1120; color: #f8fafc; padding: 15px; }
         .container { max-width: 1100px; margin: 0 auto; }
         
-        /* Navbar */
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #1e293b; margin-bottom: 20px; }
-        .brand { font-size: 22px; font-weight: bold; color: #38bdf8; }
-        .auth-bar { display: flex; align-items: center; gap: 10px; }
-        .user-balance { background: #1e293b; padding: 8px 16px; border-radius: 20px; border: 1px solid #38bdf8; font-weight: bold; color: #38bdf8; }
+        /* Header / Navbar */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #1e293b; margin-bottom: 25px; }
+        .brand { font-size: 22px; font-weight: bold; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
+        .auth-bar { display: flex; align-items: center; gap: 12px; }
+        .user-balance { background: #1e293b; padding: 8px 16px; border-radius: 20px; border: 1px solid #38bdf8; font-weight: bold; color: #38bdf8; font-size: 15px; }
         
-        /* Google Button */
-        .btn-google { background: #ffffff; color: #1e293b; padding: 8px 16px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+        /* Buttons */
+        .btn-google { background: #ffffff; color: #1e293b; padding: 8px 16px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: 0.2s; }
         .btn-google:hover { background: #f1f5f9; }
-        .btn-logout { background: #ef4444; color: #fff; padding: 8px 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-logout { background: #ef4444; color: #fff; padding: 8px 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-logout:hover { background: #dc2626; }
         
-        /* Grid & Cards */
-        .section-title { color: #38bdf8; margin: 25px 0 15px 0; font-size: 18px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
-        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; overflow: hidden; cursor: pointer; transition: 0.2s; }
+        /* Section Titles */
+        .section-title { color: #38bdf8; margin: 30px 0 15px 0; font-size: 19px; display: flex; align-items: center; gap: 8px; }
+        
+        /* Grids & Cards */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.2s, border-color 0.2s; display: flex; flex-direction: column; }
         .card:hover { transform: translateY(-4px); border-color: #38bdf8; }
-        .card img { width: 100%; height: 140px; object-fit: cover; background: #0f172a; }
-        .card-body { padding: 12px; }
-        .card-title { font-size: 16px; font-weight: bold; margin-bottom: 6px; }
-        .card-price { color: #4ade80; font-weight: bold; font-size: 15px; }
+        .card img { width: 100%; height: 145px; object-fit: cover; background: #0f172a; }
+        .card-body { padding: 14px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
+        .card-title { font-size: 16px; font-weight: bold; margin-bottom: 6px; color: #fff; }
+        .card-desc { font-size: 13px; color: #94a3b8; margin-bottom: 10px; }
+        .card-price { color: #4ade80; font-weight: bold; font-size: 16px; margin-bottom: 10px; }
+        
+        .btn-buy { background: #0284c7; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.2s; }
+        .btn-buy:hover { background: #38bdf8; color: #0b1120; }
 
         /* Modal Popup */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: #1e293b; padding: 20px; border-radius: 14px; width: 90%; max-width: 400px; border: 1px solid #38bdf8; text-align: center; }
-        .modal-content h3 { margin-bottom: 15px; color: #38bdf8; }
-        .btn-confirm { background: #38bdf8; color: #0b1120; padding: 10px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 15px; }
-        .btn-cancel { background: #64748b; color: #fff; padding: 8px 20px; border: none; border-radius: 8px; margin-top: 10px; cursor: pointer; width: 100%; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
+        .modal-content { background: #1e293b; padding: 22px; border-radius: 14px; width: 100%; max-width: 420px; border: 1px solid #38bdf8; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        .modal-content h3 { margin-bottom: 12px; color: #38bdf8; font-size: 18px; }
+        .form-group { margin-bottom: 14px; text-align: left; }
+        .form-group label { display: block; font-size: 13px; color: #cbd5e1; margin-bottom: 5px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
+        .form-group input:focus, .form-group select:focus { border-color: #38bdf8; }
+        
+        .btn-confirm { background: #38bdf8; color: #0b1120; padding: 11px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; font-size: 15px; }
+        .btn-confirm:hover { background: #7dd3fc; }
+        .btn-cancel { background: #475569; color: #fff; padding: 9px 20px; border: none; border-radius: 8px; margin-top: 8px; cursor: pointer; width: 100%; }
+        .btn-cancel:hover { background: #64748b; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Navbar -->
+    <!-- Navbar Header -->
     <div class="header">
         <div class="brand">🔥 YUTH STORE</div>
         <div class="auth-bar" id="authSection">
@@ -55,45 +74,89 @@
             </button>
             <div id="userProfile" style="display: none; align-items: center; gap: 10px;">
                 <span class="user-balance" id="userBalanceDisplay">សមតុល្យ: $0.00</span>
-                <span id="userNameDisplay" style="font-weight: bold;"></span>
+                <span id="userNameDisplay" style="font-weight: bold; color: #f1f5f9;"></span>
                 <button class="btn-logout" onclick="logout()">ចាកចេញ</button>
             </div>
         </div>
     </div>
 
-    <!-- Section Services -->
+    <!-- Section 1: Services (Top-Up) -->
     <h3 class="section-title">🎮 សេវាកម្មបញ្ចូលពេជ្រហ្គេម</h3>
     <div class="grid" id="servicesGrid">
-        <p style="color: #64748b;">មិនទាន់មានសេវាកម្មទេ</p>
+        <!-- ទំនិញ Free Fire -->
+        <div class="card" onclick="openTopupModal('Free Fire Diamonds', 'game')">
+            <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500" alt="Free Fire">
+            <div class="card-body">
+                <div class="card-title">Free Fire Diamonds 💎</div>
+                <div class="card-desc">បញ្ចូលពេជ្ររហ័សទាន់ចិត្តតាម Player ID</div>
+                <div class="card-price">ចាប់ពី $0.50 ឡើងទៅ</div>
+                <button class="btn-buy">⚡ បញ្ចូលពេជ្រឥឡូវនេះ</button>
+            </div>
+        </div>
+        <!-- ទំនិញ Mobile Legends -->
+        <div class="card" onclick="openTopupModal('Mobile Legends Diamonds', 'game')">
+            <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=500" alt="MLBB">
+            <div class="card-body">
+                <div class="card-title">Mobile Legends 💎</div>
+                <div class="card-desc">បញ្ចូលពេជ្ររហ័សតាម User ID & Zone ID</div>
+                <div class="card-price">ចាប់ពី $0.50 ឡើងទៅ</div>
+                <button class="btn-buy">⚡ បញ្ចូលពេជ្រឥឡូវនេះ</button>
+            </div>
+        </div>
     </div>
 
-    <!-- Section Accounts -->
+    <!-- Section 2: Store Accounts -->
     <h3 class="section-title">🛒 ហាងលក់ Account (Facebook / Game)</h3>
     <div class="grid" id="accountsGrid">
-        <div class="card" onclick="openOrderModal('facebook', 1.00)">
-            <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500" alt="Item">
+        <div class="card" onclick="openAccountModal('facebook (ឆ្នាំ 2020)', 1.00)">
+            <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500" alt="Facebook Account">
             <div class="card-body">
-                <div class="card-title">facebook</div>
-                <p style="font-size: 13px; color: #94a3b8; margin-bottom: 5px;">🗓️ 2020</p>
+                <div class="card-title">Account Facebook</div>
+                <div class="card-desc">🗓️ បង្កើតឆ្នាំ 2020 • សុវត្ថិភាពខ្ពស់</div>
                 <div class="card-price">$1.00</div>
-                <button class="btn-confirm" style="margin-top: 8px; padding: 6px 12px; font-size: 13px;">🔍 មើល & ទិញ</button>
+                <button class="btn-buy">🔍 មើល & ទិញ</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Buy Modal -->
-<div class="modal" id="orderModal">
+<!-- Modal បញ្ចូលពេជ្រ Top-Up -->
+<div class="modal" id="topupModal">
     <div class="modal-content">
-        <h3 id="modalTitle">ទិញទំនិញ</h3>
-        <p id="modalPrice" style="color: #4ade80; font-size: 18px; font-weight: bold; margin-bottom: 15px;">$0.00</p>
-        <p style="font-size: 14px; color: #94a3b8; margin-bottom: 10px;">សូមចុចបញ្ជាក់ដើម្បីទិញទំនិញនេះ</p>
-        <button class="btn-confirm" onclick="confirmPurchase()">បញ្ជាក់ការទិញ</button>
-        <button class="btn-cancel" onclick="closeOrderModal()">បោះបង់</button>
+        <h3 id="topupModalTitle">បញ្ចូលពេជ្រ</h3>
+        <div class="form-group">
+            <label>Player ID / Game ID:</label>
+            <input type="text" id="topupPlayerId" placeholder="ឧ. 123456789">
+        </div>
+        <div class="form-group">
+            <label>ជ្រើសរើសកញ្ចប់ពេជ្រ:</label>
+            <select id="topupPackage" onchange="updateTopupPrice()">
+                <option value="0.50">50 Diamonds - $0.50</option>
+                <option value="1.00" selected>115 Diamonds - $1.00</option>
+                <option value="2.00">240 Diamonds - $2.00</option>
+                <option value="5.00">610 Diamonds - $5.00</option>
+                <option value="10.00">1240 Diamonds - $10.00</option>
+            </select>
+        </div>
+        <p id="topupPriceDisplay" style="color: #4ade80; font-size: 18px; font-weight: bold; margin: 10px 0;">តម្លៃ: $1.00</p>
+        <button class="btn-confirm" onclick="confirmTopup()">បញ្ជាក់ការបញ្ចូល</button>
+        <button class="btn-cancel" onclick="closeModal('topupModal')">បោះបង់</button>
+    </div>
+</div>
+
+<!-- Modal ទិញ Account -->
+<div class="modal" id="accountModal">
+    <div class="modal-content">
+        <h3 id="accountModalTitle">ទិញ Account</h3>
+        <p id="accountModalPrice" style="color: #4ade80; font-size: 20px; font-weight: bold; margin: 10px 0;">$1.00</p>
+        <p style="font-size: 14px; color: #94a3b8; margin-bottom: 15px;">សមតុល្យនឹងត្រូវកាត់ចេញពីគណនីរបស់អ្នក</p>
+        <button class="btn-confirm" onclick="confirmBuyAccount()">បញ្ជាក់ការទិញ</button>
+        <button class="btn-cancel" onclick="closeModal('accountModal')">បោះបង់</button>
     </div>
 </div>
 
 <script>
+    // Firebase Config ត្រឹមត្រូវ ១០០%
     const firebaseConfig = {
         apiKey: "AIzaSyBnKL2cuZSGdtfxBbKq_otyi692HFMhD5o",
         authDomain: "yuth-store.firebaseapp.com",
@@ -105,6 +168,7 @@
         measurementId: "G-LT8LVZ7W6R"
     };
 
+    // Initialize Firebase
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
@@ -113,25 +177,28 @@
     const googleProvider = new firebase.auth.GoogleAuthProvider();
 
     let currentUser = null;
-    let selectedItem = null;
+    let currentBalance = 0;
+    let activeItem = null;
 
+    // Login Google
     function loginWithGoogle() {
         auth.signInWithPopup(googleProvider)
             .then((result) => {
-                console.log("Logged in successfully:", result.user);
+                console.log("Logged in:", result.user);
             })
             .catch((error) => {
                 alert("❌ Login Google បរាជ័យ: " + error.message);
             });
     }
 
+    // Logout
     function logout() {
         auth.signOut().then(() => {
             alert("បានចាកចេញដោយជោគជ័យ!");
         });
     }
 
-    // មុខងារអានសមតុល្យតាមគ្រប់ទម្រង់ដែល Telegram Bot បានបញ្ចូល
+    // Sync ទិន្នន័យ User និងសមតុល្យជាមួយ Bot
     auth.onAuthStateChanged((user) => {
         if (user) {
             currentUser = user;
@@ -139,51 +206,100 @@
             document.getElementById('userProfile').style.display = 'flex';
             document.getElementById('userNameDisplay').innerText = user.displayName || user.email;
             
-            const emailKey = user.email ? user.email.replace(/\./g, ',') : '';
-            const emailDirect = user.email || '';
+            const userEmail = user.email || '';
+            const emailKey = userEmail.replace(/\./g, ',');
 
-            // អានទិន្នន័យពី Database
-            database.ref('users').on('value', (snapshot) => {
-                const allUsers = snapshot.val() || {};
-                let userBalance = 0;
+            // អានទិន្នន័យសមតុល្យពី Firebase គ្រប់ទម្រង់ (UID ឬ Email)
+            database.ref().on('value', (rootSnapshot) => {
+                const rootData = rootSnapshot.val() || {};
+                const usersData = rootData.users || {};
+                let foundBal = 0;
 
-                // ពិនិត្យគ្រប់ទីតាំងដែលអាចមានសមតុល្យរបស់ Bot
-                if (allUsers[user.uid]) {
-                    userBalance = typeof allUsers[user.uid] === 'number' ? allUsers[user.uid] : (allUsers[user.uid].balance || 0);
-                } else if (emailKey && allUsers[emailKey]) {
-                    userBalance = typeof allUsers[emailKey] === 'number' ? allUsers[emailKey] : (allUsers[emailKey].balance || 0);
-                } else if (emailDirect && allUsers[emailDirect]) {
-                    userBalance = typeof allUsers[emailDirect] === 'number' ? allUsers[emailDirect] : (allUsers[emailDirect].balance || 0);
+                // ពិនិត្យ users/emailKey
+                if (usersData[emailKey] !== undefined) {
+                    foundBal = typeof usersData[emailKey] === 'number' ? usersData[emailKey] : (usersData[emailKey].balance || 0);
+                } 
+                // ពិនិត្យ users/UID
+                else if (usersData[user.uid] !== undefined) {
+                    foundBal = typeof usersData[user.uid] === 'number' ? usersData[user.uid] : (usersData[user.uid].balance || 0);
+                } 
+                // ពិនិត្យ root balance
+                else if (rootData.balances && rootData.balances[emailKey] !== undefined) {
+                    foundBal = rootData.balances[emailKey];
                 }
 
-                document.getElementById('userBalanceDisplay').innerText = 'សមតុល្យ: $' + Number(userBalance).toFixed(2);
+                currentBalance = Number(foundBal) || 0;
+                document.getElementById('userBalanceDisplay').innerText = 'សមតុល្យ: $' + currentBalance.toFixed(2);
             });
         } else {
             currentUser = null;
+            currentBalance = 0;
             document.getElementById('btnLogin').style.display = 'flex';
             document.getElementById('userProfile').style.display = 'none';
         }
     });
 
-    function openOrderModal(title, price) {
-        if (!currentUser) {
-            alert("សូមធ្វើការ Login ជាមុនសិន!");
+    // មុខងារបើកផ្ទាំង Modal
+    function openTopupModal(gameName) {
+        if (!currentUser) { alert("សូមចូលប្រើ (Login Google) ជាមុនសិន!"); return; }
+        document.getElementById('topupModalTitle').innerText = gameName;
+        document.getElementById('topupModal').style.display = 'flex';
+        updateTopupPrice();
+    }
+
+    function updateTopupPrice() {
+        const p = document.getElementById('topupPackage').value;
+        document.getElementById('topupPriceDisplay').innerText = 'តម្លៃ: $' + Number(p).toFixed(2);
+    }
+
+    function openAccountModal(title, price) {
+        if (!currentUser) { alert("សូមចូលប្រើ (Login Google) ជាមុនសិន!"); return; }
+        activeItem = { title, price };
+        document.getElementById('accountModalTitle').innerText = title;
+        document.getElementById('accountModalPrice').innerText = '$' + price.toFixed(2);
+        document.getElementById('accountModal').style.display = 'flex';
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+    }
+
+    // បញ្ជាក់ការបញ្ចូលពេជ្រ
+    function confirmTopup() {
+        const playerId = document.getElementById('topupPlayerId').value.trim();
+        const price = Number(document.getElementById('topupPackage').value);
+
+        if (!playerId) { alert("សូមបញ្ចូល Game Player ID!"); return; }
+        if (currentBalance < price) {
+            alert("❌ សមតុល្យរបស់អ្នកមិនគ្រប់គ្រាន់ទេ! សូមបញ្ចូលលុយតាម Bot ជាមុនសិន។");
             return;
         }
-        selectedItem = { title, price };
-        document.getElementById('modalTitle').innerText = title;
-        document.getElementById('modalPrice').innerText = '$' + price.toFixed(2);
-        document.getElementById('orderModal').style.display = 'flex';
+
+        // កាត់លុយ
+        const newBalance = currentBalance - price;
+        const emailKey = currentUser.email.replace(/\./g, ',');
+        database.ref('users/' + emailKey).set({ balance: newBalance });
+
+        alert("✅ បញ្ជាទិញជោគជ័យ! ប្រព័ន្ធកំពុងដំណើរការបញ្ចូលពេជ្រ...");
+        closeModal('topupModal');
+        document.getElementById('topupPlayerId').value = '';
     }
 
-    function closeOrderModal() {
-        document.getElementById('orderModal').style.display = 'none';
-    }
+    // បញ្ជាក់ការទិញ Account
+    function confirmBuyAccount() {
+        if (!activeItem) return;
+        if (currentBalance < activeItem.price) {
+            alert("❌ សមតុល្យរបស់អ្នកមិនគ្រប់គ្រាន់ទេ! សូមបញ្ចូលលុយតាម Bot ជាមុនសិន។");
+            return;
+        }
 
-    function confirmPurchase() {
-        if (!currentUser || !selectedItem) return;
-        alert("ការបញ្ជាទិញ " + selectedItem.title + " បានជោគជ័យ!");
-        closeOrderModal();
+        // កាត់លុយ
+        const newBalance = currentBalance - activeItem.price;
+        const emailKey = currentUser.email.replace(/\./g, ',');
+        database.ref('users/' + emailKey).set({ balance: newBalance });
+
+        alert("✅ ទិញបានជោគជ័យ! ព័ត៌មានគណនីនឹងត្រូវបានផ្ញើជូន។");
+        closeModal('accountModal');
     }
 </script>
 </body>
