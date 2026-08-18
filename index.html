@@ -2,382 +2,177 @@
 <html lang="km">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YUTH STORE - Game Top-Up & Diamond Shop</title>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game & Account Store</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-
-        :root {
-            --primary: #6366f1;
-            --primary-gradient: linear-gradient(135deg, #6366f1, #06b6d4);
-            --danger: #ef4444;
-            --success: #10b981;
-            --dark-bg: #0b0f19;
-            --card-bg: #131a29;
-            --surface: rgba(19, 26, 41, 0.8);
-            --text-main: #f8fafc;
-            --text-sub: #94a3b8;
-            --border: #1e293b;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', 'Hanuman', sans-serif; }
-        body { background: var(--dark-bg); color: var(--text-main); line-height: 1.5; }
-
-        header { background: var(--surface); backdrop-filter: blur(12px); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
-        .logo-area { font-weight: 800; font-size: 20px; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; display: flex; align-items: center; gap: 8px; }
-
-        .header-right { display: flex; align-items: center; gap: 12px; }
-        .online-badge { display: flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
-        .online-dot { width: 7px; height: 7px; background: var(--success); border-radius: 50%; }
-
-        .user-pill { display: none; align-items: center; gap: 8px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); padding: 4px 12px 4px 6px; border-radius: 20px; }
-        .user-pill img { width: 26px; height: 26px; border-radius: 50%; }
-        .user-pill .balance { font-weight: 800; color: #818cf8; font-size: 14px; }
-
-        .container { max-width: 1000px; margin: 25px auto; padding: 0 15px; }
-
-        .hero-banner { background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(6, 182, 212, 0.1)); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 18px; padding: 30px; text-align: center; margin-bottom: 25px; }
-        .hero-banner h1 { font-size: 24px; font-weight: 800; margin-bottom: 8px; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-banner p { font-size: 13px; color: var(--text-sub); }
-
-        .section-header { font-size: 18px; font-weight: 700; margin: 20px 0 15px 0; }
-
-        /* Game Grid - HD Posters Display */
-        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
-        
-        .game-card { 
-            height: 220px; 
-            border-radius: 16px; 
-            position: relative; 
-            color: white; 
-            cursor: pointer; 
-            transition: transform 0.25s, box-shadow 0.25s; 
-            overflow: hidden; 
-            border: 1px solid var(--border);
-            background: #1e293b;
-        }
-        .game-card:hover { 
-            transform: translateY(-6px); 
-            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.35); 
-            border-color: #6366f1;
-        }
-        
-        .game-card img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            display: block;
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
-        }
-
-        .card-bottom-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 30px 10px 10px 10px;
-            background: linear-gradient(to top, rgba(11, 15, 25, 0.95) 0%, rgba(11, 15, 25, 0.6) 60%, transparent 100%);
-            text-align: center;
-        }
-
-        .card-title { 
-            font-size: 13.5px; 
-            font-weight: 700; 
-            color: #fff;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.9);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Live Chat */
-        .fab-chat { position: fixed; bottom: 25px; right: 25px; width: 56px; height: 56px; border-radius: 50%; background: var(--primary-gradient); color: white; display: flex; justify-content: center; align-items: center; font-size: 26px; border: none; cursor: pointer; box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4); z-index: 1000; }
-        .chat-box { position: fixed; bottom: 90px; right: 25px; width: 360px; height: 500px; background: var(--card-bg); border-radius: 18px; border: 1px solid var(--border); box-shadow: 0 12px 40px rgba(0,0,0,0.5); display: none; flex-direction: column; z-index: 1000; overflow: hidden; }
-        .chat-top { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(8px); padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; border-bottom: 1px solid var(--border); }
-        .chat-logs { flex: 1; padding: 14px; background: #0b0f19; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-
-        .chat-msg { max-width: 82%; padding: 9px 13px; border-radius: 14px; font-size: 13px; word-break: break-word; }
-        .chat-msg.admin { background: #1e293b; color: #f8fafc; align-self: flex-start; border: 1px solid var(--border); }
-        .chat-msg.guest { background: var(--primary-gradient); color: white; align-self: flex-end; }
-
-        .chat-bottom-wrap { background: var(--card-bg); border-top: 1px solid var(--border); padding: 10px; display: flex; gap: 8px; }
-        .chat-bottom-wrap input { flex: 1; min-width: 0; background: #0b0f19; border: 1px solid var(--border); color: #fff; padding: 9px 14px; border-radius: 20px; outline: none; font-size: 13px; }
-        .btn-send-chat { background: var(--primary-gradient); color: white; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; }
-
-        /* Package Modal */
-        .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.65); z-index: 9999; justify-content: center; align-items: center; }
-        .modal-card { background: var(--card-bg); border: 1px solid var(--border); padding: 22px; border-radius: 18px; text-align: center; max-width: 420px; width: 92%; position: relative; max-height: 90vh; overflow-y: auto; color: var(--text-main); }
-        .modal-close-x { position: absolute; top: 12px; right: 15px; cursor: pointer; font-size: 18px; color: var(--text-sub); }
-
-        .package-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 15px 0; }
-        .package-btn { border: 1px solid var(--border); background: #0b0f19; padding: 10px 8px; border-radius: 12px; cursor: pointer; text-align: center; color: var(--text-main); position: relative; overflow: hidden; transition: 0.2s; }
-        .package-btn.active { border-color: var(--primary); background: rgba(99, 102, 241, 0.2); box-shadow: 0 0 10px rgba(99, 102, 241, 0.3); }
-
-        .discount-ribbon { position: absolute; top: 0; right: 0; background: var(--danger); color: white; font-size: 9px; font-weight: 800; padding: 2px 6px; border-bottom-left-radius: 6px; }
-        .price-orig { text-decoration: line-through; opacity: 0.5; font-size: 11px; margin-right: 4px; }
-        .price-current { color: #818cf8; font-weight: 800; font-size: 14px; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+        body { background: #0b0f19; color: #f8fafc; padding: 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #1e293b; margin-bottom: 25px; }
+        .user-balance { background: #1e293b; padding: 8px 16px; border-radius: 20px; border: 1px solid #38bdf8; font-weight: bold; color: #38bdf8; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .card { background: #151e2e; border: 1px solid #243247; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+        .card img { width: 100%; height: 150px; object-fit: cover; }
+        .card-body { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
+        .card-title { font-size: 16px; font-weight: bold; margin-bottom: 8px; color: #fff; }
+        .card-price { font-size: 18px; font-weight: bold; color: #10b981; margin-bottom: 15px; }
+        .btn-buy { background: #38bdf8; color: #0b0f19; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: auto; }
+        .btn-buy:hover { background: #0ea5e9; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: #1e293b; padding: 25px; border-radius: 14px; width: 90%; max-width: 440px; border: 1px solid #334155; }
+        .field-group { margin-bottom: 12px; }
+        .field-group label { font-size: 12px; color: #94a3b8; }
+        .field-box { display: flex; gap: 8px; margin-top: 4px; }
+        .field-box input { flex-grow: 1; padding: 8px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff; font-family: monospace; outline: none; }
+        .btn-copy { padding: 8px 12px; background: #334155; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <header>
-        <a href="#" class="logo-area">⚡ YUTHSTORE</a>
-        <div class="header-right">
-            <div class="online-badge"><div class="online-dot"></div><span>9 Online</span></div>
-            <div id="g_id_onload" data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
-            <div class="g_id_signin" data-type="standard" data-shape="pill" id="googleBtnWrapper"></div>
-            <div class="user-pill" id="userPill">
-                <img src="" id="userAvatar">
-                <div class="balance">$<span id="userBalance">0.00</span></div>
+<div class="container">
+    <div class="header">
+        <h2>🔥 ហាងទិញ-លក់ Account</h2>
+        <div class="user-balance" id="displayBalance">💰 សមតុល្យ៖ $0.00</div>
+    </div>
+
+    <h3 style="color: #38bdf8; margin-bottom: 15px;">🛒 បញ្ជី Account ដាក់លក់</h3>
+    <div class="grid" id="accountsList"></div>
+</div>
+
+<!-- Modal បង្ហាញព័ត៌មាន Login (ID, Password, 2FA) ពេលទិញជោគជ័យ -->
+<div class="modal" id="accountPurchasedModal">
+    <div class="modal-content">
+        <h3 style="color: #10b981; text-align: center; margin-bottom: 5px;">🎉 ការទិញជោគជ័យ!</h3>
+        <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-bottom: 20px;">សូមចម្លងទុកព័ត៌មានគណនីរបស់អ្នក</p>
+
+        <div class="field-group">
+            <label>🆔 UID / Email / Username៖</label>
+            <div class="field-box">
+                <input type="text" id="dispAccId" readonly style="color:#38bdf8;">
+                <button class="btn-copy" onclick="copyField('dispAccId')">📋 Copy</button>
             </div>
         </div>
-    </header>
 
-    <div class="container">
-        <div class="hero-banner">
-            <h1>🎮 YUTH STORE AUTOMATION</h1>
-            <p>សូមចុះឈ្មោះចូលគណនី Google ដើម្បីទទួលបានសមតុល្យកាបូប (Wallet) ឬឆាតផ្ទាល់ជាមួយ Admin</p>
+        <div class="field-group">
+            <label>🔑 Password (លេខសម្ងាត់)៖</label>
+            <div class="field-box">
+                <input type="text" id="dispAccPass" readonly style="color:#f59e0b;">
+                <button class="btn-copy" onclick="copyField('dispAccPass')">📋 Copy</button>
+            </div>
         </div>
 
-        <div class="section-header">🔥 ជ្រើសរើសសេវាកម្ម & កញ្ចប់ពេជ្របញ្ចុះតម្លៃ</div>
-        <div class="game-grid" id="clientGameGrid">
-            <div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-sub);">មិនទាន់មានសេវាកម្មនៅលើប្រព័ន្ធទេ សូមរង់ចាំ Admin បញ្ចូល...</div>
+        <div class="field-group">
+            <label>🛡️ 2FA Key / Backup Code៖</label>
+            <div class="field-box">
+                <input type="text" id="dispAcc2fa" readonly style="color:#ec4899;">
+                <button class="btn-copy" onclick="copyField('dispAcc2fa')">📋 Copy</button>
+            </div>
         </div>
+
+        <button onclick="copyAllAccountInfo()" style="width: 100%; padding: 10px; background: #10b981; color: #fff; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; margin-bottom: 8px;">
+            📋 ចម្លងព័ត៌មានទាំងអស់ (Copy All)
+        </button>
+        <button onclick="document.getElementById('accountPurchasedModal').style.display='none'" style="width: 100%; padding: 10px; background: #475569; color: #fff; border: none; border-radius: 8px; cursor: pointer;">
+            បិទ
+        </button>
     </div>
+</div>
 
-    <!-- Floating Chat -->
-    <button class="fab-chat" onclick="toggleChat()">💬</button>
+<script>
+    const firebaseConfig = {
+        databaseURL: "https://yuth-store-default-rtdb.firebaseio.com"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    <div class="chat-box" id="chatBox">
-        <div class="chat-top"><span>⚡ Support Live Chat</span><span style="cursor:pointer;" onclick="toggleChat()">✖</span></div>
-        <div class="chat-logs" id="chatLogs"><div class="chat-msg admin">សួស្តីបាទ! 🙏 មានអ្វីឱ្យ Admin ជួយទេ? អាចផ្ញើសារបានភ្លាមៗបាទ។</div></div>
-        <div class="chat-bottom-wrap">
-            <input type="text" id="chatInput" placeholder="វាយសារផ្ញើទៅ Admin..." onkeypress="if(event.key==='Enter') sendChat()">
-            <button class="btn-send-chat" onclick="sendChat()">➤</button>
-        </div>
-    </div>
+    // គណនីភ្ញៀវតេស្ត (ប្តូរតាម Auth ជាក់ស្តែងរបស់អ្នក)
+    let currentUser = {
+        uid: "user_test_id",
+        email: "client@gmail.com",
+        balance: 20.00
+    };
 
-    <!-- Modal Package Select -->
-    <div class="modal-bg" id="diamondModal">
-        <div class="modal-card">
-            <div class="modal-close-x" onclick="closeModal('diamondModal')">✖</div>
-            <h3 id="modalGameTitle">ជ្រើសរើសកញ្ចប់</h3>
-            <input type="text" id="playerIdInput" placeholder="បញ្ចូល Player ID / UID / លេខសម្គាល់" style="width:100%; padding:10px; margin-top:12px; border:1px solid var(--border); background:#0b0f19; color:#fff; border-radius:8px; outline:none;">
-            <div class="package-grid" id="modalPackagesGrid"></div>
-            <button onclick="proceedToPay()" style="width:100%; padding:12px; background:var(--primary-gradient); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">
-                បន្តទូទាត់ ($<span id="selectedPkgPrice">0.00</span>)
-            </button>
-        </div>
-    </div>
+    function updateBalanceDisplay() {
+        document.getElementById('displayBalance').innerText = `💰 សមតុល្យ៖ $${currentUser.balance.toFixed(2)}`;
+    }
+    updateBalanceDisplay();
 
-    <!-- Modal QR -->
-    <div class="modal-bg" id="qrModal">
-        <div class="modal-card">
-            <div class="modal-close-x" onclick="closeModal('qrModal')">✖</div>
-            <h4>ស្កេនទូទាត់ប្រាក់ KHQR</h4>
-            <p style="margin: 8px 0;">ចំនួនទឹកប្រាក់៖ <b style="color:var(--danger); font-size:22px;">$<span id="qrAmount">0.00</span></b></p>
-            <img src="qr.jpg" alt="KHQR" style="width:100%; max-width:200px; margin:10px auto; display:block; border-radius:8px;">
-            <button onclick="closeModal('qrModal')" style="width:100%; padding:9px; background:var(--danger); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">រួចរាល់</button>
-        </div>
-    </div>
+    // ទាញយក Account មកបង្ហាញ
+    db.ref('accounts_for_sale').on('value', snapshot => {
+        const container = document.getElementById('accountsList');
+        container.innerHTML = '';
+        const data = snapshot.val();
 
-    <script>
-        const FIREBASE_DB_URL = "https://yuth-store-default-rtdb.firebaseio.com/";
-        const TELEGRAM_BOT_TOKEN = "8806433517:AAGCs1y4YDwqSMiXQoJs1Y-n0DOGDtEDbII";
-        const TELEGRAM_CHAT_ID = "8363306657";
-
-        let loggedInUser = null;
-        let selectedGame = null;
-        let currentSelectedPrice = 0;
-        let currentSelectedPkgName = '';
-
-        let localGuestKey = localStorage.getItem('yuth_guest_key');
-        if (!localGuestKey) {
-            localGuestKey = 'guest_' + Math.floor(100000 + Math.random() * 900000);
-            localStorage.setItem('yuth_guest_key', localGuestKey);
+        if (!data) {
+            container.innerHTML = '<p style="color:#64748b;">មិនទាន់មាន Account ដាក់លក់នៅឡើយទេ។</p>';
+            return;
         }
 
-        function getActiveUser() {
-            return loggedInUser || { uid: localGuestKey, name: 'ភ្ញៀវ (' + localGuestKey.substring(6) + ')', email: 'មិនទាន់ Login' };
-        }
-
-        function checkAuth() {
-            if (!loggedInUser) {
-                alert("⚠️ សូមចុះឈ្មោះ / ចូលគណនី (Sign in with Google) នៅខាងលើជាមុនសិន!");
-                return false;
-            }
-            return true;
-        }
-
-        function handleCredentialResponse(response) {
-            const base64Url = response.credential.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-            const user = JSON.parse(jsonPayload);
-            
-            loggedInUser = { uid: 'uid_' + user.sub.substring(0, 10), name: user.name, email: user.email, picture: user.picture };
-            document.getElementById('googleBtnWrapper').style.display = 'none';
-            document.getElementById('userPill').style.display = 'flex';
-            document.getElementById('userAvatar').src = user.picture;
-
-            fetch(`${FIREBASE_DB_URL}users/${loggedInUser.uid}.json`, {
-                method: "PATCH",
-                body: JSON.stringify({ name: user.name, email: user.email, picture: user.picture, registeredAt: new Date().toISOString() })
-            });
-
-            fetch(`${FIREBASE_DB_URL}chats/${loggedInUser.uid}/info.json`, {
-                method: "PUT",
-                body: JSON.stringify({ name: user.name, email: user.email })
-            });
-
-            listenToBalance();
-            alert(`🎉 ស្វាគមន៍ ${user.name}!`);
-        }
-
-        function listenToBalance() {
-            if (!loggedInUser) return;
-            setInterval(() => {
-                fetch(`${FIREBASE_DB_URL}users/${loggedInUser.uid}/balance.json`)
-                    .then(res => res.json())
-                    .then(bal => {
-                        document.getElementById('userBalance').innerText = parseFloat(bal || 0).toFixed(2);
-                    });
-            }, 1500);
-        }
-
-        let gamesDataCache = {};
-        function loadStoreGames() {
-            fetch(`${FIREBASE_DB_URL}store_games.json?t=` + Date.now())
-                .then(res => res.json())
-                .then(games => {
-                    const grid = document.getElementById('clientGameGrid');
-                    if (!games || games.error || Object.keys(games).length === 0) {
-                        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-sub);">មិនទាន់មានសេវាកម្មនៅលើប្រព័ន្ធទេ សូមរង់ចាំ Admin បញ្ចូល...</div>';
-                        return;
-                    }
-
-                    gamesDataCache = games;
-                    let html = '';
-                    Object.keys(games).forEach(id => {
-                        const g = games[id];
-                        html += `
-                            <div class="game-card" onclick="openGameModal('${id}')">
-                                <img src="${g.image}" alt="${g.name}">
-                                <div class="card-bottom-overlay">
-                                    <div class="card-title">${g.name}</div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    grid.innerHTML = html;
-                }).catch(e => console.log(e));
-        }
-
-        function openGameModal(gameId) {
-            if (!checkAuth()) return;
-            selectedGame = gamesDataCache[gameId];
-            document.getElementById('modalGameTitle').innerText = selectedGame.name;
-
-            const grid = document.getElementById('modalPackagesGrid');
-            grid.innerHTML = '';
-
-            if (selectedGame.packages && selectedGame.packages.length > 0) {
-                selectedGame.packages.forEach((pkg, index) => {
-                    const activeClass = index === 0 ? 'active' : '';
-                    if (index === 0) {
-                        currentSelectedPrice = pkg.price;
-                        currentSelectedPkgName = pkg.name;
-                        document.getElementById('selectedPkgPrice').innerText = pkg.price.toFixed(2);
-                    }
-
-                    const hasDiscount = pkg.originalPrice && pkg.originalPrice > pkg.price;
-                    const ribbonHtml = hasDiscount ? `<div class="discount-ribbon">SALE</div>` : '';
-                    const origPriceHtml = hasDiscount ? `<span class="price-orig">$${pkg.originalPrice.toFixed(2)}</span>` : '';
-
-                    grid.innerHTML += `
-                        <div class="package-btn ${activeClass}" onclick="selectPkg(this, ${pkg.price}, '${pkg.name}')">
-                            ${ribbonHtml}
-                            <div style="font-weight:bold; font-size:14px; margin-top:2px;">${pkg.name}</div>
-                            <div style="margin-top:4px;">
-                                ${origPriceHtml}
-                                <span class="price-current">$${pkg.price.toFixed(2)}</span>
-                            </div>
+        for (let key in data) {
+            const acc = data[key];
+            if (acc.status === 'available') {
+                container.innerHTML += `
+                    <div class="card">
+                        <img src="${acc.image || acc.thumb}">
+                        <div class="card-body">
+                            <div class="card-title">${acc.title}</div>
+                            <div class="card-price">$${parseFloat(acc.price).toFixed(2)}</div>
+                            <button class="btn-buy" onclick="buyAccount('${key}', ${acc.price})">🛒 ទិញភ្លាមៗ</button>
                         </div>
-                    `;
-                });
+                    </div>
+                `;
+            }
+        }
+    });
+
+    // ដំណើរការទិញ និងកាត់លុយ
+    function buyAccount(accKey, price) {
+        if (currentUser.balance < price) {
+            return alert(`❌ សមតុល្យលុយមិនគ្រប់គ្រាន់!\nតម្លៃ៖ $${price.toFixed(2)}\nសមតុល្យអ្នក៖ $${currentUser.balance.toFixed(2)}\nសូមបញ្ចូលលុយជាមុនសិន!`);
+        }
+
+        if (!confirm(`តើអ្នកពិតជាចង់ទិញ Account នេះក្នុងតម្លៃ $${price.toFixed(2)} មែនទេ?`)) return;
+
+        db.ref('accounts_for_sale/' + accKey).once('value').then(snapshot => {
+            const acc = snapshot.val();
+            if (!acc || acc.status === 'sold') {
+                return alert("❌ សុំទោស អាខោននេះត្រូវបានគេទិញរួចរាល់ហើយ!");
             }
 
-            openModal('diamondModal');
-        }
+            currentUser.balance -= price;
+            updateBalanceDisplay();
 
-        function selectPkg(el, price, name) {
-            document.querySelectorAll('.package-btn').forEach(b => b.classList.remove('active'));
-            el.classList.add('active');
-            currentSelectedPrice = price;
-            currentSelectedPkgName = name;
-            document.getElementById('selectedPkgPrice').innerText = price.toFixed(2);
-        }
-
-        function proceedToPay() {
-            const uid = document.getElementById('playerIdInput').value.trim();
-            if (!uid) return alert("សូមបញ្ចូលលេខសម្គាល់ / Player ID!");
-
-            closeModal('diamondModal');
-            document.getElementById('qrAmount').innerText = currentSelectedPrice.toFixed(2);
-            openModal('qrModal');
-
-            fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    chat_id: TELEGRAM_CHAT_ID,
-                    text: `🚨 *ការបញ្ជាទិញថ្មី*\n🎮 សេវាកម្ម: ${selectedGame.name}\n💎 កញ្ចប់: ${currentSelectedPkgName}\n💵 តម្លៃ: $${currentSelectedPrice}\n🆔 UID: \`${uid}\`\n👤 ភ្ញៀវ: ${loggedInUser.name}`,
-                    parse_mode: "Markdown"
-                })
+            // ប្តូរស្ថានភាព Account ទៅជា sold
+            db.ref('accounts_for_sale/' + accKey).update({
+                status: 'sold',
+                buyerEmail: currentUser.email,
+                soldAt: Date.now()
             });
-        }
 
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function toggleChat() { const b = document.getElementById('chatBox'); b.style.display = b.style.display === 'flex' ? 'none' : 'flex'; }
+            // បង្ហាញ ID, Pass, 2FA
+            document.getElementById('dispAccId').value = acc.acc_id || 'N/A';
+            document.getElementById('dispAccPass').value = acc.acc_pass || 'N/A';
+            document.getElementById('dispAcc2fa').value = acc.acc_2fa || 'N/A';
+            document.getElementById('accountPurchasedModal').style.display = 'flex';
+        });
+    }
 
-        function sendChat() {
-            const input = document.getElementById('chatInput');
-            const text = input.value.trim();
-            if (!text) return;
-            const user = getActiveUser();
+    function copyField(id) {
+        const val = document.getElementById(id).value;
+        navigator.clipboard.writeText(val);
+        alert("✅ បានចម្លង៖ " + val);
+    }
 
-            fetch(`${FIREBASE_DB_URL}chats/${user.uid}/info.json`, { method: "PUT", body: JSON.stringify({ name: user.name, email: user.email }) });
-            fetch(`${FIREBASE_DB_URL}chats/${user.uid}/messages.json`, { method: "POST", body: JSON.stringify({ sender: "guest", text: text, timestamp: new Date().toISOString() }) });
-            input.value = '';
-        }
-
-        function listenToChatReplies() {
-            setInterval(() => {
-                const user = getActiveUser();
-                fetch(`${FIREBASE_DB_URL}chats/${user.uid}/messages.json?t=` + Date.now())
-                    .then(res => res.json())
-                    .then(data => {
-                        const logs = document.getElementById('chatLogs');
-                        if (!data || data.error) return;
-
-                        let chatHtml = '<div class="chat-msg admin">សួស្តីបាទ! 🙏 មានអ្វីឱ្យ Admin ជួយទេ? អាចផ្ញើសារបានភ្លាមៗបាទ។</div>';
-                        Object.values(data).forEach(msg => {
-                            if (msg && msg.text && msg.text !== 'undefined') {
-                                chatHtml += `<div class="chat-msg ${msg.sender || 'guest'}">${msg.text}</div>`;
-                            }
-                        });
-                        logs.innerHTML = chatHtml;
-                        logs.scrollTop = logs.scrollHeight;
-                    });
-            }, 1200);
-        }
-
-        setInterval(loadStoreGames, 2000);
-        loadStoreGames();
-        listenToChatReplies();
-    </script>
+    function copyAllAccountInfo() {
+        const id = document.getElementById('dispAccId').value;
+        const pass = document.getElementById('dispAccPass').value;
+        const tfa = document.getElementById('dispAcc2fa').value;
+        const text = `UID/Email: ${id}\nPassword: ${pass}\n2FA: ${tfa}`;
+        navigator.clipboard.writeText(text);
+        alert("✅ បានចម្លងព័ត៌មានទាំងអស់រួចរាល់!");
+    }
+</script>
 </body>
 </html>
