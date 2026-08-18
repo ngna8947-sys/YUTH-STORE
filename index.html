@@ -23,13 +23,13 @@
         body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.5; }
 
         /* Header */
-        header { background: var(--surface); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 100; }
+        header { background: var(--surface); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 100; }
         .logo-area { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 20px; color: #dc2626; text-decoration: none; }
-        .search-box { position: relative; width: 280px; }
+        .search-box { position: relative; width: 260px; }
         .search-box input { width: 100%; padding: 8px 15px 8px 38px; border-radius: 20px; border: 1px solid #e4e6eb; background: #f0f2f5; font-size: 14px; outline: none; }
         .search-box span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #8a8d91; font-size: 14px; }
         
-        .header-right { display: flex; align-items: center; gap: 12px; }
+        .header-right { display: flex; align-items: center; gap: 10px; }
         .online-badge { display: flex; align-items: center; gap: 6px; background: #e6f4ea; color: var(--success); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
         .online-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
@@ -91,17 +91,17 @@
         .chat-msg video { max-width: 100%; border-radius: 8px; margin-top: 4px; display: block; }
         .chat-msg audio { max-width: 100%; margin-top: 4px; height: 35px; }
 
+        /* Chat Controls Fixed for Mobile */
         .chat-bottom-wrap { background: white; border-top: 1px solid #eee; padding: 8px 10px; }
-        .chat-tools { display: flex; align-items: center; gap: 6px; }
-        .chat-tools input[type="text"] { flex: 1; padding: 8px 14px; border: 1px solid #ddd; border-radius: 20px; outline: none; font-size: 13px; }
+        .chat-tools { display: flex; align-items: center; gap: 6px; width: 100%; }
+        .chat-tools input[type="text"] { flex: 1; min-width: 0; padding: 8px 12px; border: 1px solid #ddd; border-radius: 20px; outline: none; font-size: 13px; }
         .chat-tools input[type="text"]:focus { border-color: var(--primary); }
         
-        .tool-btn { background: #f0f2f5; border: none; width: 34px; height: 34px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; cursor: pointer; color: #555; transition: 0.2s; }
-        .tool-btn:hover { background: #e4e6eb; color: var(--primary); }
+        .tool-btn { background: #f0f2f5; border: none; width: 32px; height: 32px; min-width: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 15px; cursor: pointer; color: #555; }
         .tool-btn.recording { background: var(--danger); color: white; animation: blink 1s infinite; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
-        .btn-send-chat { background: var(--primary); color: white; border: none; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 14px; }
+        .btn-send-chat { background: var(--primary); color: white; border: none; width: 34px; height: 34px; min-width: 34px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; }
         .btn-send-chat:hover { background: #155dc1; }
 
         /* Modals */
@@ -109,23 +109,20 @@
         .modal-card { background: white; padding: 22px; border-radius: 18px; text-align: center; max-width: 400px; width: 92%; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; max-height: 90vh; overflow-y: auto; }
         .modal-close-x { position: absolute; top: 12px; right: 15px; font-size: 20px; cursor: pointer; color: #888; }
 
-        /* Package Selection Styling */
+        /* Package Grid */
         .package-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 15px 0; }
         .package-btn { border: 2px solid #e4e6eb; background: #fff; padding: 10px 6px; border-radius: 12px; cursor: pointer; text-align: center; transition: 0.2s; }
         .package-btn:hover, .package-btn.active { border-color: var(--primary); background: #e8f0fe; transform: scale(1.02); }
         .package-amount { font-weight: 700; color: #1c1e21; font-size: 14px; }
         .package-price { color: var(--danger); font-weight: 700; font-size: 13px; margin-top: 2px; }
 
-        /* Input Form */
         .form-group { text-align: left; margin-bottom: 12px; }
         .form-group label { font-size: 12px; font-weight: 600; color: var(--text-sub); margin-bottom: 4px; display: block; }
         .form-control { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 10px; font-size: 14px; outline: none; }
-        .form-control:focus { border-color: var(--primary); }
 
-        /* Quick Amount Chips */
         .quick-amount-chips { display: flex; gap: 8px; justify-content: center; margin-bottom: 15px; flex-wrap: wrap; }
         .amount-chip { background: #f0f2f5; border: 1px solid #ddd; padding: 6px 12px; border-radius: 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
-        .amount-chip:hover, .amount-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .amount-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
 
         @media(max-width: 768px) {
             .search-box { display: none; }
@@ -258,10 +255,10 @@
         <div class="chat-bottom-wrap">
             <div class="chat-tools">
                 <input type="file" id="chatMediaInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaUpload(this)">
-                <button class="tool-btn" onclick="document.getElementById('chatMediaInput').click()" title="ផ្ញើរូបភាព / វីដេអូ">📎</button>
-                <button class="tool-btn" id="voiceRecordBtn" onclick="toggleVoiceRecording()" title="ថតសំឡេងនិយាយ">🎙️</button>
+                <button class="tool-btn" onclick="document.getElementById('chatMediaInput').click()" title="រូបភាព/វីដេអូ">📎</button>
+                <button class="tool-btn" id="voiceRecordBtn" onclick="toggleVoiceRecording()" title="ថតសំឡេង">🎙️</button>
                 <input type="text" id="chatInput" placeholder="ផ្ញើសារ..." onkeypress="if(event.key==='Enter') sendChat()">
-                <button class="btn-send-chat" onclick="sendChat()">➤</button>
+                <button class="btn-send-chat" onclick="sendChat()" title="ផ្ញើសារ">➤</button>
             </div>
             <div id="recordingStatus" style="display:none; font-size:11px; color:var(--danger); margin-top:4px; font-weight:bold; text-align:center;">
                 🔴 កំពុងថតសំឡេង... (ចុចលើរូបមេក្រូម្តងទៀតដើម្បីផ្ញើ)
@@ -382,7 +379,7 @@
 
         function checkAuth() {
             if (!loggedInUser) {
-                alert("⚠️ សូមចុះឈ្មោះ / ចូលគណនី (Sign in with Google) ជាមុនសិន ទើបអាចធ្វើការទិញពេជ្រ ឬប្រើប្រាស់មុខងារ Chat បាន!");
+                alert("⚠️ សូមចុះឈ្មោះ / ចូលគណនី (Sign in with Google) ជាមុនសិន ទើបអាចធ្វើការទិញពេជ្រ ឬបញ្ចូលលុយបាន!");
                 return false;
             }
             return true;
@@ -493,19 +490,18 @@
             openModal('qrModal');
         }
 
-        // Multimedia Chat Logic
+        // Multimedia Live Chat
         function toggleChat() {
-            if (!checkAuth()) return;
             const box = document.getElementById('chatBox');
             box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
         }
 
         function sendChat() {
-            if (!checkAuth()) return;
             const input = document.getElementById('chatInput');
             const text = input.value.trim();
-            if(!text) return;
+            if (!text) return;
 
+            const senderName = (loggedInUser && loggedInUser.name) ? loggedInUser.name : "ភ្ញៀវ (Guest)";
             const logs = document.getElementById('chatLogs');
             logs.innerHTML += `<div class="chat-msg user">${escapeHtml(text)}</div>`;
             
@@ -514,7 +510,7 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     chat_id: TELEGRAM_CHAT_ID,
-                    text: `💬 *សារពី ${loggedInUser.name} (Live Chat):*\n"${text}"`,
+                    text: `💬 *សារពី ${senderName} (Live Chat):*\n"${text}"`,
                     parse_mode: "Markdown"
                 })
             }).catch(e => console.error(e));
@@ -525,10 +521,10 @@
         }
 
         function handleMediaUpload(input) {
-            if (!checkAuth()) return;
             const file = input.files[0];
             if (!file) return;
 
+            const senderName = (loggedInUser && loggedInUser.name) ? loggedInUser.name : "ភ្ញៀវ (Guest)";
             const logs = document.getElementById('chatLogs');
             const fileUrl = URL.createObjectURL(file);
             const isVideo = file.type.startsWith('video/');
@@ -536,21 +532,21 @@
             if (isVideo) {
                 logs.innerHTML += `
                     <div class="chat-msg user">
-                        <video controls src="${fileUrl}"></video>
-                        <span style="font-size:11px; opacity:0.8;">🎥 វីដេអូ</span>
+                        <video controls style="max-width:100%; border-radius:8px;" src="${fileUrl}"></video>
+                        <span style="font-size:11px; opacity:0.8; display:block; margin-top:2px;">🎥 វីដេអូ</span>
                     </div>`;
             } else {
                 logs.innerHTML += `
                     <div class="chat-msg user">
-                        <img src="${fileUrl}" alt="Photo">
-                        <span style="font-size:11px; opacity:0.8;">📷 រូបភាព</span>
+                        <img style="max-width:100%; border-radius:8px;" src="${fileUrl}" alt="Photo">
+                        <span style="font-size:11px; opacity:0.8; display:block; margin-top:2px;">📷 រូបភាព</span>
                     </div>`;
             }
             logs.scrollTop = logs.scrollHeight;
 
             const formData = new FormData();
             formData.append("chat_id", TELEGRAM_CHAT_ID);
-            formData.append("caption", `📎 *${isVideo ? 'វីដេអូ' : 'រូបភាព'} ផ្ញើដោយ:* ${loggedInUser.name}`);
+            formData.append("caption", `📎 *${isVideo ? 'វីដេអូ' : 'រូបភាព'} ផ្ញើដោយ:* ${senderName}`);
 
             const endpoint = isVideo ? "sendVideo" : "sendPhoto";
             formData.append(isVideo ? "video" : "photo", file);
@@ -569,7 +565,6 @@
         let isRecording = false;
 
         async function toggleVoiceRecording() {
-            if (!checkAuth()) return;
             const recBtn = document.getElementById('voiceRecordBtn');
             const statusLabel = document.getElementById('recordingStatus');
 
@@ -595,9 +590,10 @@
                             </div>`;
                         logs.scrollTop = logs.scrollHeight;
 
+                        const senderName = (loggedInUser && loggedInUser.name) ? loggedInUser.name : "ភ្ញៀវ (Guest)";
                         const formData = new FormData();
                         formData.append("chat_id", TELEGRAM_CHAT_ID);
-                        formData.append("caption", `🎙️ *Voice Message ពី:* ${loggedInUser.name}`);
+                        formData.append("caption", `🎙️ *Voice Message ពី:* ${senderName}`);
                         formData.append("voice", audioBlob, "voice.ogg");
 
                         fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendVoice`, {
@@ -633,7 +629,7 @@
 
         function escapeHtml(text) {
             const map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'};
-            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+            return text.replace(/[&<>"']/g, m => map[m]);
         }
 
         setInterval(() => {
