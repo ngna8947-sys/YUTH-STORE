@@ -140,7 +140,7 @@
                 </div>
             </div>
 
-            <!-- TAB 2: MANAGE SERVICES & AUTO-COMPRESS PHOTO -->
+            <!-- TAB 2: MANAGE SERVICES & PHOTO UPLOAD -->
             <div id="manageGamesTab" class="tab-content">
                 <div class="card-panel">
                     <div class="panel-header"><div class="panel-title">➕ បញ្ចូលសេវាកម្ម/ហ្គេមថ្មី (ជ្រើសរូបថតផ្ទាល់ខ្លួន)</div></div>
@@ -152,8 +152,7 @@
                             </div>
                             <div class="form-group">
                                 <label>📸 ជ្រើសរើសរូបថតផ្ទាល់ខ្លួន (Photo):</label>
-                                <input type="file" id="gamePhotoFileInput" accept="image/*" onchange="compressAndPreviewPhoto(this)" required>
-                                <input type="hidden" id="gameBase64Photo">
+                                <input type="file" id="gamePhotoFileInput" accept="image/*" onchange="previewPhoto(this)" required>
                             </div>
                             <div class="form-group">
                                 <label>ពណ៌ផ្ទាំង (Theme Style):</label>
@@ -169,7 +168,7 @@
 
                         <div id="photoPreviewContainer" style="display:none; margin-bottom:15px; align-items:center; gap:12px; background:#0f172a; padding:10px 14px; border-radius:10px; border:1px solid var(--border);">
                             <img id="previewImgElement" src="" style="width:60px; height:60px; border-radius:10px; object-fit:cover; border:1px solid #6366f1;">
-                            <span style="font-size:12px; color:var(--success); font-weight:bold;">✓ រូបថតត្រូវបានបង្រួមស្រាលស្អាត (ទំហំល្អឥតខ្ចោះ)</span>
+                            <span style="font-size:12px; color:var(--success); font-weight:bold;">✓ រូបថតត្រូវបានជ្រើសរើស</span>
                         </div>
 
                         <div class="packages-container">
@@ -264,42 +263,22 @@
 
     <script>
         const FIREBASE_DB_URL = "https://yuth-store-default-rtdb.firebaseio.com/";
+        const IMGBB_API_KEY = "c8f25979c5c24e93bb85f3964fc5c8b7"; // ImgBB Free Cloud Key
+
         let currentActiveUid = null;
         let cachedUsers = {};
+        let selectedImageFile = null;
 
-        // បង្រួមទំហំរូបថតទៅកម្រិតស្ដង់ដារ Icon Web (< 15KB)
-        function compressAndPreviewPhoto(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = function(event) {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const TARGET_SIZE = 150; // កម្រិត Icon 150x150px
-                    canvas.width = TARGET_SIZE;
-                    canvas.height = TARGET_SIZE;
-                    const ctx = canvas.getContext('2d');
-                    
-                    // Center Crop
-                    let srcX = 0, srcY = 0, srcSize = Math.min(img.width, img.height);
-                    if (img.width > img.height) {
-                        srcX = (img.width - img.height) / 2;
-                    } else {
-                        srcY = (img.height - img.width) / 2;
-                    }
-
-                    ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, TARGET_SIZE, TARGET_SIZE);
-
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
-                    document.getElementById('gameBase64Photo').value = compressedBase64;
-                    document.getElementById('previewImgElement').src = compressedBase64;
+        function previewPhoto(input) {
+            if (input.files && input.files[0]) {
+                selectedImageFile = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewImgElement').src = e.target.result;
                     document.getElementById('photoPreviewContainer').style.display = 'flex';
                 };
-            };
+                reader.readAsDataURL(selectedImageFile);
+            }
         }
 
         function addPackageRow() {
@@ -315,67 +294,82 @@
             wrapper.appendChild(row);
         }
 
-        function handleSaveGame(e) {
+        async function handleSaveGame(e) {
             e.preventDefault();
             const btn = document.getElementById('btnSubmitGame');
             const name = document.getElementById('gameNameInput').value.trim();
-            const image = document.getElementById('gameBase64Photo').value;
             const theme = document.getElementById('gameThemeInput').value;
 
-            if (!image) {
+            if (!selectedImageFile) {
                 alert("សូមជ្រើសរើសរូបថតជាមុនសិន!");
                 return;
             }
 
-            btn.innerText = "⏳ កំពុងរក្សាទុក...";
+            btn.innerText = "⏳ កំពុង Upload រូបភាព...";
             btn.disabled = true;
 
-            const pkgNames = document.querySelectorAll('.pkg-name');
-            const pkgOriginalPrices = document.querySelectorAll('.pkg-original-price');
-            const pkgPrices = document.querySelectorAll('.pkg-price');
-            
-            const packages = [];
-            for (let i = 0; i < pkgNames.length; i++) {
-                packages.push({
-                    name: pkgNames[i].value.trim(),
-                    originalPrice: parseFloat(pkgOriginalPrices[i].value) || parseFloat(pkgPrices[i].value),
-                    price: parseFloat(pkgPrices[i].value)
+            try {
+                // ១. Upload រូបភាពទៅកាន់ Cloud ImgBB
+                const formData = new FormData();
+                formData.append("image", selectedImageFile);
+
+                const imgRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: "POST",
+                    body: formData
                 });
-            }
+                const imgData = await imgRes.json();
+                
+                if (!imgData.success) {
+                    throw new Error("មិនអាច Upload រូបភាពបានទេ សូមព្យាយាមម្តងទៀត!");
+                }
 
-            const gameId = 'game_' + Date.now();
+                const uploadedImageUrl = imgData.data.url;
+                btn.innerText = "⏳ កំពុងរក្សាទុកក្នុង Database...";
 
-            fetch(`${FIREBASE_DB_URL}store_games/${gameId}.json`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id: gameId, name, image, theme, packages, createdAt: new Date().toISOString() })
-            })
-            .then(res => {
-                if(!res.ok) throw new Error("Firebase reject request");
-                return res.json();
-            })
-            .then(() => {
+                // ២. រៀបចំកញ្ចប់ពេជ្រ
+                const pkgNames = document.querySelectorAll('.pkg-name');
+                const pkgOriginalPrices = document.querySelectorAll('.pkg-original-price');
+                const pkgPrices = document.querySelectorAll('.pkg-price');
+                
+                const packages = [];
+                for (let i = 0; i < pkgNames.length; i++) {
+                    packages.push({
+                        name: pkgNames[i].value.trim(),
+                        originalPrice: parseFloat(pkgOriginalPrices[i].value) || parseFloat(pkgPrices[i].value),
+                        price: parseFloat(pkgPrices[i].value)
+                    });
+                }
+
+                const gameId = 'game_' + Date.now();
+
+                // ៣. រក្សាទុកក្នុង Firebase
+                const fbRes = await fetch(`${FIREBASE_DB_URL}store_games/${gameId}.json`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        id: gameId,
+                        name: name,
+                        image: uploadedImageUrl,
+                        theme: theme,
+                        packages: packages,
+                        createdAt: new Date().toISOString()
+                    })
+                });
+
+                if (!fbRes.ok) throw new Error("Firebase មិនអនុញ្ញាត!");
+
                 alert("✓ បានរក្សាទុកសេវាកម្ម និងរូបថតជោគជ័យ ១០០%!");
-                btn.innerText = "💾 រក្សាទុកសេវាកម្ម & កញ្ចប់ពេជ្រ";
-                btn.disabled = false;
                 document.getElementById('addGameForm').reset();
                 document.getElementById('photoPreviewContainer').style.display = 'none';
-                document.getElementById('gameBase64Photo').value = '';
-                document.getElementById('packagesWrapper').innerHTML = `
-                    <div class="package-row">
-                        <input type="text" placeholder="ចំនួនពេជ្រ (ឧ. 100 💎)" class="pkg-name" required>
-                        <input type="number" step="0.01" placeholder="តម្លៃដើម $ (ឧ. 1.00)" class="pkg-original-price" title="តម្លៃដើម" required>
-                        <input type="number" step="0.01" placeholder="តម្លៃលក់/បញ្ចុះ $ (ឧ. 0.60)" class="pkg-price" title="តម្លៃបញ្ចុះលក់ពិតប្រាកដ" required>
-                        <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">✕</button>
-                    </div>
-                `;
+                selectedImageFile = null;
                 fetchGames();
-            })
-            .catch(err => {
-                alert("កំហុសក្នុងការរក្សាទុក៖ " + err.message);
+
+            } catch (err) {
+                alert("កំហុស៖ " + err.message);
+            } finally {
                 btn.innerText = "💾 រក្សាទុកសេវាកម្ម & កញ្ចប់ពេជ្រ";
                 btn.disabled = false;
-            });
+            }
         }
 
         function fetchGames() {
@@ -395,9 +389,7 @@
 
                     gameIds.forEach(id => {
                         const g = games[id];
-                        const imgHtml = (g.image && g.image.startsWith('data:image')) || (g.image && g.image.startsWith('http')) 
-                            ? `<img src="${g.image}" class="game-img-preview">` 
-                            : `<span style="font-size:24px;">🎮</span>`;
+                        const imgHtml = `<img src="${g.image}" class="game-img-preview" onerror="this.src='https://placehold.co/100x100?text=IMG'">`;
                         
                         let pkgsHtml = '';
                         if (g.packages && Array.isArray(g.packages)) {
