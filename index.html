@@ -36,20 +36,15 @@
         .user-pill .balance { font-weight: 800; color: #818cf8; font-size: 14px; }
 
         .container { max-width: 1000px; margin: 25px auto; padding: 0 15px; }
+        .section-header { font-size: 18px; font-weight: 700; margin: 20px 0 15px 0; display: flex; align-items: center; gap: 8px; }
 
-        .hero-banner { background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(6, 182, 212, 0.1)); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 18px; padding: 30px; text-align: center; margin-bottom: 25px; }
-        .hero-banner h1 { font-size: 24px; font-weight: 800; margin-bottom: 8px; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-banner p { font-size: 13px; color: var(--text-sub); }
-
-        .section-header { font-size: 18px; font-weight: 700; margin: 20px 0 15px 0; }
-
-        /* Store Game Grid */
+        /* Store Service Grid (Dynamic from Admin) */
         .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        .game-card { height: 180px; border-radius: 16px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; position: relative; color: white; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; }
+        .game-card { height: 190px; border-radius: 16px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; position: relative; color: white; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; }
         .game-card:hover { transform: translateY(-4px); }
-        .card-icon-wrap { flex: 1; display: flex; justify-content: center; align-items: center; font-size: 40px; }
-        .card-icon-wrap img { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; }
-        .card-title { font-size: 13px; font-weight: 700; text-align: center; }
+        .card-icon-wrap { flex: 1; display: flex; justify-content: center; align-items: center; }
+        .card-icon-wrap img { width: 70px; height: 70px; border-radius: 14px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .card-title { font-size: 13px; font-weight: 700; text-align: center; margin-top: 6px; }
 
         .theme-orange { background: linear-gradient(180deg, #f12711, #f5af19); }
         .theme-blue { background: linear-gradient(180deg, #1e3c72, #2a5298); }
@@ -101,17 +96,13 @@
     </header>
 
     <div class="container">
-        <div class="hero-banner">
-            <h1>🎮 YUTH STORE AUTOMATION</h1>
-            <p>សូមចុះឈ្មោះចូលគណនី Google ដើម្បីទទួលបានសមតុល្យកាបូប (Wallet) ឬឆាតផ្ទាល់ជាមួយ Admin</p>
-        </div>
-
-        <div class="section-header">🔥 ជ្រើសរើសហ្គេម & កញ្ចប់ពេជ្របញ្ចុះតម្លៃ</div>
+        <div class="section-header">🔥 សេវាកម្ម និងកញ្ចប់ពេជ្រទាំងអស់</div>
         <div class="game-grid" id="clientGameGrid">
-            <div style="grid-column: 1/-1; text-align:center; padding:30px; color:var(--text-sub);">កំពុងទាញយកទិន្នន័យហ្គេម...</div>
+            <div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-sub);">មិនទាន់មានសេវាកម្ម ឬហ្គេមនៅលើប្រព័ន្ធទេ សូមរង់ចាំ Admin បញ្ចូលថ្មី...</div>
         </div>
     </div>
 
+    <!-- Floating Chat Widget -->
     <button class="fab-chat" onclick="toggleChat()">💬</button>
 
     <div class="chat-box" id="chatBox">
@@ -133,7 +124,7 @@
         <div class="modal-card">
             <div class="modal-close-x" onclick="closeModal('diamondModal')">✖</div>
             <h3 id="modalGameTitle">ជ្រើសរើសកញ្ចប់</h3>
-            <input type="text" id="playerIdInput" placeholder="បញ្ចូល Player ID / UID" style="width:100%; padding:10px; margin-top:12px; border:1px solid var(--border); background:#0b0f19; color:#fff; border-radius:8px; outline:none;">
+            <input type="text" id="playerIdInput" placeholder="បញ្ចូល Player ID / UID / លេខសម្គាល់" style="width:100%; padding:10px; margin-top:12px; border:1px solid var(--border); background:#0b0f19; color:#fff; border-radius:8px; outline:none;">
             <div class="package-grid" id="modalPackagesGrid"></div>
             <button onclick="proceedToPay()" style="width:100%; padding:12px; background:var(--primary-gradient); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">
                 បន្តទូទាត់ ($<span id="selectedPkgPrice">0.00</span>)
@@ -223,7 +214,7 @@
                 .then(games => {
                     const grid = document.getElementById('clientGameGrid');
                     if (!games || games.error) {
-                        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:30px; color:var(--text-sub);">មិនទាន់មានទិន្នន័យហ្គេម</div>';
+                        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-sub);">មិនទាន់មានសេវាកម្ម ឬហ្គេមនៅលើប្រព័ន្ធទេ សូមរង់ចាំ Admin បញ្ចូលថ្មី...</div>';
                         return;
                     }
 
@@ -231,7 +222,10 @@
                     let html = '';
                     Object.keys(games).forEach(id => {
                         const g = games[id];
-                        const iconHtml = g.image.startsWith('http') ? `<img src="${g.image}">` : `<span>${g.image}</span>`;
+                        const iconHtml = (g.image && g.image.startsWith('data:image')) || (g.image && g.image.startsWith('http')) 
+                            ? `<img src="${g.image}">` 
+                            : `<span style="font-size:40px;">${g.image || '🎮'}</span>`;
+
                         html += `
                             <div class="game-card ${g.theme || 'theme-orange'}" onclick="openGameModal('${id}')">
                                 <div class="card-icon-wrap">${iconHtml}</div>
@@ -290,7 +284,7 @@
 
         function proceedToPay() {
             const uid = document.getElementById('playerIdInput').value.trim();
-            if (!uid) return alert("សូមបញ្ចូល Player ID!");
+            if (!uid) return alert("សូមបញ្ចូលលេខសម្គាល់ / Player ID!");
 
             closeModal('diamondModal');
             document.getElementById('qrAmount').innerText = currentSelectedPrice.toFixed(2);
@@ -301,7 +295,7 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     chat_id: TELEGRAM_CHAT_ID,
-                    text: `🚨 *ការបញ្ជាទិញថ្មី*\n🎮 ហ្គេម: ${selectedGame.name}\n💎 កញ្ចប់: ${currentSelectedPkgName}\n💵 តម្លៃ: $${currentSelectedPrice}\n🆔 UID: \`${uid}\`\n👤 ភ្ញៀវ: ${loggedInUser.name}`,
+                    text: `🚨 *ការបញ្ជាទិញថ្មី*\n🎮 សេវាកម្ម: ${selectedGame.name}\n💎 កញ្ចប់: ${currentSelectedPkgName}\n💵 តម្លៃ: $${currentSelectedPrice}\n🆔 UID: \`${uid}\`\n👤 ភ្ញៀវ: ${loggedInUser.name}`,
                     parse_mode: "Markdown"
                 })
             });
