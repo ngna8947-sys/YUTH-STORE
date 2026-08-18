@@ -18,7 +18,10 @@
         .brand { font-size: 22px; font-weight: bold; color: #38bdf8; }
         .auth-bar { display: flex; align-items: center; gap: 10px; }
         .user-balance { background: #1e293b; padding: 8px 16px; border-radius: 20px; border: 1px solid #38bdf8; font-weight: bold; color: #38bdf8; }
-        .btn-google { background: #fff; color: #000; padding: 8px 16px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        
+        /* Google Button */
+        .btn-google { background: #ffffff; color: #1e293b; padding: 8px 16px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: 0.2s; }
+        .btn-google:hover { background: #f1f5f9; }
         .btn-logout { background: #ef4444; color: #fff; padding: 8px 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
         /* Grid & Cards */
@@ -33,7 +36,7 @@
         .card-price { color: #10b981; font-weight: bold; font-size: 16px; margin-bottom: 8px; }
         .btn-buy { width: 100%; padding: 8px; background: #38bdf8; color: #0b0f19; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; }
 
-        /* Chat Widget */
+        /* Live Chat Widget */
         .chat-btn { position: fixed; bottom: 20px; right: 20px; background: #38bdf8; color: #0f172a; width: 55px; height: 55px; border-radius: 50%; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.4); z-index: 100; display: flex; align-items: center; justify-content: center; }
         .chat-box { display: none; position: fixed; bottom: 85px; right: 20px; width: 320px; height: 420px; background: #1e293b; border: 1px solid #334155; border-radius: 14px; z-index: 100; flex-direction: column; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
         .chat-header { background: #0f172a; padding: 12px; font-weight: bold; color: #38bdf8; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; }
@@ -45,7 +48,7 @@
         .chat-input-area input { flex-grow: 1; padding: 8px; background: #1e293b; border: 1px solid #334155; color: #fff; border-radius: 6px; outline: none; }
         .chat-input-area button { padding: 8px 12px; background: #10b981; color: #fff; border: none; border-radius: 6px; margin-left: 6px; cursor: pointer; }
 
-        /* Modal Styles */
+        /* Modals */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: #1e293b; padding: 22px; border-radius: 14px; width: 90%; max-width: 420px; border: 1px solid #334155; }
         .field-group { margin-bottom: 10px; }
@@ -61,7 +64,9 @@
     <div class="header">
         <div class="brand">🔥 YUTH STORE</div>
         <div class="auth-bar" id="authBar">
-            <!-- ប៊ូតុង Login / សមតុល្យលុយ -->
+            <button class="btn-google" onclick="loginWithGoogle()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> ចូលប្រើជាមួយ Google
+            </button>
         </div>
     </div>
 
@@ -149,7 +154,14 @@
 
 <script>
     const firebaseConfig = {
-        databaseURL: "https://yuth-store-default-rtdb.firebaseio.com"
+        apiKey: "AIzaSyBnKL2cuZSGdtfxBbKq_otyi692HFMHd5o",
+        authDomain: "yuth-store.firebaseapp.com",
+        databaseURL: "https://yuth-store-default-rtdb.firebaseio.com",
+        projectId: "yuth-store",
+        storageBucket: "yuth-store.firebasestorage.app",
+        messagingSenderId: "76819152698",
+        appId: "1:76819152698:web:64153383c57412343dda03",
+        measurementId: "G-L18LVZ7W6R"
     };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
@@ -158,10 +170,12 @@
     let currentUser = null;
     let userBalance = 0;
 
-    // --- ១. ប្រព័ន្ធ Login ជាមួយ Google ---
+    // Login ជាមួយ Google
     function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).catch(err => alert("❌ Login បរាជ័យ៖ " + err.message));
+        auth.signInWithPopup(provider).catch(err => {
+            alert("❌ Login Google បរាជ័យ៖ " + err.message);
+        });
     }
 
     auth.onAuthStateChanged(user => {
@@ -191,7 +205,7 @@
         }
     });
 
-    // --- ២. បង្ហាញសេវាកម្ម Top-Up ហ្គេម ---
+    // បង្ហាញសេវាកម្ម Top-Up ហ្គេម
     db.ref('services').on('value', snapshot => {
         const grid = document.getElementById('servicesGrid');
         grid.innerHTML = '';
@@ -212,7 +226,7 @@
         }
     });
 
-    // --- ៣. បង្ហាញ Account សម្រាប់លក់ ---
+    // បង្ហាញ Account សម្រាប់លក់
     db.ref('accounts_for_sale').on('value', snapshot => {
         const grid = document.getElementById('accountsGrid');
         grid.innerHTML = '';
@@ -270,7 +284,6 @@
         const acc = accSnap.val();
         if (!acc || acc.status === 'sold') return alert("❌ អាខោននេះត្រូវបានគេទិញរួចហើយ!");
 
-        // កាត់ប្រាក់ & Update
         await db.ref('users/' + currentUser.uid).update({ balance: userBalance - price });
         await db.ref('accounts_for_sale/' + key).update({ status: 'sold', buyerEmail: currentUser.email, soldAt: Date.now() });
 
@@ -293,7 +306,7 @@
         alert("✅ បានចម្លងព័ត៌មានទាំងអស់!");
     }
 
-    // --- ៤. ប្រព័ន្ធ Live Chat ---
+    // Live Chat Function
     function toggleChat() {
         const box = document.getElementById('chatBox');
         box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
@@ -309,7 +322,6 @@
         input.value = '';
         msgBox.scrollTop = msgBox.scrollHeight;
 
-        // Auto-reply តបសារស្វ័យប្រវត្តិ
         setTimeout(() => {
             msgBox.innerHTML += `<div class="chat-msg other">Admin បានទទួលសាររបស់អ្នកហើយ! សូមរង់ចាំការឆ្លើយតបបន្តិច...</div>`;
             msgBox.scrollTop = msgBox.scrollHeight;
