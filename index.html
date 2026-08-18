@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YUTH STORE - Game Top-Up & Reseller API</title>
+    <title>YUTH STORE - Game Top-Up & Multimedia Chat</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700&family=Poppins:wght@400;600;700&display=swap');
@@ -82,16 +82,33 @@
         .fab-chat { position: fixed; bottom: 25px; right: 25px; width: 56px; height: 56px; border-radius: 50%; background: #1877f2; color: white; display: flex; justify-content: center; align-items: center; font-size: 26px; box-shadow: 0 4px 15px rgba(24,119,242,0.4); cursor: pointer; border: none; z-index: 1000; transition: transform 0.2s; }
         .fab-chat:hover { transform: scale(1.08); }
 
-        /* Chat Pop-up */
-        .chat-box { position: fixed; bottom: 90px; right: 25px; width: 340px; height: 460px; background: white; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); display: none; flex-direction: column; z-index: 1000; overflow: hidden; border: 1px solid #e4e6eb; }
+        /* Modern Multimedia Chat Window */
+        .chat-box { position: fixed; bottom: 90px; right: 25px; width: 360px; height: 500px; background: white; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.18); display: none; flex-direction: column; z-index: 1000; overflow: hidden; border: 1px solid #e4e6eb; }
         .chat-top { background: #1877f2; color: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; }
-        .chat-logs { flex: 1; padding: 15px; background: #f0f2f5; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-        .chat-msg { max-width: 80%; padding: 8px 12px; border-radius: 14px; font-size: 13px; }
-        .chat-msg.admin { background: white; align-self: flex-start; border-bottom-left-radius: 4px; }
-        .chat-msg.user { background: #1877f2; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .chat-bottom { padding: 10px; background: white; display: flex; gap: 8px; border-top: 1px solid #eee; }
-        .chat-bottom input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 20px; outline: none; font-size: 13px; }
-        .chat-bottom button { background: #1877f2; color: white; border: none; padding: 0 15px; border-radius: 20px; cursor: pointer; }
+        .chat-logs { flex: 1; padding: 12px; background: #f0f2f5; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        
+        /* Message Bubbles */
+        .chat-msg { max-width: 82%; padding: 8px 12px; border-radius: 14px; font-size: 13px; word-break: break-word; }
+        .chat-msg.admin { background: white; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .chat-msg.user { background: #1877f2; color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 1px 2px rgba(24,119,242,0.2); }
+        
+        .chat-msg img { max-width: 100%; border-radius: 8px; margin-top: 4px; display: block; }
+        .chat-msg video { max-width: 100%; border-radius: 8px; margin-top: 4px; display: block; }
+        .chat-msg audio { max-width: 100%; margin-top: 4px; height: 35px; }
+
+        /* Chat Controls Bottom */
+        .chat-bottom-wrap { background: white; border-top: 1px solid #eee; padding: 8px 10px; }
+        .chat-tools { display: flex; align-items: center; gap: 6px; }
+        .chat-tools input[type="text"] { flex: 1; padding: 8px 14px; border: 1px solid #ddd; border-radius: 20px; outline: none; font-size: 13px; }
+        .chat-tools input[type="text"]:focus { border-color: var(--primary); }
+        
+        .tool-btn { background: #f0f2f5; border: none; width: 34px; height: 34px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; cursor: pointer; color: #555; transition: 0.2s; }
+        .tool-btn:hover { background: #e4e6eb; color: var(--primary); }
+        .tool-btn.recording { background: var(--danger); color: white; animation: blink 1s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+        .btn-send-chat { background: var(--primary); color: white; border: none; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 14px; }
+        .btn-send-chat:hover { background: #155dc1; }
 
         /* Modals */
         .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.65); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
@@ -124,6 +141,7 @@
             .search-box { display: none; }
             .promo-banner-grid { grid-template-columns: 1fr; }
             .game-grid { grid-template-columns: repeat(2, 1fr); }
+            .chat-box { width: 92%; right: 4%; bottom: 85px; height: 65vh; }
         }
     </style>
 </head>
@@ -136,8 +154,8 @@
             <input type="text" placeholder="ស្វែងរកហ្គេម...">
         </div>
         <div class="header-right">
-            <!-- ប៊ូតុងបើកមើល Reseller API -->
-            <button class="btn-api-nav" onclick="openModal('apiDocModal')">⚡ Reseller API</button>
+            <!-- ប៊ូតុង API ខ្លីច្បាស់លាស់ -->
+            <button class="btn-api-nav" onclick="openModal('apiDocModal')">⚡ API</button>
 
             <div class="online-badge">
                 <div class="online-dot"></div>
@@ -162,7 +180,7 @@
 
     <div class="container">
         <div class="section-header">
-            <span>📢 Events & Reseller</span>
+            <span>📢 Events & Promo</span>
         </div>
         <div class="promo-banner-grid">
             <div class="promo-card-main promo-ff" onclick="openDiamondModal('Free Fire Mega Promo')">
@@ -172,7 +190,7 @@
             </div>
             <div class="promo-card-main promo-reseller" onclick="openModal('apiDocModal')">
                 <div class="promo-tag" style="background:#2563eb;">Connect Your Bot</div>
-                <h3>🔌 Reseller API (លក់បន្ត)</h3>
+                <h3>🔌 API</h3>
                 <p>ភ្ជាប់ Bot Telegram ឬ Website របស់អ្នកដើម្បីទិញស្វ័យប្រវត្តិ</p>
             </div>
         </div>
@@ -240,18 +258,29 @@
     <!-- Floating Chat Button -->
     <button class="fab-chat" onclick="toggleChat()">💬</button>
 
-    <!-- Chat Modal -->
+    <!-- Multimedia Live Chat Window -->
     <div class="chat-box" id="chatBox">
         <div class="chat-top">
-            <span>YUTH STORE Chat</span>
+            <span>YUTH STORE Support</span>
             <span style="cursor:pointer;" onclick="toggleChat()">✖</span>
         </div>
         <div class="chat-logs" id="chatLogs">
-            <div class="chat-msg admin">សួស្តីបាទ! មានអ្វីឱ្យ Admin ជួយទេ? អាចទម្លាក់លេខ ឬសំណួរបានបាទ។</div>
+            <div class="chat-msg admin">
+                សួស្តីបាទ! 🙏 មានអ្វីឱ្យ Admin ជួយទេ? អ្នកអាចសរសេរអក្សរ ផ្ញើរូបភាព វីដេអូ ឬនិយាយជាសំឡេងបានបាទ។
+            </div>
         </div>
-        <div class="chat-bottom">
-            <input type="text" id="chatInput" placeholder="ផ្ញើសារមកកាន់ Admin..." onkeypress="if(event.key==='Enter') sendChat()">
-            <button onclick="sendChat()">ផ្ញើ</button>
+        
+        <div class="chat-bottom-wrap">
+            <div class="chat-tools">
+                <input type="file" id="chatMediaInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaUpload(this)">
+                <button class="tool-btn" onclick="document.getElementById('chatMediaInput').click()" title="ផ្ញើរូបភាព / វីដេអូ">📎</button>
+                <button class="tool-btn" id="voiceRecordBtn" onclick="toggleVoiceRecording()" title="ថតសំឡេងនិយាយ">🎙️</button>
+                <input type="text" id="chatInput" placeholder="ផ្ញើសារ..." onkeypress="if(event.key==='Enter') sendChat()">
+                <button class="btn-send-chat" onclick="sendChat()">➤</button>
+            </div>
+            <div id="recordingStatus" style="display:none; font-size:11px; color:var(--danger); margin-top:4px; font-weight:bold; text-align:center;">
+                🔴 កំពុងថតសំឡេង... (ចុចលើរូបមេក្រូម្តងទៀតដើម្បីផ្ញើ)
+            </div>
         </div>
     </div>
 
@@ -336,15 +365,15 @@
         </div>
     </div>
 
-    <!-- 3. Modal Reseller API Documentation (ផ្ទាំង API សម្រាប់ភ្ញៀវយកទៅលក់បន្ត) -->
+    <!-- 3. Modal API (ប្តូរចំណងជើងជា "API" តាមការចង់បាន) -->
     <div class="modal-bg" id="apiDocModal">
         <div class="modal-card" style="text-align:left;">
             <div class="modal-close-x" onclick="closeModal('apiDocModal')">✖</div>
             <h3 style="color:var(--text-main); margin-bottom:4px; display:flex; align-items:center; gap:8px;">
-                🔌 Reseller API Documentation
+                🔌 API
             </h3>
             <p style="font-size:12px; color:var(--text-sub); margin-bottom:12px;">
-                ប្រើប្រាស់ API នេះដើម្បីភ្ជាប់ជាមួយ Telegram Bot ឬ Website លក់បន្តរបស់អ្នក។
+                ប្រើប្រាស់ API នេះដើម្បីភ្ជាប់ជាមួយ Telegram Bot ឬ Website របស់អ្នក។
             </p>
 
             <div style="font-size:13px; font-weight:bold; color:#333; margin-top:8px;">1. API Endpoint (POST):</div>
@@ -357,7 +386,7 @@
             <div class="code-box">
                 <button class="code-copy-btn" onclick="copyCode(this, 'apiJsonText')">Copy</button>
 <pre id="apiJsonText">{
-  "api_key": "YOUR_RESELLER_KEY",
+  "api_key": "YOUR_API_KEY",
   "game": "Free Fire",
   "package": "100_diamonds",
   "player_id": "12345678"
@@ -411,7 +440,7 @@
 
         function checkAuth() {
             if (!loggedInUser) {
-                alert("⚠️ សូមចុះឈ្មោះ / ចូលគណនី (Sign in with Google) ជាមុនសិន ទើបអាចធ្វើការទិញពេជ្រ ឬបញ្ចូលលុយបាន!");
+                alert("⚠️ សូមចុះឈ្មោះ / ចូលគណនី (Sign in with Google) ជាមុនសិន ទើបអាចធ្វើការទិញពេជ្រ ឬប្រើប្រាស់មុខងារ Chat បាន!");
                 return false;
             }
             return true;
@@ -451,7 +480,7 @@
             document.getElementById('userAvatar').src = user.picture;
             document.getElementById('userBalance').innerText = '0.00';
             
-            alert(`🎉 ស្វាគមន៍ការមកកាន់ YUTH STORE, ${user.name}! ឥឡូវអ្នកអាចទិញពេជ្របានហើយ។`);
+            alert(`🎉 ស្វាគមន៍ការមកកាន់ YUTH STORE, ${user.name}!`);
         }
 
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
@@ -522,6 +551,7 @@
             openModal('qrModal');
         }
 
+        // Multimedia Chat Logic
         function toggleChat() {
             if (!checkAuth()) return;
             const box = document.getElementById('chatBox');
@@ -535,25 +565,133 @@
             if(!text) return;
 
             const logs = document.getElementById('chatLogs');
-            logs.innerHTML += `<div class="chat-msg user">${text}</div>`;
+            logs.innerHTML += `<div class="chat-msg user">${escapeHtml(text)}</div>`;
             
             fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     chat_id: TELEGRAM_CHAT_ID,
-                    text: `💬 *សារពី ${loggedInUser ? loggedInUser.name : 'ភ្ញៀវ'} (Live Chat):*\n"${text}"`,
+                    text: `💬 *សារពី ${loggedInUser.name} (Live Chat):*\n"${text}"`,
                     parse_mode: "Markdown"
                 })
             }).catch(e => console.error(e));
 
             input.value = '';
             logs.scrollTop = logs.scrollHeight;
+            replyAdminAuto();
+        }
 
+        function handleMediaUpload(input) {
+            if (!checkAuth()) return;
+            const file = input.files[0];
+            if (!file) return;
+
+            const logs = document.getElementById('chatLogs');
+            const fileUrl = URL.createObjectURL(file);
+            const isVideo = file.type.startsWith('video/');
+
+            if (isVideo) {
+                logs.innerHTML += `
+                    <div class="chat-msg user">
+                        <video controls src="${fileUrl}"></video>
+                        <span style="font-size:11px; opacity:0.8;">🎥 វីដេអូ</span>
+                    </div>`;
+            } else {
+                logs.innerHTML += `
+                    <div class="chat-msg user">
+                        <img src="${fileUrl}" alt="Photo">
+                        <span style="font-size:11px; opacity:0.8;">📷 រូបភាព</span>
+                    </div>`;
+            }
+            logs.scrollTop = logs.scrollHeight;
+
+            const formData = new FormData();
+            formData.append("chat_id", TELEGRAM_CHAT_ID);
+            formData.append("caption", `📎 *${isVideo ? 'វីដេអូ' : 'រូបភាព'} ផ្ញើដោយ:* ${loggedInUser.name}`);
+
+            const endpoint = isVideo ? "sendVideo" : "sendPhoto";
+            formData.append(isVideo ? "video" : "photo", file);
+
+            fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/${endpoint}`, {
+                method: "POST",
+                body: formData
+            }).catch(e => console.error("Media send error:", e));
+
+            input.value = '';
+            replyAdminAuto();
+        }
+
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
+        async function toggleVoiceRecording() {
+            if (!checkAuth()) return;
+            const recBtn = document.getElementById('voiceRecordBtn');
+            const statusLabel = document.getElementById('recordingStatus');
+
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = event => {
+                        if (event.data.size > 0) audioChunks.push(event.data);
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/ogg; codecs=opus' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+
+                        const logs = document.getElementById('chatLogs');
+                        logs.innerHTML += `
+                            <div class="chat-msg user">
+                                <audio controls src="${audioUrl}"></audio>
+                                <div style="font-size:10px; opacity:0.8; margin-top:2px;">🎙️ សំឡេង Voice Note</div>
+                            </div>`;
+                        logs.scrollTop = logs.scrollHeight;
+
+                        const formData = new FormData();
+                        formData.append("chat_id", TELEGRAM_CHAT_ID);
+                        formData.append("caption", `🎙️ *Voice Message ពី:* ${loggedInUser.name}`);
+                        formData.append("voice", audioBlob, "voice.ogg");
+
+                        fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendVoice`, {
+                            method: "POST",
+                            body: formData
+                        }).catch(e => console.error("Voice send error:", e));
+
+                        replyAdminAuto();
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    recBtn.classList.add('recording');
+                    statusLabel.style.display = 'block';
+                } catch (err) {
+                    alert("⚠️ មិនអាចបើក Microphone បានទេ! សូមអនុញ្ញាត (Allow Mic Permission) ក្នុង Browser។");
+                }
+            } else {
+                mediaRecorder.stop();
+                isRecording = false;
+                recBtn.classList.remove('recording');
+                statusLabel.style.display = 'none';
+            }
+        }
+
+        function replyAdminAuto() {
             setTimeout(() => {
-                logs.innerHTML += `<div class="chat-msg admin">Admin ទទួលបានសារហើយ! សូមរង់ចាំការឆ្លើយតបបន្តិចបាទ។</div>`;
+                const logs = document.getElementById('chatLogs');
+                logs.innerHTML += `<div class="chat-msg admin">Admin ទទួលបានហើយ! សូមរង់ចាំការឆ្លើយតបបន្តិចបាទ 🙏</div>`;
                 logs.scrollTop = logs.scrollHeight;
-            }, 1200);
+            }, 1500);
+        }
+
+        function escapeHtml(text) {
+            const map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'};
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
         }
 
         function copyCode(btn, elementId) {
