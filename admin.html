@@ -3,184 +3,428 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YUTH STORE - Admin Dashboard</title>
-    
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    
-    <!-- Google Fonts & Font Awesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Admin Dashboard - YUTH STORE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <style>
-        * { box-sizing: border-box; font-family: 'Kantumruy Pro', sans-serif; margin: 0; padding: 0; }
-        body { background: #090e17; color: #f8fafc; padding: 20px; }
-        .container { max-width: 1100px; margin: 0 auto; }
-        
-        /* Header */
-        .admin-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 15px; margin-bottom: 25px; }
-        .brand { font-size: 22px; font-weight: bold; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
+        :root {
+            --primary: #2563eb;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
 
-        /* Stats Cards */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .stat-card { background: #131c2e; border: 1px solid #1e293b; padding: 20px; border-radius: 12px; }
-        .stat-card h4 { font-size: 13px; color: #94a3b8; margin-bottom: 8px; }
-        .stat-card .value { font-size: 24px; font-weight: bold; color: #38bdf8; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Kantumruy Pro', sans-serif;
+        }
 
-        /* Action Panel */
-        .panel { background: #131c2e; border: 1px solid #1e293b; padding: 20px; border-radius: 14px; margin-bottom: 25px; }
-        .panel h3 { color: #38bdf8; font-size: 17px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-        .form-row { display: flex; gap: 12px; flex-wrap: wrap; }
-        .form-row input { flex: 1; min-width: 200px; padding: 11px; background: #0b1120; border: 1px solid #334155; border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
-        .form-row input:focus { border-color: #38bdf8; }
-        .btn-topup { background: #0284c7; color: #fff; border: none; padding: 11px 22px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-topup:hover { background: #38bdf8; color: #090e17; }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            padding: 20px;
+        }
 
-        /* Orders Table */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #1e293b; }
-        th { background: #0b1120; color: #94a3b8; font-weight: 600; }
-        tr:hover { background: rgba(56, 189, 248, 0.03); }
-        .badge { padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; }
-        .badge.pending { background: rgba(234, 179, 8, 0.2); color: #facc15; }
-        .badge.completed { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
-        .btn-done { background: #22c55e; color: #fff; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        #loginGate {
+            max-width: 400px;
+            margin: 100px auto;
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            text-align: center;
+        }
+
+        #dashboard {
+            display: none;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #334155;
+            margin-bottom: 2rem;
+        }
+
+        .box {
+            background: var(--card-bg);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        input, select, textarea {
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: white;
+            padding: 9px 12px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .btn-submit {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-topup {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        table th, table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #334155;
+        }
+
+        table th {
+            background: #0f172a;
+            color: #38bdf8;
+        }
+
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="admin-header">
-        <div class="brand"><i class="fa-solid fa-shield-halved"></i> YUTH STORE - Admin Dashboard</div>
-        <a href="index.html" style="color: #94a3b8; text-decoration: none; font-size: 14px;"><i class="fa-solid fa-arrow-left"></i> ទៅកាន់ទំព័រមុខ</a>
+    <div class="container">
+
+        <!-- Login Gate -->
+        <div id="loginGate">
+            <h2 style="margin-bottom: 1rem; color: #38bdf8;">🔐 Admin Authentication</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">សូមបញ្ចូល Password ដើម្បីចូលផ្ទាំងគ្រប់គ្រង</p>
+            <input type="password" id="adminPassInput" placeholder="Password លំនាំដើម: 123" style="width: 100%; margin-bottom: 1rem;">
+            <button class="btn-submit" style="width: 100%;" onclick="checkAdminLogin()">ចូលផ្ទាំងគ្រប់គ្រង</button>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard">
+            <div class="admin-header">
+                <h2>🛠️ YUTH STORE - Admin Control Panel</h2>
+                <div>
+                    <a href="index.html" target="_blank" style="color: #38bdf8; text-decoration: none; margin-right: 15px;">🌐 បើកមើលទំព័រភ្ញៀវ</a>
+                    <button class="btn-delete" onclick="adminLogout()">ចាកចេញ</button>
+                </div>
+            </div>
+
+            <!-- Form បញ្ចូលទំនិញ / ពេជ្រ Free Fire -->
+            <div class="box">
+                <h3 style="margin-bottom: 1.2rem; color: #38bdf8;">➕ បញ្ចូលប្រភេទអាខោន / កញ្ចប់ពេជ្រ Free Fire</h3>
+                <form id="addProductForm" onsubmit="saveProduct(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>ប្រភេទសេវាកម្ម (Category):</label>
+                            <select id="pCategory" required>
+                                <option value="💎 ពេជ្រ Free Fire">💎 ពេជ្រ Free Fire (Diamond Top-up / Pass)</option>
+                                <option value="Facebook Page">Facebook Page (Full Admin)</option>
+                                <option value="Facebook Ads BM">Facebook Ads (Business Manager)</option>
+                                <option value="TikTok Ads">TikTok Agency / Ads Account</option>
+                                <option value="Telegram VIP">Telegram Admin / Channel</option>
+                                <option value="Google Cloud / VPS">Google Cloud / VPS Hosting</option>
+                                <option value="Gmail / Other">Gmail / គណនីផ្សេងៗ</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>ឈ្មោះទំនិញ / កញ្ចប់ពេជ្រ:</label>
+                            <input type="text" id="pName" placeholder="ឧ. 520 💎 Free Fire Diamonds ឬ FB Page 50k" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>អាយុកាលអាខោន / រយៈពេលបញ្ចូល:</label>
+                            <input type="text" id="pAge" placeholder="ឧ. 1-5 នាទី ឬ បង្កើតឆ្នាំ 2020" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>តម្លៃដើម ($):</label>
+                            <input type="number" id="pPrice" step="0.01" placeholder="4.50" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>បញ្ចុះតម្លៃជាភាគរយ (% Discount):</label>
+                            <input type="number" id="pDiscount" min="0" max="100" value="0" placeholder="0 - 100">
+                        </div>
+
+                        <div class="form-group">
+                            <label>ស្ថានភាពស្តុក (Status):</label>
+                            <select id="pStatus">
+                                <option value="in_stock">មានក្នុងស្តុក (In Stock)</option>
+                                <option value="out_of_stock">អស់ពីស្តុក (Out of Stock)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>រូបភាពទំនិញ / រូបភាពពេជ្រ (ជ្រើសរើស File រូបភាពដោយខ្លួនឯង):</label>
+                            <input type="file" id="pImage" accept="image/*" required>
+                        </div>
+
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>ព័ត៌មានលម្អិតបន្ថែម (Description):</label>
+                            <textarea id="pDesc" rows="2" placeholder="✔ បញ្ចូលតាម UID រហ័ស ✔ សុវត្ថិភាព 100% មិនបាច់ប្រើ Password"></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">💾 បង្ហោះទំនិញចូល Store ភ្លាមៗ</button>
+                </form>
+            </div>
+
+            <!-- តារាងគ្រប់គ្រងទំនិញ -->
+            <div class="box">
+                <h3 style="margin-bottom: 1rem; color: #38bdf8;">📦 គ្រប់គ្រងទំនិញ & ពេជ្រក្នុងស្តុក</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>រូបភាព</th>
+                                <th>ប្រភេទ</th>
+                                <th>ឈ្មោះទំនិញ</th>
+                                <th>អាយុ/ពេល</th>
+                                <th>តម្លៃដើម</th>
+                                <th>Discount</th>
+                                <th>ស្ថានភាព</th>
+                                <th>សកម្មភាព</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- តារាងគ្រប់គ្រងភ្ញៀវ & កាបូបលុយ -->
+            <div class="box">
+                <h3 style="margin-bottom: 1rem; color: #38bdf8;">👥 គ្រប់គ្រងភ្ញៀវ & បញ្ចូលលុយ (Wallet Top-Up)</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>រូបភាព</th>
+                                <th>ឈ្មោះភ្ញៀវ</th>
+                                <th>អ៊ីមែល (Email)</th>
+                                <th>សមតុល្យលុយ ($)</th>
+                                <th>កាលបរិច្ឆេទចូល</th>
+                                <th>បញ្ចូលលុយឱ្យភ្ញៀវ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Stats -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <h4><i class="fa-solid fa-cart-shopping"></i> ការបញ្ជាទិញសរុប</h4>
-            <div class="value" id="statOrders">0</div>
-        </div>
-        <div class="stat-card">
-            <h4><i class="fa-solid fa-clock"></i> រង់ចាំដំណើរការ (Pending)</h4>
-            <div class="value" style="color: #facc15;" id="statPending">0</div>
-        </div>
-    </div>
+    <script>
+        const ADMIN_SECRET = "123";
 
-    <!-- Manual Top-up Panel -->
-    <div class="panel">
-        <h3><i class="fa-solid fa-wallet"></i> បញ្ចូលសមតុល្យឱ្យសមាជិក (Manual Top-Up)</h3>
-        <div class="form-row">
-            <input type="text" id="manualEmail" placeholder="អ៊ីមែលអ្នកប្រើប្រាស់ (ឧ. user@gmail.com)">
-            <input type="number" id="manualAmount" placeholder="ចំនួនទឹកប្រាក់ ($) ឧ. 10">
-            <button class="btn-topup" onclick="addManualBalance()">បញ្ចូលលុយ</button>
-        </div>
-    </div>
-
-    <!-- Orders Management -->
-    <div class="panel">
-        <h3><i class="fa-solid fa-list-check"></i> បញ្ជីការបញ្ជាទិញ (Orders List)</h3>
-        <div style="overflow-x: auto;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>កាលបរិច្ឆេទ</th>
-                        <th>អ៊ីមែល</th>
-                        <th>ទំនិញ</th>
-                        <th>Player ID</th>
-                        <th>តម្លៃ</th>
-                        <th>ស្ថានភាព</th>
-                        <th>សកម្មភាព</th>
-                    </tr>
-                </thead>
-                <tbody id="ordersTableBody">
-                    <tr><td colspan="7" style="text-align: center; color: #64748b;">មិនទាន់មានការបញ្ជាទិញទេ</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyBnKL2cuZSGdtfxBbKq_otyi692HFMhD5o",
-        authDomain: "yuth-store.firebaseapp.com",
-        databaseURL: "https://yuth-store-default-rtdb.firebaseio.com",
-        projectId: "yuth-store",
-        storageBucket: "yuth-store.firebasestorage.app",
-        messagingSenderId: "76819152698",
-        appId: "1:76819152698:web:64153383c57412343dda03",
-        measurementId: "G-LT8LVZ7W6R"
-    };
-
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-
-    // បញ្ចូលលុយ Manual
-    function addManualBalance() {
-        const email = document.getElementById('manualEmail').value.trim();
-        const amt = parseFloat(document.getElementById('manualAmount').value);
-
-        if (!email || isNaN(amt) || amt <= 0) return alert("សូមបញ្ចូលអ៊ីមែល និងចំនួនទឹកប្រាក់ឱ្យបានត្រឹមត្រូវ!");
-        const emailKey = email.replace(/\./g, ',');
-
-        database.ref('users/' + emailKey).once('value', (snap) => {
-            let current = 0;
-            const data = snap.val();
-            if (typeof data === 'number') current = data;
-            else if (data && data.balance !== undefined) current = data.balance;
-
-            const newTotal = current + amt;
-            database.ref('users/' + emailKey).set({ balance: newTotal }, (err) => {
-                if (!err) {
-                    alert("✅ បានបញ្ចូល $" + amt + " ទៅកាន់ " + email + " ជោគជ័យ! (សមតុល្យថ្មី: $" + newTotal + ")");
-                    document.getElementById('manualAmount').value = '';
-                } else {
-                    alert("Error: " + err.message);
-                }
-            });
-        });
-    }
-
-    // Realtime Orders
-    database.ref('orders').on('value', (snap) => {
-        const orders = snap.val() || {};
-        const tbody = document.getElementById('ordersTableBody');
-        tbody.innerHTML = '';
-
-        let total = 0, pending = 0;
-
-        Object.keys(orders).reverse().forEach((key) => {
-            const ord = orders[key];
-            total++;
-            if (ord.status === 'pending') pending++;
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${ord.time || '-'}</td>
-                <td>${ord.user || '-'}</td>
-                <td style="color: #38bdf8; font-weight: bold;">${ord.item}</td>
-                <td><code style="background:#0b1120; padding:3px 6px; border-radius:4px;">${ord.targetId}</code></td>
-                <td style="color: #4ade80; font-weight: bold;">$${Number(ord.price).toFixed(2)}</td>
-                <td><span class="badge ${ord.status}">${ord.status === 'pending' ? 'រង់ចាំ' : 'ជោគជ័យ'}</span></td>
-                <td>
-                    ${ord.status === 'pending' ? `<button class="btn-done" onclick="completeOrder('${key}')">✓ បញ្ចប់</button>` : '<i class="fa-solid fa-check" style="color:#22c55e;"></i>'}
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-
-        document.getElementById('statOrders').innerText = total;
-        document.getElementById('statPending').innerText = pending;
-    });
-
-    function completeOrder(key) {
-        if (confirm("តើអ្នកបានបញ្ចូលពេជ្រជូនភ្ញៀវរួចរាល់ហើយមែនទេ?")) {
-            database.ref('orders/' + key).update({ status: 'completed' });
+        function checkAdminLogin() {
+            const val = document.getElementById('adminPassInput').value;
+            if (val === ADMIN_SECRET) {
+                document.getElementById('loginGate').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadAdminData();
+            } else {
+                alert("❌ Password មិនត្រឹមត្រូវទេ!");
+            }
         }
-    }
-</script>
+
+        function adminLogout() {
+            document.getElementById('loginGate').style.display = 'block';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('adminPassInput').value = '';
+        }
+
+        function loadAdminData() {
+            renderProductList();
+            renderUserList();
+        }
+
+        function getProducts() {
+            const stored = localStorage.getItem('yuth_products');
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        function renderProductList() {
+            const products = getProducts();
+            const tbody = document.getElementById('productTableBody');
+            tbody.innerHTML = '';
+
+            if (products.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">មិនទាន់មានទំនិញ ឬពេជ្រក្នុងស្តុកនៅឡើយទេ</td></tr>`;
+                return;
+            }
+
+            products.forEach((p, index) => {
+                const statusText = p.status === 'out_of_stock' ? '<span style="color:var(--danger)">អស់ពីស្តុក</span>' : '<span style="color:var(--accent)">មានក្នុងស្តុក</span>';
+                tbody.innerHTML += `
+                    <tr>
+                        <td><img src="${p.img}" style="width:45px; height:45px; border-radius:6px; object-fit:cover;"></td>
+                        <td>${p.category || '-'}</td>
+                        <td><strong>${p.name}</strong></td>
+                        <td>${p.age || '-'}</td>
+                        <td>$${Number(p.price).toFixed(2)}</td>
+                        <td>${p.discount || 0}%</td>
+                        <td>${statusText}</td>
+                        <td><button class="btn-delete" onclick="deleteProduct(${index})">លុប</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function deleteProduct(index) {
+            if (confirm("តើអ្នកច្បាស់ទេថាចង់លុបទំនិញនេះចេញពី Store?")) {
+                const products = getProducts();
+                products.splice(index, 1);
+                localStorage.setItem('yuth_products', JSON.stringify(products));
+                renderProductList();
+            }
+        }
+
+        function saveProduct(e) {
+            e.preventDefault();
+            const category = document.getElementById('pCategory').value;
+            const name = document.getElementById('pName').value;
+            const age = document.getElementById('pAge').value;
+            const price = parseFloat(document.getElementById('pPrice').value);
+            const discount = parseFloat(document.getElementById('pDiscount').value) || 0;
+            const status = document.getElementById('pStatus').value;
+            const desc = document.getElementById('pDesc').value;
+            const fileInput = document.getElementById('pImage');
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const newProduct = {
+                        id: Date.now(),
+                        category: category,
+                        name: name,
+                        age: age,
+                        price: price,
+                        discount: discount,
+                        status: status,
+                        desc: desc,
+                        img: event.target.result
+                    };
+
+                    const products = getProducts();
+                    products.push(newProduct);
+                    localStorage.setItem('yuth_products', JSON.stringify(products));
+
+                    alert('✅ បានបង្ហោះទំនិញ/កញ្ចប់ពេជ្រចូល Store ជោគជ័យ!');
+                    document.getElementById('addProductForm').reset();
+                    renderProductList();
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+
+        function renderUserList() {
+            const storedUsers = localStorage.getItem('yuth_users');
+            const users = storedUsers ? JSON.parse(storedUsers) : [];
+            const tbody = document.getElementById('userTableBody');
+            tbody.innerHTML = '';
+
+            if (users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">មិនទាន់មានភ្ញៀវចុះឈ្មោះនៅឡើយទេ</td></tr>`;
+                return;
+            }
+
+            users.forEach((u, index) => {
+                const balance = Number(u.balance || 0).toFixed(2);
+                tbody.innerHTML += `
+                    <tr>
+                        <td><img src="${u.picture}" style="width:32px; height:32px; border-radius:50%;"></td>
+                        <td><strong>${u.name}</strong></td>
+                        <td>${u.email}</td>
+                        <td style="color: var(--accent); font-weight:700;">$${balance}</td>
+                        <td>${u.joinedAt}</td>
+                        <td>
+                            <button class="btn-topup" onclick="topUpUser(${index})">➕ បញ្ចូល / កែសម្រួលលុយ</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function topUpUser(index) {
+            const users = JSON.parse(localStorage.getItem('yuth_users'));
+            const user = users[index];
+            const currentBal = Number(user.balance || 0);
+
+            const input = prompt(`បញ្ចូលចំនួនទឹកប្រាក់ ($) សម្រាប់ភ្ញៀវ "${user.name}" (សមតុល្យបច្ចុប្បន្ន: $${currentBal.toFixed(2)}):`, "5.00");
+            
+            if (input !== null) {
+                const amount = parseFloat(input);
+                if (!isNaN(amount) && amount >= 0) {
+                    user.balance = amount;
+                    localStorage.setItem('yuth_users', JSON.stringify(users));
+                    alert(`✅ បានកំណត់សមតុល្យថ្មី $${amount.toFixed(2)} សម្រាប់ ${user.name} ជោគជ័យ!`);
+                    renderUserList();
+                } else {
+                    alert("❌ សូមបញ្ចូលចំនួនទឹកប្រាក់ជាលេខឱ្យបានត្រឹមត្រូវ!");
+                }
+            }
+        }
+    </script>
 </body>
 </html>
