@@ -32,7 +32,7 @@
         .menu-item:hover, .menu-item.active { background: #e8f0fe; color: var(--primary); border-left-color: var(--primary); }
         .menu-badge { margin-left: auto; background: var(--danger); color: white; font-size: 11px; padding: 2px 7px; border-radius: 10px; font-weight: bold; }
 
-        /* Main Content Area */
+        /* Main Content */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
         .topbar { background: white; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
         .menu-toggle-btn { display: none; background: #f0f2f5; border: none; padding: 6px 10px; border-radius: 8px; font-size: 18px; cursor: pointer; margin-right: 8px; }
@@ -45,7 +45,7 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Dashboard Stats Cards */
+        /* Stats Cards */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 15px; }
         .stat-card { background: white; padding: 15px; border-radius: 12px; border: 1px solid var(--border); border-left: 4px solid var(--primary); }
         .stat-card.success { border-left-color: var(--success); }
@@ -54,7 +54,7 @@
         .stat-title { font-size: 11px; color: #777; margin-bottom: 4px; }
         .stat-value { font-size: 20px; font-weight: 800; }
 
-        /* Tables & Panels */
+        /* Panels */
         .card-panel { background: white; border-radius: 12px; border: 1px solid var(--border); padding: 15px; margin-bottom: 15px; overflow-x: auto; }
         .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; flex-wrap: wrap; }
         .panel-title { font-size: 14px; font-weight: 700; }
@@ -79,21 +79,23 @@
         .price-input-group label { font-size: 11px; color: #666; }
         .price-input-group input { width: 100%; padding: 6px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; margin-top: 2px; }
 
-        /* Chat System Fix */
+        /* Multi-Customer Chat System */
         .chat-container { display: flex; height: calc(100vh - 120px); background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
-        .chat-user-list { width: 180px; border-right: 1px solid var(--border); overflow-y: auto; background: #fafafa; }
-        .chat-user-item { padding: 10px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
-        .chat-user-item.active { background: #e8f0fe; border-left: 3px solid var(--primary); }
+        .chat-user-list { width: 220px; border-right: 1px solid var(--border); overflow-y: auto; background: #fafafa; }
+        .chat-user-item { padding: 12px 14px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: 0.2s; }
+        .chat-user-item:hover { background: #f0f2f5; }
+        .chat-user-item.active { background: #e8f0fe; border-left: 4px solid var(--primary); }
+        .chat-user-name { font-weight: bold; font-size: 13px; color: var(--dark); }
+        .chat-user-snippet { font-size: 11px; color: #777; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
         
         .chat-room { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-        .chat-room-header { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: bold; background: #fafafa; }
+        .chat-room-header { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: bold; background: #fafafa; display: flex; justify-content: space-between; align-items: center; }
         .chat-room-messages { flex: 1; padding: 12px; overflow-y: auto; background: #f0f2f5; display: flex; flex-direction: column; gap: 8px; }
         
         .admin-msg-bubble { max-width: 85%; padding: 8px 12px; border-radius: 10px; font-size: 12px; word-break: break-word; }
-        .admin-msg-bubble.guest { background: white; align-self: flex-start; }
-        .admin-msg-bubble.admin { background: var(--primary); color: white; align-self: flex-end; }
+        .admin-msg-bubble.guest { background: white; align-self: flex-start; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .admin-msg-bubble.admin { background: var(--primary); color: white; align-self: flex-end; box-shadow: 0 1px 2px rgba(24,119,242,0.2); }
         
-        /* Chat Input Controls Mobile Fix */
         .chat-room-input { padding: 8px 10px; background: white; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 6px; width: 100%; }
         .chat-room-input input[type="text"] { flex: 1; min-width: 0; padding: 7px 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 13px; outline: none; }
         .tool-icon-btn { background: #f0f2f5; border: none; width: 32px; height: 32px; min-width: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; cursor: pointer; }
@@ -108,9 +110,11 @@
             .close-sidebar-btn { display: block; }
             .menu-toggle-btn { display: inline-block; }
             .admin-profile span { display: none; }
+            
+            /* Responsive Chat: User list at the top */
             .chat-container { flex-direction: column; height: calc(100vh - 130px); }
-            .chat-user-list { width: 100%; height: 55px; display: flex; flex-direction: row; border-right: none; border-bottom: 1px solid var(--border); }
-            .chat-user-item { padding: 8px 12px; border-bottom: none; border-right: 1px solid #f0f0f0; white-space: nowrap; }
+            .chat-user-list { width: 100%; height: 60px; display: flex; flex-direction: row; border-right: none; border-bottom: 1px solid var(--border); }
+            .chat-user-item { padding: 8px 12px; border-bottom: none; border-right: 1px solid #f0f0f0; min-width: 140px; }
         }
     </style>
 </head>
@@ -137,7 +141,7 @@
         </ul>
     </div>
 
-    <!-- Main Content Area -->
+    <!-- Main Content -->
     <div class="main-content">
         <div class="topbar">
             <div class="page-title">
@@ -155,7 +159,6 @@
             <!-- TAB 1: DASHBOARD -->
             <div id="dashboardTab" class="tab-content active">
                 <div class="stats-grid">
-                    <!-- កាតរាប់ចំនួនអ្នកចុះឈ្មោះ និងអ៊ីម៉ែលសរុប -->
                     <div class="stat-card purple">
                         <div class="stat-title">អ្នកចុះឈ្មោះ / អ៊ីម៉ែលសរុប</div>
                         <div class="stat-value"><span id="totalUserCount">2</span> នាក់</div>
@@ -283,34 +286,43 @@
                 </div>
             </div>
 
-            <!-- TAB 4: CHAT WITH USERS (Fixed Button ➤) -->
+            <!-- TAB 4: MULTI-CUSTOMER LIVE CHAT (បន្ទប់ឆាតដាច់ដោយឡែកពីគ្នា) -->
             <div id="chatTab" class="tab-content">
                 <div class="chat-container">
-                    <div class="chat-user-list">
-                        <div class="chat-user-item active">
-                            <div style="font-weight:bold; font-size:12px;">Sophea Touch</div>
-                            <div style="font-size:10px; color:#888;">sopheatouch99@gmail.com</div>
+                    <!-- បញ្ជីភ្ញៀវ Chat ផ្សេងៗគ្នា -->
+                    <div class="chat-user-list" id="chatUserList">
+                        <!-- User 1 -->
+                        <div class="chat-user-item active" onclick="switchChatUser('user_1', 'Sophea Touch', this)">
+                            <div class="chat-user-name">Sophea Touch</div>
+                            <div class="chat-user-snippet" id="snippet_user_1">ខ្ញុំបានបាញ់លុយ $13...</div>
+                        </div>
+                        <!-- User 2 -->
+                        <div class="chat-user-item" onclick="switchChatUser('user_2', 'Khmer Gamer', this)">
+                            <div class="chat-user-name">Khmer Gamer</div>
+                            <div class="chat-user-snippet" id="snippet_user_2">សួស្តីបង ពេជ្រ FF ចូលលឿនអត់?</div>
                         </div>
                     </div>
 
+                    <!-- បន្ទប់ឆាតរបស់ភ្ញៀវដែលបានជ្រើសរើស -->
                     <div class="chat-room">
-                        <div class="chat-room-header">ជជែកជាមួយ៖ Sophea Touch</div>
+                        <div class="chat-room-header">
+                            <span>ជជែកជាមួយ៖ <b id="activeChatUserName" style="color:var(--primary);">Sophea Touch</b></span>
+                            <span style="font-size:11px; color:var(--success);">● Active Now</span>
+                        </div>
                         <div class="chat-room-messages" id="adminChatLogs">
-                            <div class="admin-msg-bubble guest">
-                                សួស្តី Admin ខ្ញុំបានបាញ់លុយ $13 រួចហើយ។
-                            </div>
+                            <!-- សារនឹងបង្ហាញតាមភ្ញៀវនីមួយៗ -->
                         </div>
                         <div class="chat-room-input">
                             <input type="file" id="adminMediaFile" accept="image/*,video/*" style="display:none;" onchange="adminSendMedia(this)">
                             <button class="tool-icon-btn" onclick="document.getElementById('adminMediaFile').click()" title="រូបភាព/វីដេអូ">📎</button>
-                            <input type="text" id="adminChatInput" placeholder="វាយសារ..." onkeypress="if(event.key==='Enter') adminSendMsg()">
+                            <input type="text" id="adminChatInput" placeholder="វាយសារតប..." onkeypress="if(event.key==='Enter') adminSendMsg()">
                             <button class="btn-admin-send" onclick="adminSendMsg()" title="ផ្ញើសារ">➤</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 5: USERS DIRECTORY (មើលអ៊ីម៉ែល និងឈ្មោះអ្នកប្រើប្រាស់) -->
+            <!-- TAB 5: USERS DIRECTORY -->
             <div id="usersTab" class="tab-content">
                 <div class="card-panel">
                     <div class="panel-header">
@@ -350,6 +362,90 @@
     </div>
 
     <script>
+        // Database សារ Chat របស់ភ្ញៀវម្នាក់ៗដាច់ដោយឡែកពីគ្នា
+        const chatDatabases = {
+            user_1: [
+                { sender: 'guest', text: 'សួស្តី Admin ខ្ញុំបានបាញ់លុយ $13 រួចហើយ។' },
+                { sender: 'admin', text: 'បាទសួស្តី! Admin បានឃើញហើយ កំពុងបញ្ចូលជូនបាទ។' }
+            ],
+            user_2: [
+                { sender: 'guest', text: 'សួស្តីបង ពេជ្រ Free Fire កញ្ចប់ 10,000 ពេជ្រចូលលឿនអត់?' },
+                { sender: 'admin', text: 'បាទចូលលឿនណាស់បង ស្កេនបាញ់លុយហើយចូលក្នុង 1-3 នាទី!' }
+            ]
+        };
+
+        let currentActiveUserId = 'user_1';
+
+        // មុខងារបង្ហាញសារតាមភ្ញៀវនីមួយៗ
+        function renderCurrentChat() {
+            const logs = document.getElementById('adminChatLogs');
+            logs.innerHTML = '';
+            const messages = chatDatabases[currentActiveUserId] || [];
+            
+            messages.forEach(msg => {
+                const bubble = document.createElement('div');
+                bubble.className = `admin-msg-bubble ${msg.sender}`;
+                if (msg.type === 'image') {
+                    bubble.innerHTML = `<img src="${msg.src}" style="max-width:100%; border-radius:6px;">`;
+                } else if (msg.type === 'video') {
+                    bubble.innerHTML = `<video controls src="${msg.src}" style="max-width:100%; border-radius:6px;"></video>`;
+                } else {
+                    bubble.innerText = msg.text;
+                }
+                logs.appendChild(bubble);
+            });
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        // មុខងារប្តូរភ្ញៀវ Chat
+        function switchChatUser(userId, userName, element) {
+            currentActiveUserId = userId;
+            document.querySelectorAll('.chat-user-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            document.getElementById('activeChatUserName').innerText = userName;
+            renderCurrentChat();
+        }
+
+        // អនុគមន៍ Admin ផ្ញើសារតបទៅភ្ញៀវជាក់លាក់
+        function adminSendMsg() {
+            const input = document.getElementById('adminChatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            if (!chatDatabases[currentActiveUserId]) {
+                chatDatabases[currentActiveUserId] = [];
+            }
+
+            chatDatabases[currentActiveUserId].push({ sender: 'admin', text: text });
+            
+            // Update snippet នៅលើបញ្ជីឈ្មោះ
+            const snippetEl = document.getElementById(`snippet_${currentActiveUserId}`);
+            if (snippetEl) snippetEl.innerText = `Admin: ${text}`;
+
+            input.value = '';
+            renderCurrentChat();
+        }
+
+        function adminSendMedia(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const url = URL.createObjectURL(file);
+            const isVideo = file.type.startsWith('video/');
+
+            chatDatabases[currentActiveUserId].push({
+                sender: 'admin',
+                type: isVideo ? 'video' : 'image',
+                src: url
+            });
+
+            input.value = '';
+            renderCurrentChat();
+        }
+
+        // Initialize Chat
+        renderCurrentChat();
+
+        // មុខងារ Menu
         function toggleSidebar() {
             document.getElementById('adminSidebar').classList.toggle('show');
             document.getElementById('sidebarOverlay').classList.toggle('show');
@@ -391,36 +487,6 @@
             if (amount && !isNaN(amount)) {
                 alert(`បានបូក $${parseFloat(amount).toFixed(2)} ជូន ${userName} រួចរាល់!`);
             }
-        }
-
-        function adminSendMsg() {
-            const input = document.getElementById('adminChatInput');
-            const text = input.value.trim();
-            if (!text) return;
-
-            const logs = document.getElementById('adminChatLogs');
-            logs.innerHTML += `<div class="admin-msg-bubble admin">${escapeHtml(text)}</div>`;
-            input.value = '';
-            logs.scrollTop = logs.scrollHeight;
-        }
-
-        function adminSendMedia(input) {
-            const file = input.files[0];
-            if (!file) return;
-            const url = URL.createObjectURL(file);
-            const logs = document.getElementById('adminChatLogs');
-
-            if (file.type.startsWith('video/')) {
-                logs.innerHTML += `<div class="admin-msg-bubble admin"><video controls style="max-width:100%; border-radius:6px;" src="${url}"></video></div>`;
-            } else {
-                logs.innerHTML += `<div class="admin-msg-bubble admin"><img style="max-width:100%; border-radius:6px;" src="${url}"></div>`;
-            }
-            logs.scrollTop = logs.scrollHeight;
-        }
-
-        function escapeHtml(text) {
-            const map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'};
-            return text.replace(/[&<>"']/g, m => map[m]);
         }
     </script>
 </body>
