@@ -105,7 +105,7 @@
 
         <div class="section-header">🔥 ជ្រើសរើសសេវាកម្ម & កញ្ចប់ពេជ្របញ្ចុះតម្លៃ</div>
         <div class="game-grid" id="clientGameGrid">
-            <div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-sub);">កំពុងទាញយកទិន្នន័យ...</div>
+            <div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-sub);">មិនទាន់មានសេវាកម្មនៅលើប្រព័ន្ធទេ សូមរង់ចាំ Admin បញ្ចូល...</div>
         </div>
     </div>
 
@@ -223,9 +223,7 @@
                     let html = '';
                     Object.keys(games).forEach(id => {
                         const g = games[id];
-                        const iconHtml = (g.image && g.image.startsWith('data:image')) || (g.image && g.image.startsWith('http')) 
-                            ? `<img src="${g.image}">` 
-                            : `<span style="font-size:40px;">🎮</span>`;
+                        const iconHtml = `<img src="${g.image}" onerror="this.src='https://placehold.co/100x100?text=IMG'">`;
 
                         html += `
                             <div class="game-card ${g.theme || 'theme-orange'}" onclick="openGameModal('${id}')">
