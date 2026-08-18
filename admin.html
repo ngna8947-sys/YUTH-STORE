@@ -57,10 +57,11 @@
 
         /* Forms */
         .form-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 15px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 15px; }
         .form-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 200px; }
         .form-group label { font-size: 12px; font-weight: 600; color: var(--text-sub); }
         .form-group input, .form-group select { background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 10px 14px; border-radius: 10px; font-size: 13px; outline: none; }
+        .form-group input[type="file"] { padding: 7px 10px; cursor: pointer; }
         .form-group input:focus { border-color: #6366f1; }
 
         .packages-container { background: #0f172a; border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 15px; }
@@ -76,7 +77,7 @@
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
         th, td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
         th { background: rgba(15, 23, 42, 0.6); color: var(--text-sub); font-weight: 600; font-size: 11px; text-transform: uppercase; }
-        .game-img-preview { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+        .game-img-preview { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border); }
 
         /* Chat */
         .chat-container { display: flex; height: calc(100vh - 140px); background: var(--card-bg); border-radius: 14px; border: 1px solid var(--border); overflow: hidden; }
@@ -105,7 +106,7 @@
         <div class="sidebar-header">⚡ YUTH ADMIN</div>
         <ul class="sidebar-menu">
             <li class="menu-item active" onclick="switchTab('dashboardTab', this)">📊 ផ្ទាំងទិន្នន័យ (Dashboard)</li>
-            <li class="menu-item" onclick="switchTab('manageGamesTab', this)">🎮 បញ្ចូលហ្គេម & បញ្ចុះតម្លៃ</li>
+            <li class="menu-item" onclick="switchTab('manageGamesTab', this)">🎮 បញ្ចូលសេវាកម្ម/ហ្គេម & រូបថត</li>
             <li class="menu-item" onclick="switchTab('walletTab', this)">💰 បញ្ចូលលុយតាម Email</li>
             <li class="menu-item" onclick="switchTab('chatTab', this)">
                 💬 ឆាតជាមួយភ្ញៀវ <span class="menu-badge" id="chatCountBadge">0</span>
@@ -152,21 +153,22 @@
                 </div>
             </div>
 
-            <!-- TAB 2: MANAGE GAMES & DISCOUNT -->
+            <!-- TAB 2: MANAGE SERVICES & GAMES (UPLOAD PHOTO DIRECTLY) -->
             <div id="manageGamesTab" class="tab-content">
                 <div class="card-panel">
                     <div class="panel-header">
-                        <div class="panel-title">➕ បញ្ចូលហ្គេម និងកញ្ចប់ពេជ្រ (កំណត់ការបញ្ចុះតម្លៃ)</div>
+                        <div class="panel-title">➕ បញ្ចូលសេវាកម្ម/ហ្គេមថ្មី (ជ្រើសរូបថតផ្ទាល់ពីទូរសព្ទ/ម៉ាស៊ីន)</div>
                     </div>
                     <form id="addGameForm" onsubmit="handleSaveGame(event)">
                         <div class="form-grid">
                             <div class="form-group">
-                                <label>ឈ្មោះហ្គេម (Game Name):</label>
-                                <input type="text" id="gameNameInput" placeholder="ឧ. Free Fire លឿន" required>
+                                <label>ឈ្មោះសេវាកម្ម/ហ្គេម (Service/Game Name):</label>
+                                <input type="text" id="gameNameInput" placeholder="ឧ. Free Fire លឿន ឬ បញ្ចូលលុយពិសេស" required>
                             </div>
                             <div class="form-group">
-                                <label>តំណភ្ជាប់រូបភាព (Image/Icon URL):</label>
-                                <input type="text" id="gameImgInput" placeholder="https://... ឬ Emoji 🔥" required>
+                                <label>📸 ជ្រើសរើសរូបថតផ្ទាល់ខ្លួន (Upload Photo):</label>
+                                <input type="file" id="gamePhotoFileInput" accept="image/*" onchange="previewSelectedPhoto(this)" required>
+                                <input type="hidden" id="gameBase64Photo">
                             </div>
                             <div class="form-group">
                                 <label>ពណ៌ផ្ទាំង (Theme Style):</label>
@@ -178,6 +180,12 @@
                                     <option value="theme-purple">💎 ស្វាយ (Purple)</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <!-- កន្លែងមើលរូបភាព Preview -->
+                        <div id="photoPreviewContainer" style="display:none; margin-bottom:15px; align-items:center; gap:12px; background:#0f172a; padding:10px 14px; border-radius:10px; border:1px solid var(--border);">
+                            <img id="previewImgElement" src="" style="width:60px; height:60px; border-radius:10px; object-fit:cover; border:1px solid #6366f1;">
+                            <span style="font-size:12px; color:var(--success); font-weight:bold;">✓ រូបថតត្រូវបានជ្រើសរើសរួចរាល់ (រួចរាល់ក្នុងការរក្សាទុក)</span>
                         </div>
 
                         <div class="packages-container">
@@ -195,19 +203,19 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary" style="width:100%;">💾 រក្សាទុកហ្គេម & កញ្ចប់ពេជ្រទាំងអស់</button>
+                        <button type="submit" class="btn btn-primary" style="width:100%;">💾 រក្សាទុកសេវាកម្ម & កញ្ចប់ពេជ្រទាំងអស់</button>
                     </form>
                 </div>
 
                 <div class="card-panel">
                     <div class="panel-header">
-                        <div class="panel-title">📦 បញ្ជីហ្គេមទាំងអស់ (<span id="totalGamesBadge">0</span>)</div>
+                        <div class="panel-title">📦 បញ្ជីសេវាកម្មទាំងអស់ (<span id="totalGamesBadge">0</span>)</div>
                     </div>
                     <table>
                         <thead>
                             <tr>
                                 <th>រូបភាព</th>
-                                <th>ឈ្មោះហ្គេម</th>
+                                <th>ឈ្មោះសេវាកម្ម/ហ្គេម</th>
                                 <th>កញ្ចប់ពេជ្រ & តម្លៃបញ្ចុះ</th>
                                 <th>សកម្មភាព</th>
                             </tr>
@@ -288,6 +296,20 @@
         let currentActiveUid = null;
         let cachedUsers = {};
 
+        // មុខងារជ្រើសរើស និងបម្លែងរូបថតពី File ទៅជា Base64
+        function previewSelectedPhoto(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('gameBase64Photo').value = e.target.result;
+                    document.getElementById('previewImgElement').src = e.target.result;
+                    document.getElementById('photoPreviewContainer').style.display = 'flex';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
         function addPackageRow() {
             const wrapper = document.getElementById('packagesWrapper');
             const row = document.createElement('div');
@@ -304,8 +326,13 @@
         function handleSaveGame(e) {
             e.preventDefault();
             const name = document.getElementById('gameNameInput').value.trim();
-            const image = document.getElementById('gameImgInput').value.trim();
+            const image = document.getElementById('gameBase64Photo').value;
             const theme = document.getElementById('gameThemeInput').value;
+
+            if (!image) {
+                alert("សូមជ្រើសរើសរូបថតជាមុនសិន!");
+                return;
+            }
 
             const pkgNames = document.querySelectorAll('.pkg-name');
             const pkgOriginalPrices = document.querySelectorAll('.pkg-original-price');
@@ -326,8 +353,10 @@
                 method: "PUT",
                 body: JSON.stringify({ id: gameId, name, image, theme, packages, createdAt: new Date().toISOString() })
             }).then(() => {
-                alert("✓ បានបញ្ចូលហ្គេម និងកញ្ចប់ពេជ្រជោគជ័យ!");
+                alert("✓ បានបញ្ចូលសេវាកម្ម/ហ្គេម និងរូបថតជោគជ័យ!");
                 document.getElementById('addGameForm').reset();
+                document.getElementById('photoPreviewContainer').style.display = 'none';
+                document.getElementById('gameBase64Photo').value = '';
                 document.getElementById('packagesWrapper').innerHTML = `
                     <div class="package-row">
                         <input type="text" placeholder="ចំនួនពេជ្រ (ឧ. 100 💎)" class="pkg-name" required>
@@ -346,7 +375,7 @@
                 .then(games => {
                     const tbody = document.getElementById('gamesTableBody');
                     if (!games || games.error) {
-                        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-sub);">មិនទាន់មានហ្គេមនៅឡើយទេ</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-sub);">មិនទាន់មានសេវាកម្ម/ហ្គេមនៅឡើយទេ</td></tr>';
                         document.getElementById('totalGamesBadge').innerText = '0';
                         return;
                     }
@@ -357,7 +386,9 @@
 
                     gameIds.forEach(id => {
                         const g = games[id];
-                        const imgHtml = g.image.startsWith('http') ? `<img src="${g.image}" class="game-img-preview">` : `<span style="font-size:24px;">${g.image}</span>`;
+                        const imgHtml = (g.image && g.image.startsWith('data:image')) || (g.image && g.image.startsWith('http')) 
+                            ? `<img src="${g.image}" class="game-img-preview">` 
+                            : `<span style="font-size:24px;">🎮</span>`;
                         
                         let pkgsHtml = '';
                         if (g.packages && Array.isArray(g.packages)) {
@@ -381,7 +412,7 @@
         }
 
         function deleteGame(id) {
-            if (confirm("តើអ្នកពិតជាចង់លុបហ្គេមនេះមែនទេ?")) {
+            if (confirm("តើអ្នកពិតជាចង់លុបសេវាកម្ម/ហ្គេមនេះមែនទេ?")) {
                 fetch(`${FIREBASE_DB_URL}store_games/${id}.json`, { method: "DELETE" }).then(() => fetchGames());
             }
         }
