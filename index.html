@@ -43,7 +43,6 @@
 
         .section-header { font-size: 18px; font-weight: 700; margin: 20px 0 15px 0; }
 
-        /* Store Service Grid */
         .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
         .game-card { height: 190px; border-radius: 16px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; position: relative; color: white; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; }
         .game-card:hover { transform: translateY(-4px); }
@@ -57,7 +56,6 @@
         .theme-red { background: linear-gradient(180deg, #cb2d3e, #ef473a); }
         .theme-purple { background: linear-gradient(180deg, #654ea3, #eaafc8); }
 
-        /* Live Chat */
         .fab-chat { position: fixed; bottom: 25px; right: 25px; width: 56px; height: 56px; border-radius: 50%; background: var(--primary-gradient); color: white; display: flex; justify-content: center; align-items: center; font-size: 26px; border: none; cursor: pointer; box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4); z-index: 1000; }
         .chat-box { position: fixed; bottom: 90px; right: 25px; width: 360px; height: 500px; background: var(--card-bg); border-radius: 18px; border: 1px solid var(--border); box-shadow: 0 12px 40px rgba(0,0,0,0.5); display: none; flex-direction: column; z-index: 1000; overflow: hidden; }
         .chat-top { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(8px); padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; border-bottom: 1px solid var(--border); }
@@ -71,7 +69,6 @@
         .chat-bottom-wrap input { flex: 1; min-width: 0; background: #0b0f19; border: 1px solid var(--border); color: #fff; padding: 9px 14px; border-radius: 20px; outline: none; font-size: 13px; }
         .btn-send-chat { background: var(--primary-gradient); color: white; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; }
 
-        /* Package Modal */
         .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.65); z-index: 9999; justify-content: center; align-items: center; }
         .modal-card { background: var(--card-bg); border: 1px solid var(--border); padding: 22px; border-radius: 18px; text-align: center; max-width: 420px; width: 92%; position: relative; max-height: 90vh; overflow-y: auto; color: var(--text-main); }
         .modal-close-x { position: absolute; top: 12px; right: 15px; cursor: pointer; font-size: 18px; color: var(--text-sub); }
@@ -108,11 +105,10 @@
 
         <div class="section-header">🔥 ជ្រើសរើសសេវាកម្ម & កញ្ចប់ពេជ្របញ្ចុះតម្លៃ</div>
         <div class="game-grid" id="clientGameGrid">
-            <div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-sub);">មិនទាន់មានសេវាកម្មនៅលើប្រព័ន្ធទេ សូមរង់ចាំ Admin បញ្ចូល...</div>
+            <div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-sub);">កំពុងទាញយកទិន្នន័យ...</div>
         </div>
     </div>
 
-    <!-- Floating Chat -->
     <button class="fab-chat" onclick="toggleChat()">💬</button>
 
     <div class="chat-box" id="chatBox">
@@ -218,7 +214,7 @@
                 .then(res => res.json())
                 .then(games => {
                     const grid = document.getElementById('clientGameGrid');
-                    if (!games || games.error) {
+                    if (!games || games.error || Object.keys(games).length === 0) {
                         grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-sub);">មិនទាន់មានសេវាកម្មនៅលើប្រព័ន្ធទេ សូមរង់ចាំ Admin បញ្ចូល...</div>';
                         return;
                     }
@@ -229,7 +225,7 @@
                         const g = games[id];
                         const iconHtml = (g.image && g.image.startsWith('data:image')) || (g.image && g.image.startsWith('http')) 
                             ? `<img src="${g.image}">` 
-                            : `<span style="font-size:40px;">${g.image || '🎮'}</span>`;
+                            : `<span style="font-size:40px;">🎮</span>`;
 
                         html += `
                             <div class="game-card ${g.theme || 'theme-orange'}" onclick="openGameModal('${id}')">
@@ -239,7 +235,7 @@
                         `;
                     });
                     grid.innerHTML = html;
-                });
+                }).catch(e => console.log(e));
         }
 
         function openGameModal(gameId) {
@@ -324,7 +320,7 @@
         function listenToChatReplies() {
             setInterval(() => {
                 const user = getActiveUser();
-                fetch(`${FIREBASE_DB_URL}chats/${user.uid}/messages.json`)
+                fetch(`${FIREBASE_DB_URL}chats/${user.uid}/messages.json?t=` + Date.now())
                     .then(res => res.json())
                     .then(data => {
                         const logs = document.getElementById('chatLogs');
