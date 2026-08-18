@@ -3,108 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YUTH STORE - Game Top-Up & Account Store</title>
+    <title>ផ្ទាំងគ្រប់គ្រង Admin - YUTH STORE</title>
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
-        body { background: #0b0f19; color: #f8fafc; padding: 20px; }
+        body { background: #0b1120; color: #f8fafc; padding: 20px; }
         .container { max-width: 1100px; margin: 0 auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #1e293b; margin-bottom: 25px; }
-        .user-balance { background: #1e293b; padding: 8px 16px; border-radius: 20px; border: 1px solid #38bdf8; font-weight: bold; color: #38bdf8; }
-        .section-title { color: #38bdf8; margin: 25px 0 15px 0; font-size: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 20px; }
-        .card { background: #151e2e; border: 1px solid #243247; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: 0.2s; }
-        .card:hover { transform: translateY(-4px); border-color: #38bdf8; }
-        .card img { width: 100%; height: 140px; object-fit: cover; }
-        .card-body { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; }
-        .card-title { font-size: 15px; font-weight: bold; margin-bottom: 6px; color: #fff; }
-        .btn-buy { background: #38bdf8; color: #0b0f19; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: auto; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: #1e293b; padding: 25px; border-radius: 14px; width: 90%; max-width: 440px; border: 1px solid #334155; }
-        .field-group { margin-bottom: 12px; }
-        .field-group label { font-size: 12px; color: #94a3b8; }
-        .field-box { display: flex; gap: 8px; margin-top: 4px; }
-        .field-box input { flex-grow: 1; padding: 8px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff; font-family: monospace; outline: none; }
-        .btn-copy { padding: 8px 12px; background: #334155; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+        .header-title { color: #38bdf8; font-size: 24px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 20px; margin-bottom: 25px; }
+        .card h3 { color: #38bdf8; margin-bottom: 15px; font-size: 18px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .full-width { grid-column: span 2; }
+        label { font-size: 13px; color: #94a3b8; display: block; margin-bottom: 6px; }
+        input, select, textarea { width: 100%; padding: 10px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #fff; outline: none; }
+        input[type="file"] { padding: 8px; background: #1e293b; border: 1px dashed #38bdf8; cursor: pointer; }
+        input:focus, textarea:focus { border-color: #38bdf8; }
+        button { cursor: pointer; border: none; border-radius: 8px; font-weight: bold; transition: 0.2s; }
+        .btn-green { background: #10b981; color: #fff; padding: 12px; width: 100%; margin-top: 15px; }
+        .btn-green:hover { background: #059669; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #334155; font-size: 14px; }
+        th { color: #94a3b8; }
+        .badge-available { background: #10b981; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 11px; }
+        .badge-sold { background: #ef4444; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 11px; }
+        .diamond-tag { background: #0f172a; border: 1px solid #334155; padding: 3px 8px; border-radius: 6px; font-size: 12px; display: inline-block; margin: 2px; }
+        .img-preview { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; margin-top: 5px; display: none; border: 1px solid #38bdf8; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: #1e293b; padding: 25px; border-radius: 14px; width: 90%; max-width: 450px; border: 1px solid #334155; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <h2>🔥 YUTH STORE</h2>
-        <div class="user-balance" id="displayBalance">💰 សមតុល្យ៖ $0.00</div>
+    <div class="header-title">⚙️ ផ្ទាំងគ្រប់គ្រង Admin (Top-Up & Account Store)</div>
+
+    <!-- ១. បន្ថែមសេវាកម្ម Top-Up ហ្គេម -->
+    <div class="card">
+        <h3>🎮 បន្ថែមសេវាកម្មហ្គេម Top-Up ថ្មី</h3>
+        <div class="form-grid">
+            <div>
+                <label>ឈ្មោះហ្គេម / សេវាកម្ម៖</label>
+                <input type="text" id="gameName" placeholder="ឧ. Free Fire, Mobile Legends">
+            </div>
+            <div>
+                <label>📁 រូបភាព Logo ហ្គេម (ជ្រើសរើសពីទូរសព្ទ/កុំព្យូទ័រ)៖</label>
+                <input type="file" id="gameImageFile" accept="image/*" onchange="previewFile(this, 'gameImgPreview')">
+                <img id="gameImgPreview" class="img-preview">
+            </div>
+            <div class="full-width">
+                <label>កញ្ចប់ពេជ្រ & តម្លៃ (ទម្រង់៖ ពេជ្រ:តម្លៃ, ពេជ្រ:តម្លៃ)៖</label>
+                <input type="text" id="gamePackages" placeholder="100:1.50, 300:2.50, 500:4.00, 1000:7.00">
+            </div>
+        </div>
+        <button class="btn-green" onclick="addGameService()">➕ បន្ថែមសេវាកម្មហ្គេម</button>
     </div>
 
-    <!-- ១. បញ្ជីសេវាកម្ម Top-Up ហ្គេម (មុខងារចាស់) -->
-    <h3 class="section-title">🎮 សេវាកម្មបញ្ចូលពេជ្រហ្គេម (Top-Up)</h3>
-    <div class="grid" id="servicesGrid"></div>
+    <!-- ២. បញ្ជីសេវាកម្ម Top-Up ហ្គេម -->
+    <div class="card">
+        <h3>📦 បញ្ជីសេវាកម្មហ្គេមទាំងអស់</h3>
+        <div style="overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>រូបភាព</th>
+                        <th>ឈ្មោះសេវាកម្ម/ហ្គេម</th>
+                        <th>កញ្ចប់ពេជ្រ & តម្លៃ</th>
+                        <th>សកម្មភាព</th>
+                    </tr>
+                </thead>
+                <tbody id="servicesTableBody"></tbody>
+            </table>
+        </div>
+    </div>
 
-    <!-- ២. បញ្ជី Account សម្រាប់ដាក់លក់ (មុខងារថ្មី) -->
-    <h3 class="section-title">🛒 ហាងលក់ Account (Facebook / Game)</h3>
-    <div class="grid" id="accountsGrid"></div>
-</div>
-
-<!-- Modal មើលព័ត៌មានលម្អិត & អាយុអាខោន មុនទិញ -->
-<div class="modal" id="accPreviewModal">
-    <div class="modal-content">
-        <img id="prevImg" src="" style="width:100%; height:180px; object-fit:cover; border-radius:8px; margin-bottom:12px;">
-        <h3 id="prevTitle" style="color:#38bdf8; margin-bottom:10px;"></h3>
-        <div style="background:#0f172a; padding:12px; border-radius:8px; margin-bottom:15px; border:1px solid #334155;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                <span style="color:#94a3b8;">📅 អាយុអាខោន៖</span>
-                <span id="prevAge" style="color:#f59e0b; font-weight:bold;"></span>
+    <!-- ៣. បន្ថែម Account សម្រាប់ដាក់លក់ -->
+    <div class="card">
+        <h3>🛒 បន្ថែម Account សម្រាប់ដាក់លក់ (Facebook / Game)</h3>
+        <div class="form-grid">
+            <div>
+                <label>ឈ្មោះ Account / ប្រភេទ៖</label>
+                <input type="text" id="accTitle" placeholder="ឧ. Facebook Account 2018 / FF Level 60">
             </div>
-            <div style="display:flex; justify-content:space-between;">
-                <span style="color:#94a3b8;">💵 តម្លៃ៖</span>
-                <span id="prevPrice" style="color:#10b981; font-weight:bold; font-size:16px;"></span>
+            <div>
+                <label>តម្លៃ ($ USD)៖</label>
+                <input type="number" step="0.01" id="accPrice" placeholder="15.00">
+            </div>
+            <div>
+                <label>📅 អាយុអាខោន / ឆ្នាំបង្កើត៖</label>
+                <input type="text" id="accAge" placeholder="ឧ. បង្កើតឆ្នាំ 2018 (អាយុ 8 ឆ្នាំ)">
+            </div>
+            <div>
+                <label>📁 រូប Profile / Logo (ជ្រើសរើសពីទូរសព្ទ)៖</label>
+                <input type="file" id="accThumbFile" accept="image/*" onchange="previewFile(this, 'accThumbPreview')">
+                <img id="accThumbPreview" class="img-preview">
+            </div>
+            <div class="full-width">
+                <label>📁 រូប Screenshot បង្ហាញអាខោន (ជ្រើសរើសពីទូរសព្ទ)៖</label>
+                <input type="file" id="accImageFile" accept="image/*" onchange="previewFile(this, 'accImgPreview')">
+                <img id="accImgPreview" class="img-preview" style="height:80px; width:120px;">
+            </div>
+            <div>
+                <label>🆔 UID / Email / Username (លេខសម្ងាត់)៖</label>
+                <input type="text" id="accUid" placeholder="100082348234">
+            </div>
+            <div>
+                <label>🔑 Password (លេខសម្ងាត់)៖</label>
+                <input type="text" id="accPass" placeholder="Pass@12345">
+            </div>
+            <div class="full-width">
+                <label>🛡️ 2FA Key / Backup Code (លេខកូដសុវត្ថិភាព)៖</label>
+                <input type="text" id="acc2fa" placeholder="JBSWY3DPEHPK3PXP">
             </div>
         </div>
-        <div style="display:flex; gap:10px;">
-            <button onclick="document.getElementById('accPreviewModal').style.display='none'" style="flex:1; padding:10px; background:#475569; color:#fff; border:none; border-radius:8px; cursor:pointer;">បោះបង់</button>
-            <button id="btnConfirmBuy" style="flex:2; padding:10px; background:#10b981; color:#fff; font-weight:bold; border:none; border-radius:8px; cursor:pointer;">🛒 ទិញយកលេខសម្ងាត់</button>
+        <button class="btn-green" onclick="addNewAccount()">➕ បង្ហោះលក់ Account នេះ</button>
+    </div>
+
+    <!-- ៤. បញ្ជី Account ទាំងអស់ -->
+    <div class="card">
+        <h3>📋 បញ្ជី Account ទាំងអស់ក្នុងប្រព័ន្ធ</h3>
+        <div style="overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>រូបភាព</th>
+                        <th>ឈ្មោះ Account</th>
+                        <th>អាយុអាខោន</th>
+                        <th>តម្លៃ</th>
+                        <th>UID / Login</th>
+                        <th>Password</th>
+                        <th>2FA</th>
+                        <th>ស្ថានភាព</th>
+                        <th>សកម្មភាព</th>
+                    </tr>
+                </thead>
+                <tbody id="accountsTableBody"></tbody>
+            </table>
         </div>
     </div>
 </div>
 
-<!-- Modal បង្ហាញ UID, Password, 2FA ពេលទិញជោគជ័យ -->
-<div class="modal" id="accountPurchasedModal">
+<!-- Modal កែប្រែសេវាកម្ម -->
+<div class="modal" id="editServiceModal">
     <div class="modal-content">
-        <h3 style="color: #10b981; text-align: center; margin-bottom: 5px;">🎉 ការទិញបានជោគជ័យ!</h3>
-        <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-bottom: 15px;">សូមចម្លងទុកព័ត៌មានគណនីរបស់អ្នក</p>
-
-        <div class="field-group">
-            <label>🆔 UID / Email / Username៖</label>
-            <div class="field-box">
-                <input type="text" id="dispAccId" readonly style="color:#38bdf8;">
-                <button class="btn-copy" onclick="copyField('dispAccId')">📋 Copy</button>
-            </div>
+        <h3 style="color:#38bdf8; margin-bottom:15px;">✏️ កែប្រែព័ត៌មានសេវាកម្ម</h3>
+        <input type="hidden" id="editGameKey">
+        <label>ឈ្មោះសេវាកម្ម / ហ្គេម៖</label>
+        <input type="text" id="editGameName" style="margin-bottom:15px;">
+        <label>📁 ប្តូររូបភាពថ្មី (បើចង់ប្តូរ)៖</label>
+        <input type="file" id="editGameImgFile" accept="image/*" style="margin-bottom:20px;">
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button onclick="document.getElementById('editServiceModal').style.display='none'" style="padding:8px 16px; background:#475569; color:#fff;">បោះបង់</button>
+            <button onclick="saveServiceChanges()" style="padding:8px 16px; background:#38bdf8; color:#0f172a;">រក្សាទុក</button>
         </div>
-
-        <div class="field-group">
-            <label>🔑 Password (លេខសម្ងាត់)៖</label>
-            <div class="field-box">
-                <input type="text" id="dispAccPass" readonly style="color:#f59e0b;">
-                <button class="btn-copy" onclick="copyField('dispAccPass')">📋 Copy</button>
-            </div>
-        </div>
-
-        <div class="field-group">
-            <label>🛡️ 2FA Key / Backup Code៖</label>
-            <div class="field-box">
-                <input type="text" id="dispAcc2fa" readonly style="color:#ec4899;">
-                <button class="btn-copy" onclick="copyField('dispAcc2fa')">📋 Copy</button>
-            </div>
-        </div>
-
-        <button onclick="copyAllInfo()" style="width: 100%; padding: 10px; background: #10b981; color: #fff; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; margin-bottom: 8px;">
-            📋 ចម្លងព័ត៌មានទាំងអស់ (Copy All)
-        </button>
-        <button onclick="document.getElementById('accountPurchasedModal').style.display='none'" style="width: 100%; padding: 10px; background: #475569; color: #fff; border: none; border-radius: 8px; cursor: pointer;">
-            បិទ
-        </button>
     </div>
 </div>
 
@@ -115,123 +167,196 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // គណនី Guest តេស្ត (ភ្ជាប់ Realtime User)
-    let loggedInUser = {
-        uid: "user_client_demo",
-        email: "client@gmail.com",
-        balance: 50.00
-    };
-
-    function updateUI() {
-        document.getElementById('displayBalance').innerText = `💰 សមតុល្យ៖ $${loggedInUser.balance.toFixed(2)}`;
+    // Helper: បម្លែង File រូបភាពទៅជា Base64 Data String
+    function getBase64(file) {
+        return new Promise((resolve, reject) => {
+            if (!file) return resolve('');
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
     }
-    updateUI();
 
-    // ១. បង្ហាញសេវាកម្ម Top-Up ហ្គេម (មុខងារចាស់)
+    // Helper: បង្ហាញរូប Preview ពេលរើសរូបរួច
+    function previewFile(input, previewId) {
+        const preview = document.getElementById(previewId);
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // --- ១. បន្ថែមសេវាកម្មហ្គេម ---
+    async function addGameService() {
+        const name = document.getElementById('gameName').value.trim();
+        const packagesStr = document.getElementById('gamePackages').value.trim();
+        const file = document.getElementById('gameImageFile').files[0];
+
+        if (!name || !packagesStr) return alert("សូមបំពេញឈ្មោះហ្គេម និងកញ្ចប់តម្លៃ!");
+
+        const imageBase64 = await getBase64(file) || 'https://via.placeholder.com/80';
+
+        const packages = {};
+        packagesStr.split(',').forEach(item => {
+            const parts = item.split(':');
+            if (parts.length === 2) {
+                const amount = parts[0].trim();
+                const price = parseFloat(parts[1].trim());
+                if (amount && !isNaN(price)) packages[amount] = price;
+            }
+        });
+
+        db.ref('services').push({
+            name: name,
+            image: imageBase64,
+            packages: packages
+        }).then(() => {
+            alert("✅ បានបន្ថែមសេវាកម្មជោគជ័យ!");
+            document.getElementById('gameName').value = '';
+            document.getElementById('gamePackages').value = '';
+            document.getElementById('gameImageFile').value = '';
+            document.getElementById('gameImgPreview').style.display = 'none';
+        });
+    }
+
     db.ref('services').on('value', snapshot => {
-        const grid = document.getElementById('servicesGrid');
-        grid.innerHTML = '';
+        const tbody = document.getElementById('servicesTableBody');
+        tbody.innerHTML = '';
         const data = snapshot.val();
-        if (!data) return grid.innerHTML = '<p style="color:#64748b;">មិនទាន់មានសេវាកម្មទេ។</p>';
+        if (!data) return tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b;">មិនទាន់មានសេវាកម្មនៅឡើយទេ។</td></tr>';
 
         for (let key in data) {
             const item = data[key];
-            grid.innerHTML += `
-                <div class="card" onclick="alert('ជ្រើសរើសសេវាកម្ម៖ ${item.name}')">
-                    <img src="${item.image}">
-                    <div class="card-body">
-                        <div class="card-title">${item.name}</div>
-                        <p style="font-size:12px; color:#94a3b8;">ចុចដើម្បីជ្រើសរើសកញ្ចប់ពេជ្រ</p>
-                    </div>
-                </div>
+            let pkgsHtml = '';
+            if (item.packages) {
+                for (let amount in item.packages) {
+                    pkgsHtml += `<span class="diamond-tag">💎 ${amount}: <strong>$${item.packages[amount].toFixed(2)}</strong></span>`;
+                }
+            }
+
+            tbody.innerHTML += `
+                <tr>
+                    <td><img src="${item.image}" style="width:40px; height:40px; border-radius:8px; object-fit:cover;"></td>
+                    <td><strong>${item.name}</strong></td>
+                    <td>${pkgsHtml || 'គ្មានកញ្ចប់'}</td>
+                    <td>
+                        <button onclick="openEditModal('${key}', '${item.name}')" style="padding:6px 10px; background:#eab308; color:#000; font-size:12px; margin-right:5px;">✏️ កែ</button>
+                        <button onclick="deleteService('${key}')" style="padding:6px 10px; background:#ef4444; color:#fff; font-size:12px;">🗑️ លុប</button>
+                    </td>
+                </tr>
             `;
         }
     });
 
-    // ២. បង្ហាញ Account សម្រាប់លក់ (មុខងារថ្មី)
+    function openEditModal(key, name) {
+        document.getElementById('editGameKey').value = key;
+        document.getElementById('editGameName').value = name;
+        document.getElementById('editServiceModal').style.display = 'flex';
+    }
+
+    async function saveServiceChanges() {
+        const key = document.getElementById('editGameKey').value;
+        const name = document.getElementById('editGameName').value.trim();
+        const file = document.getElementById('editGameImgFile').files[0];
+
+        if (!name) return alert("សូមបញ្ចូលឈ្មោះសេវាកម្ម!");
+        
+        const updateData = { name: name };
+        if (file) {
+            updateData.image = await getBase64(file);
+        }
+
+        db.ref('services/' + key).update(updateData).then(() => {
+            alert("✅ បានកែប្រែទិន្នន័យជោគជ័យ!");
+            document.getElementById('editServiceModal').style.display = 'none';
+        });
+    }
+
+    function deleteService(key) {
+        if (confirm("តើអ្នកពិតជាចង់លុបសេវាកម្មនេះមែនទេ?")) db.ref('services/' + key).remove();
+    }
+
+    // --- ២. បន្ថែម Account ដាក់លក់ ---
+    async function addNewAccount() {
+        const title = document.getElementById('accTitle').value.trim();
+        const price = parseFloat(document.getElementById('accPrice').value);
+        const age = document.getElementById('accAge').value.trim();
+        const uid = document.getElementById('accUid').value.trim();
+        const pass = document.getElementById('accPass').value.trim();
+        const tfa = document.getElementById('acc2fa').value.trim();
+
+        const thumbFile = document.getElementById('accThumbFile').files[0];
+        const imageFile = document.getElementById('accImageFile').files[0];
+
+        if (!title || isNaN(price) || price <= 0 || !uid || !pass) {
+            return alert("សូមបំពេញឈ្មោះ តម្លៃ UID និង Password ឱ្យបានត្រឹមត្រូវ!");
+        }
+
+        const thumbBase64 = await getBase64(thumbFile) || 'https://via.placeholder.com/100';
+        const imageBase64 = await getBase64(imageFile) || thumbBase64;
+
+        db.ref('accounts_for_sale').push({
+            title: title,
+            price: price,
+            age: age || 'Account គុណភាពខ្ពស់',
+            thumb: thumbBase64,
+            image: imageBase64,
+            acc_id: uid,
+            acc_pass: pass,
+            acc_2fa: tfa || 'គ្មាន',
+            status: 'available',
+            createdAt: Date.now()
+        }).then(() => {
+            alert("✅ បានបង្ហោះដាក់លក់ Account ជោគជ័យ!");
+            document.getElementById('accTitle').value = '';
+            document.getElementById('accPrice').value = '';
+            document.getElementById('accAge').value = '';
+            document.getElementById('accUid').value = '';
+            document.getElementById('accPass').value = '';
+            document.getElementById('acc2fa').value = '';
+            document.getElementById('accThumbFile').value = '';
+            document.getElementById('accImageFile').value = '';
+            document.getElementById('accThumbPreview').style.display = 'none';
+            document.getElementById('accImgPreview').style.display = 'none';
+        });
+    }
+
     db.ref('accounts_for_sale').on('value', snapshot => {
-        const grid = document.getElementById('accountsGrid');
-        grid.innerHTML = '';
+        const tbody = document.getElementById('accountsTableBody');
+        tbody.innerHTML = '';
         const data = snapshot.val();
-        if (!data) return grid.innerHTML = '<p style="color:#64748b;">មិនទាន់មាន Account ដាក់លក់ទេ។</p>';
+        if (!data) return tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:#64748b;">មិនទាន់មាន Account ដាក់លក់នៅឡើយទេ។</td></tr>';
 
         for (let key in data) {
-            const item = data[key];
-            if (item.status === 'available') {
-                grid.innerHTML += `
-                    <div class="card" onclick="openAccountPreview('${key}')">
-                        <img src="${item.image || item.thumb}">
-                        <div class="card-body">
-                            <div class="card-title">${item.title}</div>
-                            <div style="font-size:12px; color:#f59e0b; margin-bottom:6px;">📅 ${item.age || 'គុណភាពខ្ពស់'}</div>
-                            <div style="color:#10b981; font-weight:bold; font-size:16px; margin-bottom:10px;">$${parseFloat(item.price).toFixed(2)}</div>
-                            <button class="btn-buy">🔍 មើលព័ត៌មាន & ទិញ</button>
-                        </div>
-                    </div>
-                `;
-            }
+            const acc = data[key];
+            const status = acc.status === 'sold' 
+                ? '<span class="badge-sold">លក់ដាច់ហើយ</span>' 
+                : '<span class="badge-available">នៅសល់</span>';
+
+            tbody.innerHTML += `
+                <tr>
+                    <td><img src="${acc.thumb}" style="width:40px; height:40px; border-radius:6px; object-fit:cover;"></td>
+                    <td><strong>${acc.title}</strong></td>
+                    <td style="color:#f59e0b;">${acc.age || 'N/A'}</td>
+                    <td style="color:#38bdf8; font-weight:bold;">$${parseFloat(acc.price).toFixed(2)}</td>
+                    <td><code>${acc.acc_id}</code></td>
+                    <td><code>${acc.acc_pass}</code></td>
+                    <td><code>${acc.acc_2fa}</code></td>
+                    <td>${status}</td>
+                    <td><button onclick="deleteAccount('${key}')" style="padding:6px 10px; background:#ef4444; color:#fff; font-size:12px;">🗑️ លុប</button></td>
+                </tr>
+            `;
         }
     });
 
-    // បើកផ្ទាំង Preview មើលអាយុអាខោន
-    function openAccountPreview(key) {
-        db.ref('accounts_for_sale/' + key).once('value').then(snapshot => {
-            const acc = snapshot.val();
-            if (!acc) return;
-
-            document.getElementById('prevImg').src = acc.image || acc.thumb;
-            document.getElementById('prevTitle').innerText = acc.title;
-            document.getElementById('prevAge').innerText = acc.age || 'មិនបានបញ្ជាក់';
-            document.getElementById('prevPrice').innerText = `$${parseFloat(acc.price).toFixed(2)}`;
-
-            document.getElementById('btnConfirmBuy').onclick = function() {
-                document.getElementById('accPreviewModal').style.display = 'none';
-                purchaseAccount(key, acc.price);
-            };
-
-            document.getElementById('accPreviewModal').style.display = 'flex';
-        });
-    }
-
-    // ដំណើរការទិញ និងកាត់លុយ
-    function purchaseAccount(key, price) {
-        if (loggedInUser.balance < price) {
-            return alert(`❌ សមតុល្យលុយមិនគ្រប់គ្រាន់!\nតម្លៃ៖ $${price.toFixed(2)}\nសមតុល្យអ្នក៖ $${loggedInUser.balance.toFixed(2)}\nសូមបញ្ចូលលុយជាមុនសិន!`);
-        }
-
-        db.ref('accounts_for_sale/' + key).once('value').then(snapshot => {
-            const acc = snapshot.val();
-            if (!acc || acc.status === 'sold') return alert("❌ សុំទោស អាខោននេះត្រូវបានគេទិញរួចហើយ!");
-
-            loggedInUser.balance -= price;
-            updateUI();
-
-            db.ref('accounts_for_sale/' + key).update({
-                status: 'sold',
-                buyerEmail: loggedInUser.email,
-                soldAt: Date.now()
-            });
-
-            document.getElementById('dispAccId').value = acc.acc_id || 'N/A';
-            document.getElementById('dispAccPass').value = acc.acc_pass || 'N/A';
-            document.getElementById('dispAcc2fa').value = acc.acc_2fa || 'N/A';
-            document.getElementById('accountPurchasedModal').style.display = 'flex';
-        });
-    }
-
-    function copyField(id) {
-        const val = document.getElementById(id).value;
-        navigator.clipboard.writeText(val);
-        alert("✅ បានចម្លង៖ " + val);
-    }
-
-    function copyAllInfo() {
-        const uid = document.getElementById('dispAccId').value;
-        const pass = document.getElementById('dispAccPass').value;
-        const tfa = document.getElementById('dispAcc2fa').value;
-        navigator.clipboard.writeText(`UID/Email: ${uid}\nPassword: ${pass}\n2FA: ${tfa}`).then(() => {
-            alert("✅ បានចម្លងព័ត៌មានទាំងអស់រួចរាល់!");
-        });
+    function deleteAccount(key) {
+        if (confirm("តើអ្នកពិតជាចង់លុប Account នេះមែនទេ?")) db.ref('accounts_for_sale/' + key).remove();
     }
 </script>
 </body>
