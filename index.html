@@ -16,7 +16,7 @@
             --primary: #1877f2;
             --danger: #e41e3f;
             --success: #31a24c;
-            --card-border: rgba(0, 0, 0, 0.08);
+            --warning: #f59e0b;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Hanuman', sans-serif; }
@@ -25,22 +25,22 @@
         /* Header */
         header { background: var(--surface); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 100; }
         .logo-area { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 20px; color: #dc2626; text-decoration: none; }
-        .search-box { position: relative; width: 300px; }
+        .search-box { position: relative; width: 280px; }
         .search-box input { width: 100%; padding: 8px 15px 8px 38px; border-radius: 20px; border: 1px solid #e4e6eb; background: #f0f2f5; font-size: 14px; outline: none; }
         .search-box span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #8a8d91; font-size: 14px; }
         
-        .header-right { display: flex; align-items: center; gap: 15px; }
-        .online-badge { display: flex; align-items: center; gap: 6px; background: #e6f4ea; color: var(--success); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+        .header-right { display: flex; align-items: center; gap: 12px; }
+        .online-badge { display: flex; align-items: center; gap: 6px; background: #e6f4ea; color: var(--success); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
         .online-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        .btn-google-login { display: flex; align-items: center; gap: 8px; background: white; border: 1px solid #dadce0; padding: 7px 16px; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600; color: #3c4043; transition: 0.2s; }
-        .btn-google-login:hover { background: #f8f9fa; }
+        .btn-google-login { display: flex; align-items: center; gap: 8px; background: white; border: 1px solid #dadce0; padding: 7px 14px; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600; color: #3c4043; }
         .btn-google-login img { width: 16px; height: 16px; }
 
-        .user-pill { display: none; align-items: center; gap: 10px; background: #e8f0fe; padding: 4px 12px 4px 6px; border-radius: 20px; border: 1px solid #d2e3fc; }
+        .user-pill { display: none; align-items: center; gap: 8px; background: #e8f0fe; padding: 4px 12px 4px 6px; border-radius: 20px; border: 1px solid #d2e3fc; }
         .user-pill img { width: 28px; height: 28px; border-radius: 50%; }
         .user-pill .balance { font-weight: 700; color: var(--primary); font-size: 14px; }
+        .btn-topup-wallet { background: var(--danger); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; }
 
         /* Container */
         .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
@@ -55,7 +55,7 @@
         .promo-card-main h3 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
         .promo-card-main p { font-size: 13px; opacity: 0.9; }
 
-        /* Game Grid (ទម្រង់ដើម កាតពណ៌តាមប្រភេទ) */
+        /* Game Grid */
         .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 15px; }
         .game-card { height: 190px; border-radius: 16px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; position: relative; color: white; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .game-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
@@ -65,11 +65,10 @@
         .card-title { font-size: 13px; font-weight: 700; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .card-badge { align-self: flex-start; background: rgba(255,255,255,0.2); font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 600; margin-top: 4px; }
 
-        /* Card Color Schemes (ដូចរូបដើម) */
+        /* Card Color Schemes */
         .theme-blue { background: linear-gradient(180deg, #1e3c72, #2a5298); }
         .theme-orange { background: linear-gradient(180deg, #f12711, #f5af19); }
         .theme-dark-orange { background: linear-gradient(180deg, #4b6cb7, #182848); }
-        .theme-cyan { background: linear-gradient(180deg, #005aa7, #fffde4); color: #333; }
         .theme-teal { background: linear-gradient(180deg, #134e5e, #71b280); }
         .theme-dark { background: linear-gradient(180deg, #2c3e50, #3498db); }
         .theme-purple { background: linear-gradient(180deg, #654ea3, #eaafc8); }
@@ -90,10 +89,28 @@
         .chat-bottom input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 20px; outline: none; font-size: 13px; }
         .chat-bottom button { background: #1877f2; color: white; border: none; padding: 0 15px; border-radius: 20px; cursor: pointer; }
 
-        /* Modal QR */
-        .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; }
-        .modal-card { background: white; padding: 22px; border-radius: 16px; text-align: center; max-width: 320px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .modal-card img { width: 100%; max-width: 220px; border-radius: 10px; border: 1px solid #eee; margin: 10px 0; }
+        /* Modals Generic */
+        .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.65); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
+        .modal-card { background: white; padding: 22px; border-radius: 18px; text-align: center; max-width: 380px; width: 92%; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; max-height: 90vh; overflow-y: auto; }
+        .modal-close-x { position: absolute; top: 12px; right: 15px; font-size: 20px; cursor: pointer; color: #888; }
+
+        /* Package Selection Styling */
+        .package-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 15px 0; }
+        .package-btn { border: 2px solid #e4e6eb; background: #fff; padding: 10px 8px; border-radius: 12px; cursor: pointer; text-align: center; transition: 0.2s; }
+        .package-btn:hover, .package-btn.active { border-color: var(--primary); background: #e8f0fe; transform: scale(1.02); }
+        .package-amount { font-weight: 700; color: #1c1e21; font-size: 14px; }
+        .package-price { color: var(--danger); font-weight: 700; font-size: 13px; margin-top: 2px; }
+
+        /* Input Form */
+        .form-group { text-align: left; margin-bottom: 12px; }
+        .form-group label { font-size: 12px; font-weight: 600; color: var(--text-sub); margin-bottom: 4px; display: block; }
+        .form-control { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 10px; font-size: 14px; outline: none; }
+        .form-control:focus { border-color: var(--primary); }
+
+        /* Custom Top-Up Amount Chips */
+        .quick-amount-chips { display: flex; gap: 8px; justify-content: center; margin-bottom: 15px; flex-wrap: wrap; }
+        .amount-chip { background: #f0f2f5; border: 1px solid #ddd; padding: 6px 12px; border-radius: 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .amount-chip:hover, .amount-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
 
         @media(max-width: 768px) {
             .search-box { display: none; }
@@ -113,10 +130,10 @@
         <div class="header-right">
             <div class="online-badge">
                 <div class="online-dot"></div>
-                <span id="onlineVal">6 Online</span>
+                <span id="onlineVal">7 Online</span>
             </div>
 
-            <!-- Login Container (Google Identity Services) -->
+            <!-- Login Container -->
             <div id="g_id_onload"
                  data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
                  data-callback="handleCredentialResponse"
@@ -127,7 +144,7 @@
             <div class="user-pill" id="userPill">
                 <img src="" id="userAvatar" alt="Profile">
                 <div class="balance">$<span id="userBalance">0.00</span></div>
-                <span style="cursor:pointer; color:#e41e3f; font-weight:bold; font-size:16px; margin-left:4px;" onclick="showQR(5.00)" title="Top-Up Wallet">+</span>
+                <button class="btn-topup-wallet" onclick="openWalletTopUpModal()" title="បញ្ចូលលុយក្នុងកាបូប">+</button>
             </div>
         </div>
     </header>
@@ -135,70 +152,70 @@
     <div class="container">
         <div class="section-header">📢 Events & Promo</div>
         <div class="promo-banner-grid">
-            <div class="promo-card-main promo-ff">
+            <div class="promo-card-main promo-ff" onclick="openDiamondModal('Free Fire Mega Promo')">
                 <div class="promo-tag">Anniversary Event</div>
                 <h3>Free Fire Mega Promo</h3>
                 <p>បញ្ចុះតម្លៃពិសេសលើគ្រប់កញ្ចប់ពេជ្រ</p>
             </div>
-            <div class="promo-card-main promo-ml">
+            <div class="promo-card-main promo-ml" onclick="openDiamondModal('Mobile Legends')">
                 <div class="promo-tag">Discount Special</div>
                 <h3>Mobile Legends Weekly Pass</h3>
                 <p>ទទួលបានការបញ្ចុះតម្លៃរហូតដល់ 30%</p>
             </div>
         </div>
 
-        <div class="section-header">🔥 All Games</div>
+        <div class="section-header">🔥 All Games (ជ្រើសរើសកញ្ចប់ពេជ្រ)</div>
         <div class="game-grid">
-            <div class="game-card theme-blue" onclick="showQR(0.99)">
+            <div class="game-card theme-blue" onclick="openDiamondModal('Mobile Legends [khmer]')">
                 <div class="card-sold">29k+ Sold</div>
                 <div class="card-icon-wrap">🛡️</div>
                 <div class="card-title">Mobile Legends [khmer]</div>
                 <div class="card-badge">Event ✨</div>
             </div>
 
-            <div class="game-card theme-orange" onclick="showQR(1.50)">
+            <div class="game-card theme-orange" onclick="openDiamondModal('Free Fire លឿន')">
                 <div class="card-sold">90k+ Sold</div>
                 <div class="card-icon-wrap">🔥</div>
                 <div class="card-title">Free Fire លឿន</div>
                 <div class="card-badge">Event</div>
             </div>
 
-            <div class="game-card theme-dark-orange" onclick="showQR(2.00)">
+            <div class="game-card theme-dark-orange" onclick="openDiamondModal('Free Fire លឿន V2')">
                 <div class="card-sold">3k+ Sold</div>
                 <div class="card-icon-wrap">⚡</div>
                 <div class="card-title">Free Fire លឿន V2</div>
                 <div class="card-badge" style="background:#e41e3f;">RESTOCKING</div>
             </div>
 
-            <div class="game-card theme-dark" onclick="showQR(0.80)">
+            <div class="game-card theme-dark" onclick="openDiamondModal('Mobile Legends [Russia]')">
                 <div class="card-sold">322 Sold</div>
                 <div class="card-icon-wrap">🛡️</div>
                 <div class="card-title">Mobile Legends [Russia]</div>
                 <div class="card-badge">Event</div>
             </div>
 
-            <div class="game-card theme-teal" onclick="showQR(1.20)">
+            <div class="game-card theme-teal" onclick="openDiamondModal('Mobile Legends [Singapore]')">
                 <div class="card-sold">185 Sold</div>
                 <div class="card-icon-wrap">🛡️</div>
                 <div class="card-title">Mobile Legends [Singapore]</div>
                 <div class="card-badge">Event</div>
             </div>
 
-            <div class="game-card theme-dark" onclick="showQR(7.25)">
+            <div class="game-card theme-dark" onclick="openDiamondModal('Monthly Pass')">
                 <div class="card-sold">140 Sold</div>
                 <div class="card-icon-wrap">📅</div>
                 <div class="card-title">Monthly 7.25$</div>
                 <div class="card-badge" style="background:#e41e3f;">RESTOCKING</div>
             </div>
 
-            <div class="game-card theme-purple" onclick="showQR(1.00)">
+            <div class="game-card theme-purple" onclick="openDiamondModal('Diamond Pack')">
                 <div class="card-sold">171 Sold</div>
                 <div class="card-icon-wrap">💎</div>
                 <div class="card-title">Diamond Pack</div>
                 <div class="card-badge">Special</div>
             </div>
 
-            <div class="game-card theme-red" onclick="showQR(3.50)">
+            <div class="game-card theme-red" onclick="openDiamondModal('Free Fire VIP')">
                 <div class="card-sold">7k+ Sold</div>
                 <div class="card-icon-wrap">🌙</div>
                 <div class="card-title">Free Fire VIP</div>
@@ -225,36 +242,106 @@
         </div>
     </div>
 
-    <!-- Modal QR Code -->
+    <!-- 1. Modal ជ្រើសរើសកញ្ចប់ពេជ្រ (Diamond Package Selection) -->
+    <div class="modal-bg" id="diamondModal">
+        <div class="modal-card">
+            <div class="modal-close-x" onclick="closeModal('diamondModal')">✖</div>
+            <h3 id="modalGameTitle" style="color:var(--text-main); margin-bottom:5px;">ជ្រើសរើសកញ្ចប់</h3>
+            <p style="font-size:12px; color:var(--text-sub); margin-bottom:15px;">ជ្រើសរើសចំនួនពេជ្រ និងបញ្ចូលលេខសម្គាល់គណនី</p>
+
+            <div class="form-group">
+                <label>Player ID / UID:</label>
+                <input type="text" id="playerIdInput" class="form-control" placeholder="ឧទាហរណ៍៖ 12345678">
+            </div>
+
+            <div class="form-group" id="zoneIdGroup" style="display:none;">
+                <label>Zone ID (Server):</label>
+                <input type="text" id="zoneIdInput" class="form-control" placeholder="ឧទាហរណ៍៖ 2004">
+            </div>
+
+            <div class="package-grid">
+                <div class="package-btn active" onclick="selectPkg(this, 0.99, '115 💎')">
+                    <div class="package-amount">115 💎</div>
+                    <div class="package-price">$0.99</div>
+                </div>
+                <div class="package-btn" onclick="selectPkg(this, 1.95, '240 💎')">
+                    <div class="package-amount">240 💎</div>
+                    <div class="package-price">$1.95</div>
+                </div>
+                <div class="package-btn" onclick="selectPkg(this, 4.80, '610 💎')">
+                    <div class="package-amount">610 💎</div>
+                    <div class="package-price">$4.80</div>
+                </div>
+                <div class="package-btn" onclick="selectPkg(this, 7.25, 'Monthly Pass 📅')">
+                    <div class="package-amount">Monthly Pass</div>
+                    <div class="package-price">$7.25</div>
+                </div>
+            </div>
+
+            <button onclick="proceedToPay()" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:10px; font-weight:bold; font-size:15px; cursor:pointer;">
+                បន្តទូទាត់ ($<span id="selectedPkgPrice">0.99</span>)
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. Modal ដាក់លុយចូលកាបូបដោយខ្លួនឯង (Custom Top-Up Wallet Modal) -->
+    <div class="modal-bg" id="walletTopUpModal">
+        <div class="modal-card">
+            <div class="modal-close-x" onclick="closeModal('walletTopUpModal')">✖</div>
+            <h3 style="color:var(--text-main); margin-bottom:5px;">បញ្ចូលលុយក្នុងកាបូប (Wallet)</h3>
+            <p style="font-size:12px; color:var(--text-sub); margin-bottom:15px;">ជ្រើសរើសចំនួនលឿន ឬវាយបញ្ចូលទឹកប្រាក់តាមចិត្ត</p>
+
+            <div class="quick-amount-chips">
+                <div class="amount-chip" onclick="setCustomAmount(1.00, this)">$1.00</div>
+                <div class="amount-chip active" onclick="setCustomAmount(2.00, this)">$2.00</div>
+                <div class="amount-chip" onclick="setCustomAmount(5.00, this)">$5.00</div>
+                <div class="amount-chip" onclick="setCustomAmount(10.00, this)">$10.00</div>
+                <div class="amount-chip" onclick="setCustomAmount(20.00, this)">$20.00</div>
+            </div>
+
+            <div class="form-group">
+                <label>ចំនួនទឹកប្រាក់ ($):</label>
+                <input type="number" id="customWalletAmount" class="form-control" value="2.00" min="0.5" step="0.1" oninput="clearActiveChips()">
+            </div>
+
+            <button onclick="proceedCustomTopUp()" style="width:100%; padding:12px; background:var(--success); color:white; border:none; border-radius:10px; font-weight:bold; font-size:15px; cursor:pointer;">
+                បង្ហាញ QR ស្កេនបាញ់លុយ
+            </button>
+        </div>
+    </div>
+
+    <!-- 3. Modal QR Code (KHQR Image) -->
     <div class="modal-bg" id="qrModal">
         <div class="modal-card">
+            <div class="modal-close-x" onclick="closeModal('qrModal')">✖</div>
             <h4 style="margin-bottom:6px; color:#333;">ស្កេនទូទាត់ប្រាក់ KHQR</h4>
             <p style="font-size:13px; color:#666;">
-                ចំនួនទឹកប្រាក់៖ <b style="color:#e41e3f; font-size:18px;">$<span id="qrAmount">0.00</span></b>
+                ចំនួនទឹកប្រាក់៖ <b style="color:#e41e3f; font-size:22px;">$<span id="qrAmount">0.00</span></b>
             </p>
             
             <!-- រូបភាព QR ផ្ទាល់ -->
-            <img src="qr.jpg" alt="Bakong KHQR">
+            <img src="qr.jpg" alt="Bakong KHQR" style="width:100%; max-width:220px; border-radius:10px; border:1px solid #eee; margin:10px auto; display:block;">
 
-            <p style="font-size:12px; color:#555; margin-bottom:12px;">
-                ឈ្មោះគណនី៖ <b>SAMNANG MON</b>
+            <p style="font-size:12px; color:#555; margin-bottom:12px; background:#f9f9f9; padding:8px; border-radius:6px;">
+                ឈ្មោះគណនី៖ <b>SAMNANG MON</b><br>
+                <i style="font-size:11px; color:#888;">(សូមបញ្ចូលទឹកប្រាក់ឱ្យត្រូវតាមចំនួនខាងលើ)</i>
             </p>
 
-            <button onclick="closeQR()" style="width:100%; padding:9px; background:#e41e3f; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">
-                បិទ
+            <button onclick="closeModal('qrModal')" style="width:100%; padding:9px; background:#e41e3f; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">
+                រួចរាល់ / បិទ
             </button>
         </div>
     </div>
 
     <script>
-        // Google Sign-In Callback
+        let currentSelectedPrice = 0.99;
+        let currentSelectedPkgName = '115 💎';
+
+        // Google Sign-In
         function handleCredentialResponse(response) {
             const base64Url = response.credential.split('.')[1];
             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
             const user = JSON.parse(jsonPayload);
             
             document.getElementById('googleBtnWrapper').style.display = 'none';
@@ -263,13 +350,65 @@
             document.getElementById('userBalance').innerText = '0.00';
         }
 
-        // QR Code Modal
+        // Modal Controllers
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // 1. Diamond Modal Setup
+        function openDiamondModal(gameTitle) {
+            document.getElementById('modalGameTitle').innerText = gameTitle;
+            const isML = gameTitle.includes('Mobile Legends');
+            document.getElementById('zoneIdGroup').style.display = isML ? 'block' : 'none';
+            openModal('diamondModal');
+        }
+
+        function selectPkg(element, price, pkgName) {
+            document.querySelectorAll('.package-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            currentSelectedPrice = price;
+            currentSelectedPkgName = pkgName;
+            document.getElementById('selectedPkgPrice').innerText = price.toFixed(2);
+        }
+
+        function proceedToPay() {
+            const uid = document.getElementById('playerIdInput').value.trim();
+            if (!uid) {
+                alert("សូមបញ្ចូល Player ID របស់អ្នកជាមុនសិន!");
+                return;
+            }
+            closeModal('diamondModal');
+            showQR(currentSelectedPrice);
+        }
+
+        // 2. Custom Wallet Top-Up Setup
+        function openWalletTopUpModal() {
+            openModal('walletTopUpModal');
+        }
+
+        function setCustomAmount(val, element) {
+            document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('active'));
+            if(element) element.classList.add('active');
+            document.getElementById('customWalletAmount').value = val.toFixed(2);
+        }
+
+        function clearActiveChips() {
+            document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('active'));
+        }
+
+        function proceedCustomTopUp() {
+            const amount = parseFloat(document.getElementById('customWalletAmount').value);
+            if(isNaN(amount) || amount <= 0) {
+                alert("សូមបញ្ចូលចំនួនទឹកប្រាក់ត្រឹមត្រូវ!");
+                return;
+            }
+            closeModal('walletTopUpModal');
+            showQR(amount);
+        }
+
+        // 3. QR Modal Trigger
         function showQR(price) {
             document.getElementById('qrAmount').innerText = parseFloat(price).toFixed(2);
-            document.getElementById('qrModal').style.display = 'flex';
-        }
-        function closeQR() {
-            document.getElementById('qrModal').style.display = 'none';
+            openModal('qrModal');
         }
 
         // Chat Widget
@@ -293,9 +432,9 @@
             }, 1200);
         }
 
-        // Live Online Count
+        // Online counter update
         setInterval(() => {
-            document.getElementById('onlineVal').innerText = (Math.floor(Math.random() * 5) + 6) + ' Online';
+            document.getElementById('onlineVal').innerText = (Math.floor(Math.random() * 4) + 6) + ' Online';
         }, 10000);
     </script>
 </body>
