@@ -8,120 +8,429 @@
         @import url('https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700&family=Poppins:wght@400;600;700&display=swap');
 
         :root {
-            --primary: #1a73e8;
-            --danger: #d93025;
-            --success: #0f9d58;
-            --dark: #202124;
+            --primary: #1877f2;
+            --primary-dark: #145dbf;
+            --danger: #e41e3f;
+            --success: #31a24c;
+            --warning: #f59e0b;
+            --dark: #1c1e21;
             --bg: #f0f2f5;
+            --card: #ffffff;
+            --border: #e4e6eb;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Hanuman', sans-serif; }
-        body { background: var(--bg); display: flex; height: 100vh; overflow: hidden; }
+        body { background: var(--bg); display: flex; height: 100vh; overflow: hidden; color: var(--dark); }
 
         /* Sidebar */
-        .sidebar { width: 250px; background: white; box-shadow: 2px 0 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
-        .sidebar-header { padding: 20px; font-size: 20px; font-weight: bold; color: var(--danger); text-align: center; border-bottom: 1px solid #eee; }
-        .menu-item { padding: 15px 20px; color: var(--dark); cursor: pointer; border-bottom: 1px solid #fafafa; transition: 0.2s; display: flex; align-items: center; gap: 10px; }
-        .menu-item:hover, .menu-item.active { background: #e8f0fe; color: var(--primary); font-weight: bold; border-right: 4px solid var(--primary); }
+        .sidebar { width: 260px; background: white; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .sidebar-header { padding: 20px; font-size: 20px; font-weight: 800; color: var(--danger); text-align: center; border-bottom: 1px solid var(--border); }
+        .sidebar-menu { list-style: none; padding: 10px 0; flex: 1; overflow-y: auto; }
+        .menu-item { padding: 14px 20px; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; color: #555; cursor: pointer; transition: 0.2s; border-left: 4px solid transparent; }
+        .menu-item:hover, .menu-item.active { background: #e8f0fe; color: var(--primary); border-left-color: var(--primary); }
+        .menu-badge { margin-left: auto; background: var(--danger); color: white; font-size: 11px; padding: 2px 7px; border-radius: 10px; font-weight: bold; }
 
-        /* Main Content */
-        .main-content { flex: 1; display: flex; flex-direction: column; }
-        .header { background: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .page-title { font-size: 20px; font-weight: bold; }
+        /* Main Content Area */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .topbar { background: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .page-title { font-size: 20px; font-weight: 700; }
+        .admin-profile { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+        .admin-badge { background: #e6f4ea; color: var(--success); padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }
 
-        .content-area { flex: 1; padding: 20px; overflow-y: auto; }
-        
+        .content-body { flex: 1; padding: 25px; overflow-y: auto; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
         /* Stats Cards */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
-        .stat-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 5px solid var(--primary); }
-        .stat-card.success { border-color: var(--success); }
-        .stat-card.danger { border-color: var(--danger); }
-        .stat-title { font-size: 14px; color: #666; margin-bottom: 5px; }
-        .stat-value { font-size: 24px; font-weight: bold; color: var(--dark); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .stat-card { background: white; padding: 20px; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.02); border-left: 5px solid var(--primary); }
+        .stat-card.success { border-left-color: var(--success); }
+        .stat-card.warning { border-left-color: var(--warning); }
+        .stat-title { font-size: 13px; color: #777; margin-bottom: 6px; }
+        .stat-value { font-size: 26px; font-weight: 800; }
 
-        /* Table */
-        .table-container { background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); padding: 20px; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: #f8f9fa; color: #555; font-weight: 600; font-size: 14px; }
-        tr:hover { background: #fcfcfc; }
-        .badge { padding: 4px 8px; border-radius: 20px; font-size: 12px; font-weight: bold; color: white; }
-        .bg-warning { background: #f4b400; }
-        .bg-success { background: var(--success); }
+        /* Tables & Cards */
+        .card-panel { background: white; border-radius: 14px; border: 1px solid var(--border); padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .panel-title { font-size: 16px; font-weight: 700; }
+        
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+        th, td { padding: 12px 14px; border-bottom: 1px solid #f0f0f0; }
+        th { background: #f8f9fa; color: #555; font-weight: 600; }
+        tr:hover { background: #fafafa; }
+        
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        .badge-pending { background: #fef3c7; color: #d97706; }
+        .badge-success { background: #dcfce7; color: #15803d; }
 
-        /* Actions */
-        .btn { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; color: white; font-size: 12px; font-weight: bold; }
-        .btn-approve { background: var(--success); }
-        .btn-reject { background: var(--danger); }
+        .btn { padding: 6px 12px; border: none; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-primary { background: var(--primary); color: white; }
+
+        /* Price Management Grid */
+        .price-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
+        .price-card { background: #f8f9fa; border: 1px solid #e4e6eb; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .price-card h4 { font-size: 15px; color: var(--primary); }
+        .price-input-group { display: flex; align-items: center; gap: 8px; }
+        .price-input-group input { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; outline: none; }
+
+        /* Admin Live Chat Interface */
+        .chat-container { display: flex; height: calc(100vh - 160px); background: white; border-radius: 14px; border: 1px solid var(--border); overflow: hidden; }
+        .chat-user-list { width: 280px; border-right: 1px solid var(--border); overflow-y: auto; }
+        .chat-user-item { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .chat-user-item:hover, .chat-user-item.active { background: #e8f0fe; }
+        .chat-user-avatar { width: 36px; height: 36px; border-radius: 50%; background: #ddd; }
+        
+        .chat-room { flex: 1; display: flex; flex-direction: column; }
+        .chat-room-header { padding: 12px 20px; border-bottom: 1px solid var(--border); font-weight: bold; background: #fafafa; }
+        .chat-room-messages { flex: 1; padding: 15px; overflow-y: auto; background: #f0f2f5; display: flex; flex-direction: column; gap: 10px; }
+        
+        .admin-msg-bubble { max-width: 75%; padding: 8px 14px; border-radius: 12px; font-size: 13px; }
+        .admin-msg-bubble.guest { background: white; align-self: flex-start; }
+        .admin-msg-bubble.admin { background: var(--primary); color: white; align-self: flex-end; }
+        .admin-msg-bubble img, .admin-msg-bubble video { max-width: 100%; border-radius: 6px; margin-top: 4px; display: block; }
+        
+        .chat-room-input { padding: 10px 15px; background: white; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+        .chat-room-input input[type="text"] { flex: 1; padding: 8px 14px; border: 1px solid #ddd; border-radius: 20px; outline: none; font-size: 13px; }
+        .tool-icon-btn { background: #f0f2f5; border: none; width: 34px; height: 34px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; }
     </style>
 </head>
 <body>
 
+    <!-- Sidebar Navigation -->
     <div class="sidebar">
-        <div class="sidebar-header">🛠️ Admin Panel</div>
-        <div class="menu-item active">📊 Dashboard</div>
-        <div class="menu-item">🛒 បញ្ជាទិញ (Orders)</div>
-        <div class="menu-item">💬 ឆាតភ្ញៀវ (Live Chat)</div>
-        <div class="menu-item">⚙️ កំណត់ហ្គេម</div>
+        <div class="sidebar-header">🛠️ YUTH ADMIN</div>
+        <ul class="sidebar-menu">
+            <li class="menu-item active" onclick="switchTab('dashboardTab', this)">📊 Dashboard</li>
+            <li class="menu-item" onclick="switchTab('topupTab', this)">
+                💰 បញ្ចូលលុយ (Top-Up) <span class="menu-badge" id="pendingCount">1</span>
+            </li>
+            <li class="menu-item" onclick="switchTab('priceTab', this)">🏷️ បញ្ចុះតម្លៃ / កែតម្លៃ</li>
+            <li class="menu-item" onclick="switchTab('chatTab', this)">💬 ឆាតជាមួយភ្ញៀវ</li>
+            <li class="menu-item" onclick="switchTab('usersTab', this)">👥 បញ្ជីអ្នកប្រើប្រាស់</li>
+        </ul>
     </div>
 
+    <!-- Main Content -->
     <div class="main-content">
-        <div class="header">
-            <div class="page-title">ផ្ទាំងត្រួតពិនិត្យ (Dashboard)</div>
-            <div>Admin: <b>Samnang</b></div>
+        <div class="topbar">
+            <div class="page-title" id="pageTitle">ផ្ផ្ទាំងត្រួតពិនិត្យ (Dashboard)</div>
+            <div class="admin-profile">
+                <span class="admin-badge">● Online</span>
+                <span>Admin: <b>Samnang Mon</b></span>
+            </div>
         </div>
 
-        <div class="content-area">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-title">ការបញ្ជាទិញថ្ងៃនេះ</div>
-                    <div class="stat-value">12</div>
+        <div class="content-body">
+
+            <!-- TAB 1: DASHBOARD -->
+            <div id="dashboardTab" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title">ការបញ្ជាទិញសរុប</div>
+                        <div class="stat-value">128</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-title">ចំណូលសរុប (USD)</div>
+                        <div class="stat-value">$1,245.80</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-title">រង់ចាំយល់ព្រម (Pending)</div>
+                        <div class="stat-value">1</div>
+                    </div>
                 </div>
-                <div class="stat-card success">
-                    <div class="stat-title">ប្រាក់ចំណូល</div>
-                    <div class="stat-value">$45.50</div>
-                </div>
-                <div class="stat-card danger">
-                    <div class="stat-title">រង់ចាំយល់ព្រម (Pending)</div>
-                    <div class="stat-value">3</div>
+
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">ការបញ្ជាទិញថ្មីៗ (Recent Orders)</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ម៉ោង</th>
+                                <th>ឈ្មោះភ្ញៀវ</th>
+                                <th>ហ្គេម & កញ្ចប់</th>
+                                <th>Player ID</th>
+                                <th>តម្លៃ</th>
+                                <th>ស្ថានភាព</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>13:45</td>
+                                <td>Vannak Gamer</td>
+                                <td>Free Fire - 500 💎</td>
+                                <td><code>84930219</code></td>
+                                <td>$5.00</td>
+                                <td><span class="badge badge-success">ជោគជ័យ</span></td>
+                            </tr>
+                            <tr>
+                                <td>13:10</td>
+                                <td>Dara ML</td>
+                                <td>Mobile Legends - Monthly</td>
+                                <td><code>2938491 (2004)</code></td>
+                                <td>$13.00</td>
+                                <td><span class="badge badge-success">ជោគជ័យ</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <div class="table-container">
-                <h3 style="margin-bottom: 15px;">បញ្ជីទិញថ្មីៗ (Recent Orders)</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>អតិថិជន</th>
-                            <th>ផលិតផល</th>
-                            <th>តម្លៃ</th>
-                            <th>ស្ថានភាព</th>
-                            <th>សកម្មភាព</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Khmer Gamer</td>
-                            <td>Top-Up Wallet</td>
-                            <td>$5.00</td>
-                            <td><span class="badge bg-warning">រង់ចាំឆែកមើលលុយចូល</span></td>
-                            <td>
-                                <button class="btn btn-approve" onclick="alert('បញ្ចូលលុយឱ្យភ្ញៀវជោគជ័យ!')">យល់ព្រម</button>
-                                <button class="btn btn-reject">បដិសេធ</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>សុខ សាន្ត</td>
-                            <td>Free Fire លឿន</td>
-                            <td>$1.50</td>
-                            <td><span class="badge bg-success">ជោគជ័យ</span></td>
-                            <td>រួចរាល់</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- TAB 2: TOP-UP WALLET MANAGEMENT -->
+            <div id="topupTab" class="tab-content">
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">💰 សំណើរបញ្ចូលលុយក្នុងកាបូប (KHQR Top-Up Requests)</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ឈ្មោះភ្ញៀវ</th>
+                                <th>អ៊ីម៉ែល</th>
+                                <th>ចំនួនទឹកប្រាក់</th>
+                                <th>វិក្កយបត្រ (Proof)</th>
+                                <th>ស្ថានភាព</th>
+                                <th>សកម្មភាព</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topupTableBody">
+                            <tr id="orderRow1">
+                                <td>Sophea Touch</td>
+                                <td>sopheatouch99@gmail.com</td>
+                                <td><b style="color:var(--danger); font-size:15px;">$13.00</b></td>
+                                <td><a href="qr.jpg" target="_blank" style="color:var(--primary); font-weight:bold;">🔎 មើលរូបបាញ់លុយ</a></td>
+                                <td><span class="badge badge-pending">រង់ចាំឆែកលុយចូល</span></td>
+                                <td>
+                                    <button class="btn btn-success" onclick="approveTopup('orderRow1', 'Sophea Touch', 13.00)">✓ យល់ព្រម (ដាក់លុយ)</button>
+                                    <button class="btn btn-danger" onclick="rejectTopup('orderRow1')">✕ បដិសេធ</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+
+            <!-- TAB 3: PRICE & DISCOUNT MANAGEMENT -->
+            <div id="priceTab" class="tab-content">
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">🏷️ កែសម្រួលតម្លៃ & ដាក់ប្រូម៉ូសិនបញ្ចុះតម្លៃពេជ្រ</div>
+                        <button class="btn btn-primary" onclick="alert('រក្សាទុកការកែប្រែតម្លៃបានជោគជ័យ!')">💾 រក្សាទុកតម្លៃថ្មី</button>
+                    </div>
+                    <div class="price-grid">
+                        <div class="price-card">
+                            <h4>💎 Free Fire - 100 ពេជ្រ</h4>
+                            <div class="price-input-group">
+                                <label>តម្លៃ ($):</label>
+                                <input type="number" step="0.1" value="0.60">
+                            </div>
+                        </div>
+                        <div class="price-card">
+                            <h4>💎 Free Fire - 300 ពេជ្រ</h4>
+                            <div class="price-input-group">
+                                <label>តម្លៃ ($):</label>
+                                <input type="number" step="0.1" value="2.00">
+                            </div>
+                        </div>
+                        <div class="price-card">
+                            <h4>💎 Free Fire - 500 ពេជ្រ</h4>
+                            <div class="price-input-group">
+                                <label>តម្លៃ ($):</label>
+                                <input type="number" step="0.1" value="5.00">
+                            </div>
+                        </div>
+                        <div class="price-card">
+                            <h4>💎 Free Fire - 800 ពេជ្រ</h4>
+                            <div class="price-input-group">
+                                <label>តម្លៃ ($):</label>
+                                <input type="number" step="0.1" value="9.00">
+                            </div>
+                        </div>
+                        <div class="price-card">
+                            <h4>💎 Free Fire - 1000 ពេជ្រ</h4>
+                            <div class="price-input-group">
+                                <label>តម្លៃ ($):</label>
+                                <input type="number" step="0.1" value="10.00">
+                            </div>
+                        </div>
+                        <div class="price-card">
+                            <h4>💎 Free Fire - 10,000 ពេជ្រ 🔥</h4>
+                            <div class="price-input-group">
+                                <label>តម្លៃ ($):</label>
+                                <input type="number" step="0.1" value="25.00">
+                            </div>
+                        </div>
+                        <div class="price-card">
+                            <h4>📅 កញ្ចប់ប្រចាំខែ (Monthly Pass)</h4>
+                            <div class="price-input-group">
+                                <label>តម្លៃ ($):</label>
+                                <input type="number" step="0.1" value="13.00">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: LIVE CHAT WITH CUSTOMERS -->
+            <div id="chatTab" class="tab-content">
+                <div class="chat-container">
+                    <div class="chat-user-list">
+                        <div class="chat-user-item active" onclick="selectChatUser('Sophea Touch')">
+                            <div class="chat-user-avatar" style="background:#e8f0fe; display:flex; align-items:center; justify-content:center; font-weight:bold; color:var(--primary);">S</div>
+                            <div>
+                                <div style="font-weight:bold; font-size:13px;">Sophea Touch</div>
+                                <div style="font-size:11px; color:#888;">ខ្ញុំបានបាញ់លុយ $13 រួចហើយ...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-room">
+                        <div class="chat-room-header" id="chatHeaderName">
+                            ជជែកជាមួយ៖ Sophea Touch
+                        </div>
+                        <div class="chat-room-messages" id="adminChatLogs">
+                            <div class="admin-msg-bubble guest">
+                                សួស្តី Admin ខ្ញុំបានបាញ់លុយ $13 តាម KHQR រួចហើយ សូមជួយបញ្ចូលលុយឱ្យផង។
+                            </div>
+                        </div>
+                        <div class="chat-room-input">
+                            <input type="file" id="adminMediaFile" accept="image/*,video/*" style="display:none;" onchange="adminSendMedia(this)">
+                            <button class="tool-icon-btn" onclick="document.getElementById('adminMediaFile').click()" title="ផ្ញើរូបភាព/វីដេអូ">📎</button>
+                            <button class="tool-icon-btn" onclick="adminRecordVoice()" title="ថតសំឡេង">🎙️</button>
+                            <input type="text" id="adminChatInput" placeholder="វាយសារតបទៅកាន់ភ្ញៀវ..." onkeypress="if(event.key==='Enter') adminSendMsg()">
+                            <button class="btn btn-primary" onclick="adminSendMsg()">ផ្ញើ</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: USERS DIRECTORY -->
+            <div id="usersTab" class="tab-content">
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">👥 បញ្ជីអ្នកប្រើប្រាស់ & អតិថិជន (Users Directory)</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>រូបភាព</th>
+                                <th>ឈ្មោះអតិថិជន</th>
+                                <th>អ៊ីម៉ែល (Email)</th>
+                                <th>សមតុល្យកាបូប ($)</th>
+                                <th>កាលបរិច្ឆេទចុះឈ្មោះ</th>
+                                <th>សកម្មភាព</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sophea" style="width:32px; height:32px; border-radius:50%;"></td>
+                                <td><b>Sophea Touch</b></td>
+                                <td>sopheatouch99@gmail.com</td>
+                                <td><b style="color:var(--primary);">$13.00</b></td>
+                                <td>18/08/2026</td>
+                                <td>
+                                    <button class="btn btn-primary" onclick="manualAddBalance('Sophea Touch')">+ បូក/ដកលុយ</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" style="width:32px; height:32px; border-radius:50%;"></td>
+                                <td><b>Khmer Gamer</b></td>
+                                <td>khmer.gamer88@gmail.com</td>
+                                <td><b style="color:var(--primary);">$0.00</b></td>
+                                <td>18/08/2026</td>
+                                <td>
+                                    <button class="btn btn-primary" onclick="manualAddBalance('Khmer Gamer')">+ បូក/ដកលុយ</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
 
+    <script>
+        // ប្តូរ Tab ម៉ឺនុយ
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+
+            const titles = {
+                dashboardTab: 'ផ្ទាំងត្រួតពិនិត្យ (Dashboard)',
+                topupTab: '💰 សំណើរបញ្ចូលលុយ (Top-Up Approval)',
+                priceTab: '🏷️ គ្រប់គ្រងតម្លៃ & បញ្ចុះតម្លៃ',
+                chatTab: '💬 ឆាតជាមួយភ្ញៀវ (Live Support)',
+                usersTab: '👥 បញ្ជីឈ្មោះ & អ៊ីម៉ែលអ្នកប្រើប្រាស់'
+            };
+            document.getElementById('pageTitle').innerText = titles[tabId];
+        }
+
+        // ១. យល់ព្រមបញ្ចូលលុយឱ្យភ្ញៀវ
+        function approveTopup(rowId, userName, amount) {
+            if (confirm(`តើអ្នកពិតជាបានឆែកឃើញលុយ $${amount} ចូលកុង និងចង់បញ្ចូលលុយឱ្យ ${userName} មែនទេ?`)) {
+                const row = document.getElementById(rowId);
+                row.innerHTML = `
+                    <td colspan="6" style="text-align:center; color:var(--success); font-weight:bold; background:#e6f4ea;">
+                        ✓ បានបញ្ចូលទឹកប្រាក់ $${amount.toFixed(2)} ជូន ${userName} ជោគជ័យ!
+                    </td>
+                `;
+                document.getElementById('pendingCount').innerText = '0';
+            }
+        }
+
+        function rejectTopup(rowId) {
+            if (confirm("តើអ្នកចង់បដិសេធសំណើនេះមែនទេ?")) {
+                document.getElementById(rowId).remove();
+                document.getElementById('pendingCount').innerText = '0';
+            }
+        }
+
+        // ២. បូកលុយដោយដៃជូន User
+        function manualAddBalance(userName) {
+            const amount = prompt(`បញ្ចូលចំនួនលុយ ($) ដែលត្រូវបូកជូន ${userName}:`, "5.00");
+            if (amount && !isNaN(amount)) {
+                alert(`បានបូកទឹកប្រាក់ $${parseFloat(amount).toFixed(2)} ជូន ${userName} រួចរាល់!`);
+            }
+        }
+
+        // ៣. មុខងារ Admin Live Chat
+        function adminSendMsg() {
+            const input = document.getElementById('adminChatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const logs = document.getElementById('adminChatLogs');
+            logs.innerHTML += `<div class="admin-msg-bubble admin">${text}</div>`;
+            input.value = '';
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function adminSendMedia(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const url = URL.createObjectURL(file);
+            const logs = document.getElementById('adminChatLogs');
+
+            if (file.type.startsWith('video/')) {
+                logs.innerHTML += `<div class="admin-msg-bubble admin"><video controls src="${url}"></video></div>`;
+            } else {
+                logs.innerHTML += `<div class="admin-msg-bubble admin"><img src="${url}"></div>`;
+            }
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function adminRecordVoice() {
+            alert("🎙️ Admin Voice Recording: បានថតសំឡេង និងផ្ញើទៅកាន់ភ្ញៀវរួចរាល់!");
+            const logs = document.getElementById('adminChatLogs');
+            logs.innerHTML += `<div class="admin-msg-bubble admin">🎙️ <i>[Voice Note បានផ្ញើ]</i></div>`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+    </script>
 </body>
 </html>
