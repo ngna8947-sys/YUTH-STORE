@@ -36,9 +36,14 @@
         .user-pill .balance { font-weight: 800; color: #818cf8; font-size: 14px; }
 
         .container { max-width: 1000px; margin: 25px auto; padding: 0 15px; }
-        .section-header { font-size: 18px; font-weight: 700; margin: 20px 0 15px 0; display: flex; align-items: center; gap: 8px; }
 
-        /* Store Service Grid (Dynamic from Admin) */
+        .hero-banner { background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(6, 182, 212, 0.1)); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 18px; padding: 30px; text-align: center; margin-bottom: 25px; }
+        .hero-banner h1 { font-size: 24px; font-weight: 800; margin-bottom: 8px; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-banner p { font-size: 13px; color: var(--text-sub); }
+
+        .section-header { font-size: 18px; font-weight: 700; margin: 20px 0 15px 0; }
+
+        /* Store Service Grid */
         .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
         .game-card { height: 190px; border-radius: 16px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; position: relative; color: white; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; }
         .game-card:hover { transform: translateY(-4px); }
@@ -58,7 +63,7 @@
         .chat-top { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(8px); padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; border-bottom: 1px solid var(--border); }
         .chat-logs { flex: 1; padding: 14px; background: #0b0f19; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
 
-        .chat-msg { max-width: 82%; padding: 9px 13px; border-radius: 14px; font-size: 13px; word-break: break-word; line-height: 1.4; }
+        .chat-msg { max-width: 82%; padding: 9px 13px; border-radius: 14px; font-size: 13px; word-break: break-word; }
         .chat-msg.admin { background: #1e293b; color: #f8fafc; align-self: flex-start; border: 1px solid var(--border); }
         .chat-msg.guest { background: var(--primary-gradient); color: white; align-self: flex-end; }
 
@@ -96,23 +101,23 @@
     </header>
 
     <div class="container">
-        <div class="section-header">🔥 សេវាកម្ម និងកញ្ចប់ពេជ្រទាំងអស់</div>
+        <div class="hero-banner">
+            <h1>🎮 YUTH STORE AUTOMATION</h1>
+            <p>សូមចុះឈ្មោះចូលគណនី Google ដើម្បីទទួលបានសមតុល្យកាបូប (Wallet) ឬឆាតផ្ទាល់ជាមួយ Admin</p>
+        </div>
+
+        <div class="section-header">🔥 ជ្រើសរើសសេវាកម្ម & កញ្ចប់ពេជ្របញ្ចុះតម្លៃ</div>
         <div class="game-grid" id="clientGameGrid">
-            <div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-sub);">មិនទាន់មានសេវាកម្ម ឬហ្គេមនៅលើប្រព័ន្ធទេ សូមរង់ចាំ Admin បញ្ចូលថ្មី...</div>
+            <div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-sub);">មិនទាន់មានសេវាកម្មនៅលើប្រព័ន្ធទេ សូមរង់ចាំ Admin បញ្ចូល...</div>
         </div>
     </div>
 
-    <!-- Floating Chat Widget -->
+    <!-- Floating Chat -->
     <button class="fab-chat" onclick="toggleChat()">💬</button>
 
     <div class="chat-box" id="chatBox">
-        <div class="chat-top">
-            <span>⚡ Support Live Chat</span>
-            <span style="cursor:pointer;" onclick="toggleChat()">✖</span>
-        </div>
-        <div class="chat-logs" id="chatLogs">
-            <div class="chat-msg admin">សួស្តីបាទ! 🙏 មានអ្វីឱ្យ Admin ជួយទេ? អាចផ្ញើសារបានភ្លាមៗបាទ។</div>
-        </div>
+        <div class="chat-top"><span>⚡ Support Live Chat</span><span style="cursor:pointer;" onclick="toggleChat()">✖</span></div>
+        <div class="chat-logs" id="chatLogs"><div class="chat-msg admin">សួស្តីបាទ! 🙏 មានអ្វីឱ្យ Admin ជួយទេ? អាចផ្ញើសារបានភ្លាមៗបាទ។</div></div>
         <div class="chat-bottom-wrap">
             <input type="text" id="chatInput" placeholder="វាយសារផ្ញើទៅ Admin..." onkeypress="if(event.key==='Enter') sendChat()">
             <button class="btn-send-chat" onclick="sendChat()">➤</button>
@@ -209,12 +214,12 @@
 
         let gamesDataCache = {};
         function loadStoreGames() {
-            fetch(`${FIREBASE_DB_URL}store_games.json`)
+            fetch(`${FIREBASE_DB_URL}store_games.json?t=` + Date.now())
                 .then(res => res.json())
                 .then(games => {
                     const grid = document.getElementById('clientGameGrid');
                     if (!games || games.error) {
-                        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-sub);">មិនទាន់មានសេវាកម្ម ឬហ្គេមនៅលើប្រព័ន្ធទេ សូមរង់ចាំ Admin បញ្ចូលថ្មី...</div>';
+                        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-sub);">មិនទាន់មានសេវាកម្មនៅលើប្រព័ន្ធទេ សូមរង់ចាំ Admin បញ្ចូល...</div>';
                         return;
                     }
 
@@ -337,6 +342,7 @@
             }, 1200);
         }
 
+        setInterval(loadStoreGames, 2000);
         loadStoreGames();
         listenToChatReplies();
     </script>
