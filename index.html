@@ -34,6 +34,9 @@
         .online-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
+        .btn-google-login { display: flex; align-items: center; gap: 8px; background: white; border: 1px solid #dadce0; padding: 7px 14px; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600; color: #3c4043; }
+        .btn-google-login img { width: 16px; height: 16px; }
+
         .user-pill { display: none; align-items: center; gap: 8px; background: #e8f0fe; padding: 4px 12px 4px 6px; border-radius: 20px; border: 1px solid #d2e3fc; }
         .user-pill img { width: 28px; height: 28px; border-radius: 50%; }
         .user-pill .balance { font-weight: 700; color: var(--primary); font-size: 14px; }
@@ -132,6 +135,7 @@
                 <span id="onlineVal">9 Online</span>
             </div>
 
+            <!-- Login Container -->
             <div id="g_id_onload"
                  data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
                  data-callback="handleCredentialResponse"
@@ -251,7 +255,7 @@
         </div>
     </div>
 
-    <!-- 1. Modal ជ្រើសរើសកញ្ចប់ពេជ្រ (តម្លៃពេញលេញ) -->
+    <!-- 1. Modal ជ្រើសរើសកញ្ចប់ពេជ្រ -->
     <div class="modal-bg" id="diamondModal">
         <div class="modal-card">
             <div class="modal-close-x" onclick="closeModal('diamondModal')">✖</div>
@@ -360,55 +364,59 @@
 
         let currentSelectedPrice = 0.60;
         let currentSelectedPkgName = '100 💎';
+        let loggedInUser = null; // លំនាំដើមគឺគ្មានគណនី
 
-        let guestId = localStorage.getItem('yuth_guest_id');
-        if (!guestId) {
-            guestId = 'user_' + Math.floor(100000 + Math.random() * 900000);
-            localStorage.setItem('yuth_guest_id', guestId);
+        // 🔒 ចាក់សោសុវត្ថិភាពតឹងរ៉ឹង៖ ភ្ញៀវមិនទាន់ចុះឈ្មោះ/Login មិនឱ្យធ្វើសកម្មភាពអ្វីទាំងអស់
+        function checkAuth() {
+            if (!loggedInUser) {
+                alert("⚠️ សូមចុះឈ្មោះ / ចូលគណនី (Sign in with Google) នៅជ្រុងខាងស្តាំខាងលើជាមុនសិន ទើបអាចទិញពេជ្រ ឬបញ្ចូលលុយបាន!");
+                return false;
+            }
+            return true;
         }
 
-        let currentUser = {
-            uid: guestId,
-            name: 'ភ្ញៀវថ្មី (' + guestId.substring(5) + ')',
-            email: 'មិនទាន់ភ្ជាប់ Email'
-        };
-
-        function syncToAdmin(textMsg) {
-            let activeChats = JSON.parse(localStorage.getItem('yuth_active_chats') || '{}');
-            if (!activeChats[currentUser.uid]) {
-                activeChats[currentUser.uid] = {
-                    name: currentUser.name,
-                    email: currentUser.email,
-                    balance: 0.00,
-                    messages: []
-                };
-            }
-            activeChats[currentUser.uid].name = currentUser.name;
-            activeChats[currentUser.uid].email = currentUser.email;
-            if (textMsg) {
-                activeChats[currentUser.uid].messages.push({ sender: 'guest', text: textMsg });
-            }
-            localStorage.setItem('yuth_active_chats', JSON.stringify(activeChats));
-        }
-
-        syncToAdmin();
-
+        // Google Sign-In Callback (ពេលភ្ញៀវចុច Login)
         function handleCredentialResponse(response) {
             const base64Url = response.credential.split('.')[1];
             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
             const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
             const user = JSON.parse(jsonPayload);
             
-            currentUser.name = user.name;
-            currentUser.email = user.email;
-            currentUser.picture = user.picture;
+            loggedInUser = {
+                uid: 'user_' + user.sub.substring(0, 8),
+                name: user.name,
+                email: user.email,
+                picture: user.picture
+            };
 
             document.getElementById('googleBtnWrapper').style.display = 'none';
             document.getElementById('userPill').style.display = 'flex';
             document.getElementById('userAvatar').src = user.picture;
+            document.getElementById('userBalance').innerText = '0.00';
             
+            // បញ្ជូនគណនីភ្ញៀវទៅឱ្យ Admin ឃើញភ្លាមៗ
             syncToAdmin();
-            alert(`🎉 ស្វាគមន៍ ${user.name}!`);
+
+            alert(`🎉 ស្វាគមន៍ការមកកាន់ YUTH STORE, ${user.name}! ឥឡូវអ្នកអាចធ្វើការទិញពេជ្របានហើយ។`);
+        }
+
+        function syncToAdmin(textMsg) {
+            if (!loggedInUser) return;
+            let activeChats = JSON.parse(localStorage.getItem('yuth_active_chats') || '{}');
+            if (!activeChats[loggedInUser.uid]) {
+                activeChats[loggedInUser.uid] = {
+                    name: loggedInUser.name,
+                    email: loggedInUser.email,
+                    balance: 0.00,
+                    messages: []
+                };
+            }
+            activeChats[loggedInUser.uid].name = loggedInUser.name;
+            activeChats[loggedInUser.uid].email = loggedInUser.email;
+            if (textMsg) {
+                activeChats[loggedInUser.uid].messages.push({ sender: 'guest', text: textMsg });
+            }
+            localStorage.setItem('yuth_active_chats', JSON.stringify(activeChats));
         }
 
         function sendTelegramNotification(title, packageInfo, price, uid, zoneId) {
@@ -419,7 +427,7 @@
             message += `💵 *តម្លៃ:* $${parseFloat(price).toFixed(2)}\n`;
             if (uid) message += `🆔 *Player ID:* \`${uid}\`\n`;
             if (zoneId) message += `🌐 *Zone ID:* \`${zoneId}\`\n`;
-            message += `👤 *គណនីភ្ញៀវ:* ${currentUser.name} (${currentUser.email})\n`;
+            if (loggedInUser) message += `👤 *គណនីភ្ញៀវ:* ${loggedInUser.name} (${loggedInUser.email})\n`;
             message += `⏰ *ពេលវេលា:* ${time}`;
 
             fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -436,7 +444,9 @@
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
+        // 1. បើកផ្ទាំងទិញពេជ្រ (ចាក់សោបើមិនទាន់ Login)
         function openDiamondModal(gameTitle) {
+            if (!checkAuth()) return;
             document.getElementById('modalGameTitle').innerText = gameTitle;
             const isML = gameTitle.includes('Mobile Legends');
             document.getElementById('zoneIdGroup').style.display = isML ? 'block' : 'none';
@@ -452,6 +462,7 @@
         }
 
         function proceedToPay() {
+            if (!checkAuth()) return;
             const uid = document.getElementById('playerIdInput').value.trim();
             const zoneId = document.getElementById('zoneIdInput') ? document.getElementById('zoneIdInput').value.trim() : '';
             const gameTitle = document.getElementById('modalGameTitle').innerText;
@@ -466,7 +477,9 @@
             showQR(currentSelectedPrice);
         }
 
+        // 2. បើកផ្ទាំងដាក់លុយ (ចាក់សោបើមិនទាន់ Login)
         function openWalletTopUpModal() {
+            if (!checkAuth()) return;
             openModal('walletTopUpModal');
         }
 
@@ -481,6 +494,7 @@
         }
 
         function proceedCustomTopUp() {
+            if (!checkAuth()) return;
             const amount = parseFloat(document.getElementById('customWalletAmount').value);
             if(isNaN(amount) || amount <= 0) {
                 alert("សូមបញ្ចូលចំនួនទឹកប្រាក់ត្រឹមត្រូវ!");
@@ -497,13 +511,15 @@
             openModal('qrModal');
         }
 
-        // Multimedia Live Chat
+        // 3. មុខងារ Chat (ចាក់សោបើមិនទាន់ Login)
         function toggleChat() {
+            if (!checkAuth()) return;
             const box = document.getElementById('chatBox');
             box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
         }
 
         function sendChat() {
+            if (!checkAuth()) return;
             const input = document.getElementById('chatInput');
             const text = input.value.trim();
             if (!text) return;
@@ -518,7 +534,7 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     chat_id: TELEGRAM_CHAT_ID,
-                    text: `💬 *សារពី ${currentUser.name} (Live Chat):*\n"${text}"`,
+                    text: `💬 *សារពី ${loggedInUser.name} (Live Chat):*\n"${text}"`,
                     parse_mode: "Markdown"
                 })
             }).catch(e => console.error(e));
@@ -529,6 +545,7 @@
         }
 
         function handleMediaUpload(input) {
+            if (!checkAuth()) return;
             const file = input.files[0];
             if (!file) return;
 
@@ -555,7 +572,7 @@
 
             const formData = new FormData();
             formData.append("chat_id", TELEGRAM_CHAT_ID);
-            formData.append("caption", `📎 *${isVideo ? 'វីដេអូ' : 'រូបភាព'} ផ្ញើដោយ:* ${currentUser.name}`);
+            formData.append("caption", `📎 *${isVideo ? 'វីដេអូ' : 'រូបភាព'} ផ្ញើដោយ:* ${loggedInUser.name}`);
 
             const endpoint = isVideo ? "sendVideo" : "sendPhoto";
             formData.append(isVideo ? "video" : "photo", file);
@@ -574,6 +591,7 @@
         let isRecording = false;
 
         async function toggleVoiceRecording() {
+            if (!checkAuth()) return;
             const recBtn = document.getElementById('voiceRecordBtn');
             const statusLabel = document.getElementById('recordingStatus');
 
@@ -603,7 +621,7 @@
 
                         const formData = new FormData();
                         formData.append("chat_id", TELEGRAM_CHAT_ID);
-                        formData.append("caption", `🎙️ *Voice Message ពី:* ${currentUser.name}`);
+                        formData.append("caption", `🎙️ *Voice Message ពី:* ${loggedInUser.name}`);
                         formData.append("voice", audioBlob, "voice.ogg");
 
                         fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendVoice`, {
