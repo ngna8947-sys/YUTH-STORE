@@ -1,40 +1,5 @@
+// Function បង្ហាញ Modal
 function showQR(amountUSD) {
-    const formattedAmount = parseFloat(amountUSD).toFixed(2);
-    document.getElementById('qrAmountDisplay').innerText = formattedAmount;
-
-    // ប្រើ Bakong KHQR SDK ផ្លូវការ
-    const { BakongKHQR, IndividualInfo } = window.BakongKHQR;
-
-    const optionalData = {
-        currency: "USD",
-        amount: parseFloat(formattedAmount),
-        mobileNumber: "85590217653",
-        storeLabel: "YUTH STORE",
-        terminalLabel: "Online"
-    };
-
-    const individualInfo = new IndividualInfo(
-        "mon_samnang@bkrt",
-        "SAMNANG MON",
-        "Phnom Penh",
-        optionalData
-    );
-
-    const khqr = new BakongKHQR();
-    const response = khqr.generateIndividual(individualInfo);
-
-    if (response && response.data && response.data.qr) {
-        // គូរ QR ទៅលើ Canvas
-        QRCode.toCanvas(document.getElementById('qrCanvas'), response.data.qr, {
-            width: 220,
-            margin: 1,
-            errorCorrectionLevel: 'M'
-        }, function (error) {
-            if (error) console.error("QR Render Error:", error);
-        });
-
-        document.getElementById('qrModal').style.display = 'flex';
-    } else {
-        console.error("KHQR Generation Failed:", response);
-    }
+    document.getElementById('qrAmountDisplay').innerText = parseFloat(amountUSD).toFixed(2);
+    document.getElementById('qrModal').style.display = 'flex';
 }
