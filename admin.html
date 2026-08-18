@@ -96,7 +96,6 @@
 </head>
 <body>
 
-    <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">🛠️ YUTH ADMIN</div>
         <ul class="sidebar-menu">
@@ -112,7 +111,6 @@
         </ul>
     </div>
 
-    <!-- Main Content Area -->
     <div class="main-content">
         <div class="topbar">
             <div class="page-title" id="pageTitle">Dashboard</div>
@@ -167,14 +165,6 @@
                                 <td>Free Fire - 500 💎</td>
                                 <td><code>84930219</code></td>
                                 <td>$5.00</td>
-                                <td><span class="badge badge-success">ជោគជ័យ</span></td>
-                            </tr>
-                            <tr>
-                                <td>13:10</td>
-                                <td>Dara ML</td>
-                                <td>Mobile Legends - Monthly</td>
-                                <td><code>2938491 (2004)</code></td>
-                                <td>$13.00</td>
                                 <td><span class="badge badge-success">ជោគជ័យ</span></td>
                             </tr>
                         </tbody>
@@ -282,7 +272,7 @@
                     <div class="panel-header">
                         <div class="panel-title">👥 បញ្ជីឈ្មោះ & អ៊ីម៉ែលអ្នកចុះឈ្មោះទាំងអស់ (<span id="userCountBadge">0</span> នាក់)</div>
                     </div>
-                    <div id="usersTableWrapper">កំពុងទាញយកទិន្នន័យពី Firebase...</div>
+                    <div id="usersTableWrapper">កំពុងទាញយក...</div>
                 </div>
             </div>
 
@@ -294,42 +284,42 @@
         let currentActiveUid = null;
 
         function fetchRealtimeData() {
-            // ទាញយកអ្នកចុះឈ្មោះទាំងអស់
+            // ទាញយកអ្នកចុះឈ្មោះ
             fetch(`${FIREBASE_DB_URL}users.json`)
                 .then(res => res.json())
                 .then(users => {
-                    const uids = users ? Object.keys(users) : [];
+                    if (!users || users.error) {
+                        return;
+                    }
+                    const uids = Object.keys(users);
                     document.getElementById('totalUserCount').innerText = uids.length;
                     document.getElementById('sidebarUserCount').innerText = uids.length;
                     document.getElementById('userCountBadge').innerText = uids.length;
 
                     let html = '<table><thead><tr><th>ល.រ</th><th>ឈ្មោះ</th><th>អ៊ីម៉ែល</th><th>សកម្មភាព</th></tr></thead><tbody>';
-                    if (uids.length === 0) {
-                        html += '<tr><td colspan="4" style="text-align:center; color:#888;">មិនទាន់មានអ្នកចុះឈ្មោះ</td></tr>';
-                    } else {
-                        uids.forEach((uid, index) => {
-                            const u = users[uid];
-                            html += `<tr><td>#${index+1}</td><td><b>${u.name}</b></td><td>${u.email}</td><td><button class="btn btn-primary">+ បូកលុយ</button></td></tr>`;
-                        });
-                    }
+                    uids.forEach((uid, index) => {
+                        const u = users[uid];
+                        html += `<tr><td>#${index+1}</td><td><b>${u.name || 'គ្មានឈ្មោះ'}</b></td><td>${u.email || '-'}</td><td><button class="btn btn-primary">+ ដាក់លុយ</button></td></tr>`;
+                    });
                     html += '</tbody></table>';
                     document.getElementById('usersTableWrapper').innerHTML = html;
-                });
+                }).catch(e => console.log(e));
 
-            // ទាញយកបញ្ជីភ្ញៀវដែលបាន Chat
+            // ទាញយកបញ្ជីឆាត
             fetch(`${FIREBASE_DB_URL}chats.json`)
                 .then(res => res.json())
                 .then(chats => {
                     const listEl = document.getElementById('chatUserList');
-                    listEl.innerHTML = '';
-                    if (!chats) {
+                    if (!chats || chats.error) {
                         listEl.innerHTML = '<div style="padding:15px; font-size:12px; color:#888;">មិនទាន់មានសារ</div>';
                         return;
                     }
 
-                    const chatUids = Object.keys(chats);
+                    listEl.innerHTML = '';
+                    const chatUids = Object.keys(chats).filter(k => k !== 'error');
+
                     chatUids.forEach((uid, index) => {
-                        const info = chats[uid].info || { name: uid, email: '' };
+                        const info = chats[uid].info || { name: 'ភ្ញៀវ (' + uid.substring(0, 6) + ')', email: '' };
                         const isActive = uid === currentActiveUid ? 'active' : '';
 
                         listEl.innerHTML += `
@@ -343,22 +333,23 @@
                             selectUser(uid, info.name);
                         }
                     });
-                });
+                }).catch(e => console.log(e));
 
-            // ទាញយកសាររបស់ភ្ញៀវដែលកំពុងជជែក
-            if (currentActiveUid) {
+            // ទាញយកសារ
+            if (currentActiveUid && currentActiveUid !== 'error') {
                 fetch(`${FIREBASE_DB_URL}chats/${currentActiveUid}/messages.json`)
                     .then(res => res.json())
                     .then(messages => {
+                        if (!messages || messages.error) return;
                         const logs = document.getElementById('adminChatLogs');
                         logs.innerHTML = '';
-                        if (messages) {
-                            Object.values(messages).forEach(m => {
+                        Object.values(messages).forEach(m => {
+                            if (m.text) {
                                 logs.innerHTML += `<div class="admin-msg-bubble ${m.sender}">${m.text}</div>`;
-                            });
-                        }
+                            }
+                        });
                         logs.scrollTop = logs.scrollHeight;
-                    });
+                    }).catch(e => console.log(e));
             }
         }
 
